@@ -1,0 +1,43 @@
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { getServerSession } from "next-auth/next";
+import { NextRequest, NextResponse } from "next/server";
+import prisma from "@/lib/prisma";
+
+export async function GET(request: Request, { params }: NextRequest) {
+    const session = await getServerSession(authOptions);
+    const userId = params!.user;
+    if (!session) {
+        return NextResponse.json(
+            {
+                error: "Vous devez être connecté pour créer un projet.",
+            },
+            { status: 401 },
+        );
+    }
+
+    const user = await prisma.user.findUnique({
+        where: {
+            email: session.user!.email!,
+        },
+    });
+
+    if (!user || user.id !== userId) {
+        return NextResponse.json(
+            {
+                error: "Vous devez être connecté pour créer un projet.",
+            },
+            { status: 401 },
+        );
+    }
+
+    const projects = await prisma.projectMembership.findMany({
+        where: {
+            userId,
+        },
+        include: {
+            project: true,
+        },
+    });
+
+    return NextResponse.json(projects, { status: 200 });
+}

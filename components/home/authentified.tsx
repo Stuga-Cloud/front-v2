@@ -1,14 +1,19 @@
+"use client"
 import { Session } from "next-auth";
 import Image from "next/image";
+import { useRouter } from 'next/navigation';
+import NewProject from "./new-project";
+import './dialog.css';
 
 export default function Authentified({ session }: { session: Session | null }) {
+    const router = useRouter();
     const { email, image, name } = session?.user || {};
     if (!email) return null;
 
     return (
         <div className="z-10 w-4/5 justify-start">
             <div className="flex items-center justify-between">
-                <div className="gap- z-10 flex items-center gap-2">
+                <div className="flex items-center gap-2">
                     <div className="overflow-hidden rounded-full">
                         <Image
                             alt={email}
@@ -24,7 +29,9 @@ export default function Authentified({ session }: { session: Session | null }) {
                         {name}
                     </h6>
                 </div>
-                <button className="hover:bg-white-500 text-black-700 flex h-12 items-center gap-2 rounded border border-gray-700 bg-transparent px-4  py-2 text-sm font-semibold hover:border-none hover:bg-gray-200 hover:text-white">
+                {/* <button className="hover:bg-white-500 text-black-700 flex h-12 items-center gap-2 rounded border border-gray-700 bg-transparent px-4  py-2 text-sm font-semibold hover:border-none hover:bg-gray-200 hover:text-white" 
+                    onClick={() => router.push('/projects/new')}
+                >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="24"
@@ -41,20 +48,22 @@ export default function Authentified({ session }: { session: Session | null }) {
                         ></path>
                     </svg>
                     <text>New Project</text>
-                </button>
+                </button> */}
+                <NewProject session={session} />
             </div>
-            <div className="flex h-[50vh] w-full items-center justify-center border-2 border-dashed  gap-2">
+            <div className="flex h-[50vh] w-full items-center justify-center gap-2 border-2  border-dashed">
                 <Image
                     src="/stuga-logo.png"
                     alt="Description de l'image"
                     width="60"
                     height="60"
                 ></Image>
-                <div className="h-16 overflow-hidden text-sm flex flex-col justify-center">
-                    <h5 className="text-2xl font-bold text-gray-500 md:text-2xl">Create a new project</h5>
+                <div className="flex h-16 flex-col justify-center overflow-hidden text-sm">
+                    <h5 className="text-2xl font-bold text-gray-500 md:text-2xl">
+                        Create a new project
+                    </h5>
                     <p className="text-gray-500">
-                        Deploy containers, lambdas,
-                        secure database and more.
+                        Deploy containers, lambdas, secure database and more.
                     </p>
                 </div>
             </div>
