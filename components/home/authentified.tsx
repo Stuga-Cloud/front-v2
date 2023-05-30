@@ -1,13 +1,46 @@
-"use client"
+"use client";
 import { Session } from "next-auth";
 import Image from "next/image";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 import NewProject from "./new-project";
-import './dialog.css';
+import "./dialog.css";
+import { useState, useEffect } from "react";
+import Card from "./card";
+import { LoadingSpinner } from "../shared/icons";
 
 export default function Authentified({ session }: { session: Session | null }) {
-    const router = useRouter();
-    const { email, image, name } = session?.user || {};
+    const { email, image, name, id } = session?.user || {};
+    const [projects, setProjects] = useState([]);
+    const [loader, setLoader] = useState(true);
+
+    const refreshProjects = async () => {
+        setLoader(true);
+        try {
+            const response = await fetch(`/api/projects/users/${id}`);
+            const data = await response.json();
+            setProjects(data);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoader(false);
+        }
+    };
+
+    useEffect(() => {
+        if (!id) return;
+
+        // 2. Effectuez une requête pour obtenir les données de l'utilisateur
+        fetch(`/api/projects/users/${id}`)
+            .then((response) => response.json())
+            .then((data) => {
+                console.log(data);
+                setProjects(data);
+            })
+            .catch((error) => {
+                console.error("Error:", error);
+            }).finally(() => setLoader(false));
+    }, [id]);
+
     if (!email) return null;
 
     return (
@@ -49,24 +82,43 @@ export default function Authentified({ session }: { session: Session | null }) {
                     </svg>
                     <text>New Project</text>
                 </button> */}
-                <NewProject session={session} />
+                <NewProject afterCreate={refreshProjects} session={session} />
             </div>
-            <div className="flex h-[50vh] w-full items-center justify-center gap-2 border-2  border-dashed">
-                <Image
-                    src="/stuga-logo.png"
-                    alt="Description de l'image"
-                    width="60"
-                    height="60"
-                ></Image>
-                <div className="flex h-16 flex-col justify-center overflow-hidden text-sm">
-                    <h5 className="text-2xl font-bold text-gray-500 md:text-2xl">
-                        Create a new project
-                    </h5>
-                    <p className="text-gray-500">
-                        Deploy containers, lambdas, secure database and more.
-                    </p>
+            {loader ? (
+                <div className="h-[50vh] flex items-center justify-center">
+                    <LoadingSpinner  />
                 </div>
-            </div>
+            ) : projects && projects.length > 0 ? (
+                <div className="grid grid-cols-3 gap-4">
+                    {projects.map((project) => (
+                        <Card
+                            key={project.id}
+                            title={project.name}
+                            description=""
+                            demo=""
+                            large={false}
+                        />
+                    ))}
+                </div>
+            ) : (
+                <div className="flex h-[50vh] w-full items-center justify-center gap-2 border-2  border-dashed">
+                    <Image
+                        src="/stuga-logo.png"
+                        alt="Description de l'image"
+                        width="60"
+                        height="60"
+                    ></Image>
+                    <div className="flex h-16 flex-col justify-center overflow-hidden text-sm">
+                        <h5 className="text-2xl font-bold text-gray-500 md:text-2xl">
+                            Create a new project
+                        </h5>
+                        <p className="text-gray-500">
+                            Deploy containers, lambdas, secure database and
+                            more.
+                        </p>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

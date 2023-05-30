@@ -14,25 +14,33 @@ import { Cross2Icon } from "@radix-ui/react-icons";
 import axios from "axios";
 import { Session } from "next-auth";
 import { useState } from "react";
+import LoadingDots from "../shared/icons/loading-dots";
 
-export default function NewProject({ session }: { session: Session | null }) {
+export default function NewProject({ session, afterCreate }: { session: Session | null, afterCreate: () => Promise<void> }) {
     const [name, setName] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [open , setOpen] = useState(false);
+
 
     const handleSubmit = async (e) => {
         console.log("submit");
         console.log(e);
         e.preventDefault();
         try {
+            setLoading(true);
             const response = await axios.post("/api/projects", { name });
-            console.log(response)
             setName("");
+            setLoading(false);
+            setOpen(false);
+            await afterCreate();
         } catch (error) {
+            setLoading(false);
             console.error("il y'a eu une erreur");
             console.error(error);
         }
     };
     return (
-        <Dialog>
+        <Dialog open={open} onOpenChange={setOpen} >
             <DialogTrigger asChild>
                 <button className="Button violet flex h-12 items-center gap-2 ">
                     <svg
@@ -94,7 +102,11 @@ export default function NewProject({ session }: { session: Session | null }) {
                             className="Button green"
                             onClick={(e) => handleSubmit(e)}
                         >
-                            Save changes
+                            {loading ? (
+                                <LoadingDots color="#808080" />
+                            ) : (
+                                "Save changes"
+                            )}
                         </button>
                     </div>
                     <Close asChild>

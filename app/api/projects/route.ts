@@ -1,4 +1,3 @@
-
 import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
@@ -10,7 +9,7 @@ interface RequestBody {
 
 export async function POST(request: Request) {
     const req = await request.json();
-    const session = await getServerSession(authOptions)
+    const session = await getServerSession(authOptions);
     const { name }: RequestBody = req;
     if (!session) {
         return NextResponse.json(
@@ -43,6 +42,12 @@ export async function POST(request: Request) {
                 createdBy: user.id,
             },
         });
+        await prisma.projectMembership.create({
+            data: {
+                userId: user.id,
+                projectId: project.id,
+            },
+        });
         return NextResponse.json(project, { status: 201 });
     } catch (e) {
         return NextResponse.json(
@@ -53,4 +58,3 @@ export async function POST(request: Request) {
         );
     }
 }
-

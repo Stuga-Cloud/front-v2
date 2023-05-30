@@ -10,7 +10,6 @@ export default async function Home({
 }: {
     searchParams?: { [key: string]: string | string[] | undefined };
 }) {
-    console.log(searchParams!.error);
     const session = await getServerSession(authOptions);
 
     return (

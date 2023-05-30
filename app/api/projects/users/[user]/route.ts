@@ -30,12 +30,17 @@ export async function GET(request: Request, { params }: NextRequest) {
         );
     }
 
-    const projects = await prisma.projectMembership.findMany({
+    const projectMemberships = await prisma.projectMembership.findMany({
         where: {
             userId,
         },
-        include: {
-            project: true,
+    });
+
+    const projects = await prisma.project.findMany({
+        where: {
+            OR: projectMemberships.map((membership) => ({
+                id: membership.projectId,
+            })),
         },
     });
 
