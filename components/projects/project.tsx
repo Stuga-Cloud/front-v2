@@ -1,47 +1,24 @@
 "use client";
-import { Session } from "next-auth";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
-import NewProject from "./new-project";
+import LoadingSpinner from "@/components/shared/icons/loading-spinner";
+import { useState } from "react";
+import { Session } from "next-auth";
+import { Project } from "@/lib/models/project";
+import NewService from "./new-service";
 import "../shared/css/dialog.css";
-import { useState, useEffect } from "react";
-import Card from "./card";
-import { LoadingSpinner } from "../shared/icons";
-import ProjectCard from "./project-card";
-import { pathEventEmitter } from "@/lib/event-emitter/path-event-emitter";
+import { useRouter } from "next/navigation";
 
-export default function Authentified({ session }: { session: Session | null }) {
+export default function Project({
+    session,
+    project,
+}: {
+    session: Session | null;
+    project: Project;
+}) {
     const { email, image, name, id } = session?.user || {};
-    const [projects, setProjects] = useState([]);
-    const [loader, setLoader] = useState(true);
+    const [loader, setLoader] = useState(false);
+    const [services, setServices] = useState([]);
     const router = useRouter();
-
-    const refreshProjects = async () => {
-        setLoader(true);
-        try {
-            const response = await fetch(`/api/projects/users/${id}`);
-            const data = await response.json();
-            setProjects(data);
-        } catch (error) {
-            console.error(error);
-        } finally {
-            setLoader(false);
-        }
-    };
-
-    useEffect(() => {
-        if (!id) return;
-
-        fetch(`/api/projects/users/${id}`)
-            .then((response) => response.json())
-            .then((data) => {
-                console.log(data);
-                setProjects(data);
-            })
-            .catch((error) => {
-                console.error("Error:", error);
-            }).finally(() => setLoader(false));
-    }, [id]);
 
     if (!email) return null;
 
@@ -84,24 +61,35 @@ export default function Authentified({ session }: { session: Session | null }) {
                     </svg>
                     <text>New Project</text>
                 </button> */}
-                <NewProject afterCreate={refreshProjects} session={session} />
+                <NewService
+                    session={session}
+                    afterCreate={(service: "registry" | "lambda" | "container" | "database") => {
+                        switch (service) {
+                            case "registry":
+                                console.log(`/projects/${id}/registries/new`)
+                                router.push(`/projects/${id}/services/registry/new`);
+                                break;
+                            case "lambda":
+                                router.push(`/projects/${id}/services/lambdas/new`);
+                                break;
+                            case "container":
+                                router.push(`/projects/${id}/services/containers/new`);
+                                break;
+                            case "database":
+                                router.push(`/projects/${id}/services/databases/new`);
+                                break;
+                        }
+                    }}
+                />
             </div>
             {loader ? (
-                <div className="h-[50vh] flex items-center justify-center">
-                    <LoadingSpinner  />
+                <div className="flex h-[50vh] items-center justify-center">
+                    <LoadingSpinner />
                 </div>
-            ) : projects && projects.length > 0 ? (
+            ) : services && services.length > 0 ? (
                 <div className="grid grid-cols-3 gap-4">
-                    {projects.map((project) => (
-                        <ProjectCard
-                            key={project.id}
-                            name={project.name}
-                            onClick={() => {
-                                console.log(project);
-                                pathEventEmitter.emit("update", { path: project.name });
-                                router.push(`/projects/${project.id}`);
-                            }}
-                        />
+                    {services.map((service) => (
+                        <div key={service.name}>{service.name}</div>
                     ))}
                 </div>
             ) : (
@@ -114,7 +102,7 @@ export default function Authentified({ session }: { session: Session | null }) {
                     ></Image>
                     <div className="flex h-16 flex-col justify-center overflow-hidden text-sm">
                         <h5 className="text-2xl font-bold text-gray-500 md:text-2xl">
-                            Create a new project
+                            Create a new service
                         </h5>
                         <p className="text-gray-500">
                             Deploy containers, lambdas, secure database and

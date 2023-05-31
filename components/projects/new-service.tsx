@@ -4,7 +4,6 @@ import {
     DialogContent,
     DialogTrigger,
     Portal,
-    Root,
     Overlay,
     Title,
     Description,
@@ -14,19 +13,25 @@ import { Cross2Icon } from "@radix-ui/react-icons";
 import axios from "axios";
 import { Session } from "next-auth";
 import { useState } from "react";
-import LoadingDots from "../shared/icons/loading-dots";
+import ServiceCard from "./service-card";
+import { useRouter } from "next/router";
 
-export default function NewProject({ session, afterCreate }: { session: Session | null, afterCreate: () => Promise<void> }) {
+export default function NewService({
+    session,
+    afterCreate,
+}: {
+    session: Session | null;
+    afterCreate: (service: "registry" | "lambda" | "container" | "database") => void;
+}) {
     const [name, setName] = useState("");
     const [loading, setLoading] = useState(false);
-    const [open , setOpen] = useState(false);
-
+    const [open, setOpen] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
             setLoading(true);
-            await axios.post("/api/projects", { name });
+            await axios.post("/api/services", { name });
             setName("");
             setLoading(false);
             setOpen(false);
@@ -36,7 +41,7 @@ export default function NewProject({ session, afterCreate }: { session: Session 
         }
     };
     return (
-        <Dialog open={open} onOpenChange={setOpen} >
+        <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
                 <button className="Button violet flex h-12 items-center gap-2 ">
                     <svg
@@ -54,45 +59,34 @@ export default function NewProject({ session, afterCreate }: { session: Session 
                             d="M12 4v16m8-8H4"
                         ></path>
                     </svg>
-                    Create new project
+                    Create new service
                 </button>
             </DialogTrigger>
             <Portal className="z-20">
                 <Overlay className="DialogOverlay" />
                 <DialogContent className="DialogContent z-10">
-                    <Title className="DialogTitle">New Project</Title>
+                    <Title className="DialogTitle">New Service</Title>
                     <Description className="DialogDescription">
-                        Create your project with a unique name
+                        Create container registry, lambdas, containers, and
+                        secure database.
                     </Description>
-
-                    <fieldset className="Fieldset">
-                        <label className="Label" htmlFor="name">
-                            Name
-                        </label>
-                        <input
-                            className="Input"
-                            id="name"
-                            defaultValue="Project 1"
-                            onChange={(e) => setName(e.target.value)}
+                    <div className="grid grid-cols-2 items-center gap-4">
+                        <ServiceCard
+                            title="Container Registry"
+                            onClick={() => afterCreate("registry")}
                         />
-                    </fieldset>
-                    <div
-                        style={{
-                            display: "flex",
-                            marginTop: 25,
-                            justifyContent: "flex-end",
-                        }}
-                    >
-                        <button
-                            className="Button green"
-                            onClick={(e) => handleSubmit(e)}
-                        >
-                            {loading ? (
-                                <LoadingDots color="#808080" />
-                            ) : (
-                                "Save changes"
-                            )}
-                        </button>
+                        <ServiceCard
+                            title="Lambdas"
+                            onClick={() => afterCreate("lambda")}
+                        />
+                        <ServiceCard
+                            title="Containers"
+                            onClick={() => afterCreate("container")}
+                        />
+                        <ServiceCard
+                            title="Database"
+                            onClick={() => afterCreate("database")}
+                        />
                     </div>
                     <Close asChild>
                         <button
