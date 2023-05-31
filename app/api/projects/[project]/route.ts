@@ -9,7 +9,7 @@ export async function GET(request: Request, { params }: NextRequest) {
     if (!session) {
         return NextResponse.json(
             {
-                error: "Vous devez être connecté pour créer un projet.",
+                error: "Vous devez être connecté pour récupérer un projet.",
             },
             { status: 401 },
         );

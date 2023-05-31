@@ -3,24 +3,24 @@ import { authOptions } from "../../api/auth/[...nextauth]/route";
 import Project from "@/components/project/project";
 import UnAuthentified from "@/components/home/un-authentified";
 import { useRouter } from "next/navigation";
+import axios from "axios";
 
 export default async function ProjectPage({
+    params,
     searchParams,
-}: {
+  }: {
+    params: { project: string };
     searchParams?: { [key: string]: string | string[] | undefined };
-}) {
+  }) {
     const session = await getServerSession(authOptions);
 
-    const projectId = searchParams?.project;
-    const project = await fetch(`/api/projects/${projectId}`)
-        .then((response) => response.json())
-        .catch(() => console.log("error"));
-    console.log(project);
 
+    const projectId = params.project;
+    
     return (
         <>
             {session ? (
-                <Project session={session} project={project} />
+                <Project session={session} projectId={projectId} />
             ) : (
                 console.log("not authentified")
             )}

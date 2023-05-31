@@ -5,6 +5,7 @@ import prisma from "@/lib/prisma";
 
 export async function GET(request: Request, { params }: NextRequest) {
     const session = await getServerSession(authOptions);
+
     const userId = params!.user;
     if (!session) {
         return NextResponse.json(

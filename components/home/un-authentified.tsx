@@ -21,28 +21,29 @@ export default function UnAuthentified() {
     //     .catch((e) => console.log(e));
     return (
         <>
-            <div className="z-10 w-full max-w-xl px-5 xl:px-0">
-                <h1
-                    className="animate-fade-up bg-gradient-to-br from-black to-stone-500 bg-clip-text text-center font-display text-4xl font-bold tracking-[-0.02em] text-transparent opacity-0 drop-shadow-sm md:text-7xl md:leading-[5rem]"
-                    style={{
-                        animationDelay: "0.15s",
-                        animationFillMode: "forwards",
-                    }}
-                >
-                    <Balancer>The simplicity in the cloud</Balancer>
-                </h1>
-                <p
-                    className="mt-6 animate-fade-up text-center text-gray-500 opacity-0 md:text-xl"
-                    style={{
-                        animationDelay: "0.25s",
-                        animationFillMode: "forwards",
-                    }}
-                >
-                    <Balancer>
-                        Simplicity, speed and security, all in one place
-                    </Balancer>
-                </p>
-                {/* <div
+            <div className="flex items-center justify-center h-5/5" >
+                <div className="z-10 w-full max-w-xl px-5 xl:px-0">
+                    <h1
+                        className="animate-fade-up bg-gradient-to-br from-black to-stone-500 bg-clip-text text-center font-display text-4xl font-bold tracking-[-0.02em] text-transparent opacity-0 drop-shadow-sm md:text-7xl md:leading-[5rem]"
+                        style={{
+                            animationDelay: "0.15s",
+                            animationFillMode: "forwards",
+                        }}
+                    >
+                        <Balancer>The simplicity in the cloud</Balancer>
+                    </h1>
+                    <p
+                        className="mt-6 animate-fade-up text-center text-gray-500 opacity-0 md:text-xl"
+                        style={{
+                            animationDelay: "0.25s",
+                            animationFillMode: "forwards",
+                        }}
+                    >
+                        <Balancer>
+                            Simplicity, speed and security, all in one place
+                        </Balancer>
+                    </p>
+                    {/* <div
             className="mx-auto mt-6 flex animate-fade-up items-center justify-center space-x-5 opacity-0"
             style={{
                 animationDelay: "0.3s",
@@ -89,8 +90,8 @@ export default function UnAuthentified() {
                 </p>
             </a>
         </div> */}
-            </div>
-            {/* <div className="my-10 grid w-full max-w-screen-xl animate-fade-up grid-cols-1 gap-5 px-5 md:grid-cols-3 xl:px-0">
+                </div>
+                {/* <div className="my-10 grid w-full max-w-screen-xl animate-fade-up grid-cols-1 gap-5 px-5 md:grid-cols-3 xl:px-0">
         {features.map(({ title, description, demo, large }) => (
             <Card
                 key={title}
@@ -107,6 +108,7 @@ export default function UnAuthentified() {
             />
         ))}
     </div> */}
+            </div>
         </>
     );
 }
