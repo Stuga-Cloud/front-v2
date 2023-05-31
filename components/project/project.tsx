@@ -7,6 +7,7 @@ import { Project } from "@/lib/models/project";
 import NewService from "./new-service";
 import "../shared/css/dialog.css";
 import { useRouter } from "next/navigation";
+import ProjectSettingsButton from "@/components/project/project-settings-button";
 
 export default function Project({
     session,
@@ -15,6 +16,7 @@ export default function Project({
     session: Session | null;
     project: Project;
 }) {
+    // @ts-ignore
     const { email, image, name, id } = session?.user || {};
     const [loader, setLoader] = useState(false);
     const [services, setServices] = useState([]);
@@ -41,42 +43,39 @@ export default function Project({
                         {name}
                     </h6>
                 </div>
-                {/* <button className="hover:bg-white-500 text-black-700 flex h-12 items-center gap-2 rounded border border-gray-700 bg-transparent px-4  py-2 text-sm font-semibold hover:border-none hover:bg-gray-200 hover:text-white" 
-                    onClick={() => router.push('/projects/new')}
-                >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                    >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M12 4v16m8-8H4"
-                        ></path>
-                    </svg>
-                    <text>New Project</text>
-                </button> */}
+            </div>
+            <div className="flex items-center justify-end gap-1 py-4">
+                <ProjectSettingsButton session={session} projectId={id} />
                 <NewService
                     session={session}
-                    afterCreate={(service: "registry" | "lambda" | "container" | "database") => {
+                    afterCreate={(
+                        service:
+                            | "registry"
+                            | "lambda"
+                            | "container"
+                            | "database",
+                    ) => {
                         switch (service) {
                             case "registry":
-                                console.log(`/projects/${id}/registries/new`)
-                                router.push(`/projects/${id}/services/registry/new`);
+                                console.log(`/projects/${id}/registries/new`);
+                                router.push(
+                                    `/projects/${id}/services/registry/new`,
+                                );
                                 break;
                             case "lambda":
-                                router.push(`/projects/${id}/services/lambdas/new`);
+                                router.push(
+                                    `/projects/${id}/services/lambdas/new`,
+                                );
                                 break;
                             case "container":
-                                router.push(`/projects/${id}/services/containers/new`);
+                                router.push(
+                                    `/projects/${id}/services/containers/new`,
+                                );
                                 break;
                             case "database":
-                                router.push(`/projects/${id}/services/databases/new`);
+                                router.push(
+                                    `/projects/${id}/services/databases/new`,
+                                );
                                 break;
                         }
                     }}
@@ -88,7 +87,7 @@ export default function Project({
                 </div>
             ) : services && services.length > 0 ? (
                 <div className="grid grid-cols-3 gap-4">
-                    {services.map((service) => (
+                    {services.map((service: any) => (
                         <div key={service.name}>{service.name}</div>
                     ))}
                 </div>

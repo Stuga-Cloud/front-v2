@@ -3,6 +3,13 @@ import { getServerSession } from "next-auth/next";
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
+/**
+ * Get all projects for a user
+ * @param request
+ * @param params
+ * @constructor
+ */
+// @ts-ignore
 export async function GET(request: Request, { params }: NextRequest) {
     const session = await getServerSession(authOptions);
     const userId = params!.user;
