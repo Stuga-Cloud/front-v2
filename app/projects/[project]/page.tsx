@@ -1,6 +1,6 @@
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../../api/auth/[...nextauth]/route";
-import Project from "@/components/projects/project";
+import Project from "@/components/project/project";
 import UnAuthentified from "@/components/home/un-authentified";
 import { useRouter } from "next/navigation";
 
