@@ -17,7 +17,7 @@ export async function GET(request: Request, { params }: NextRequest) {
     if (!session) {
         return NextResponse.json(
             {
-                error: "Vous devez être connecté pour créer un projet.",
+                error: `You must be logged in to get projects for a user. (userId: ${userId})`,
             },
             { status: 401 },
         );
@@ -32,7 +32,7 @@ export async function GET(request: Request, { params }: NextRequest) {
     if (!user || user.id !== userId) {
         return NextResponse.json(
             {
-                error: "Vous devez être connecté pour créer un projet.",
+                error: `You must be logged in to get projects for a user. (userId: ${userId})`,
             },
             { status: 401 },
         );

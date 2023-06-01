@@ -1,28 +1,23 @@
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getServerSession } from "next-auth/next";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
-interface RequestBody {
-    email: string;
-    projectId: string;
-}
-
 /**
- * Create a new project membership - add a new member to a project
+ * Remove a member from a project
  * @param request
  * @param params
  * @constructor
  */
 // @ts-ignore
-export async function POST(request: Request) {
+export async function DELETE(request: Request, { params }: NextRequest) {
     const session = await getServerSession(authOptions);
-    const req = await request.json();
-    const { email, projectId }: RequestBody = req;
     if (!session) {
         return NextResponse.json(
             {
-                error: `You must be logged in to add a member to a project.`,
+                error: `You must be logged in to delete a project membership. (userId: ${
+                    params!.user
+                }, projectId: ${params!.project})`,
             },
             { status: 401 },
         );
@@ -43,6 +38,9 @@ export async function POST(request: Request) {
         );
     }
 
+    const userId = params!.user;
+    const projectId = params!.project;
+
     const project = await prisma.project.findUnique({
         where: {
             id: projectId,
@@ -52,7 +50,7 @@ export async function POST(request: Request) {
     if (!project) {
         return NextResponse.json(
             {
-                error: `Project with id ${projectId} does not exist.`,
+                error: `Project does not exist. (projectId: ${projectId})`,
             },
             { status: 404 },
         );
@@ -60,22 +58,22 @@ export async function POST(request: Request) {
     if (project.createdBy !== loggedUser.id) {
         return NextResponse.json(
             {
-                error: `You are not the owner of the project.`,
+                error: `You are not the owner of this project. (projectId: ${projectId})`,
             },
-            { status: 403 },
+            { status: 401 },
         );
     }
 
-    const member = await prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
         where: {
-            email,
+            id: userId,
         },
     });
 
-    if (!member) {
+    if (!user) {
         return NextResponse.json(
             {
-                error: `User with email ${email} does not exist.`,
+                error: `User does not exist. (userId: ${userId})`,
             },
             { status: 404 },
         );
@@ -84,36 +82,29 @@ export async function POST(request: Request) {
     const projectMembership = await prisma.projectMembership.findUnique({
         where: {
             userId_projectId: {
-                userId: member.id,
+                userId,
                 projectId,
             },
         },
     });
 
-    if (projectMembership) {
+    if (!projectMembership) {
         return NextResponse.json(
             {
-                error: `User with email ${email} is already a member of the project.`,
+                error: `User is not a member of this project or project does not exist. (projectId: ${projectId}, userId: ${userId})`,
             },
-            { status: 409 },
+            { status: 404 },
         );
     }
 
-    try {
-        const projectMembership = await prisma.projectMembership.create({
-            data: {
-                userId: member.id,
+    const deletedProjectMembership = await prisma.projectMembership.delete({
+        where: {
+            userId_projectId: {
+                userId,
                 projectId,
-                hasAccepted: false,
             },
-        });
-        return NextResponse.json(projectMembership, { status: 201 });
-    } catch (e: any) {
-        return NextResponse.json(
-            {
-                error: `An error occurred while adding the member to the project: ${e.message}`,
-            },
-            { status: 500 },
-        );
-    }
+        },
+    });
+
+    return NextResponse.json(deletedProjectMembership, { status: 200 });
 }
