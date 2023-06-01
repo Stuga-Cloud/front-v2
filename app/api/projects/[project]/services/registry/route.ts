@@ -126,3 +126,72 @@ export async function POST(request: Request, { params }: NextRequest) {
     }
 }
 
+export async function GET(request: Request, { params }: NextRequest) {
+
+    const { project }: RequestParams = params!;
+    const session = await getServerSession(authOptions);
+    if (!session) {
+        return NextResponse.json(
+            {
+                error: "You must be logged in to create a project.",
+            },
+            { status: 401 },
+        );
+    }
+
+    const user = await prisma.user.findUnique({
+        where: {
+            email: session.user!.email!,
+        },
+    });
+
+    if (!user) {
+        return NextResponse.json(
+            {
+                error: "You must be logged in to create a project.",
+            },
+            { status: 401 },
+        );
+    }
+
+    const projectFromDb = await prisma.project.findUnique({
+        where: {
+            id: project,
+        },
+    });
+
+    if (!projectFromDb) {
+        return NextResponse.json(
+            {
+                error: "project not found",
+            },
+            { status: 404 },
+        );
+    }
+
+    const registry = await prisma.registry.findFirst({
+        where: {
+            projectId: projectFromDb!.id,
+        },
+    });
+    console.log("registry");
+    console.log(registry);
+
+    if (!registry) {
+        return NextResponse.json(
+            {
+                error: "registry not found",
+            },
+            { status: 404 },
+        );
+    }
+
+    const registryNamespaces = await prisma.registryNamespace.findMany({
+        where: {
+            registryId: registry.id,
+        },
+    });
+
+    return NextResponse.json(registryNamespaces, { status: 200 });
+}
+
