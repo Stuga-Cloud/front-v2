@@ -9,8 +9,11 @@ import { Session } from "next-auth";
 
 export default function UserDropdown({ session }: { session: Session }) {
   const { email, image } = session?.user || {};
+  console.log("drop")
+  console.log(session)
   const [openPopover, setOpenPopover] = useState(false);
-
+  console.log(email)
+  console.log(image)
   if (!email) return null;
 
   return (
