@@ -51,26 +51,26 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
-  projectsMembership      ProjectMembership[]
-  createdProjects   Project[]
+  id                 String              @id @default(cuid())
+  name               String?
+  email              String?             @unique
+  emailVerified      DateTime?
+  image              String?
+  accounts           Account[]
+  sessions           Session[]
+  projectsMembership ProjectMembership[]
+  createdProjects    Project[]
 }
 
-
 model Project {
-  id    String    @id @default(cuid())
-  name  String
+  id        String              @id @default(cuid())
+  name      String
   createdBy String
   members     ProjectMembership[]
   registry  Registry?
 
   user User @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+
   @@index([createdBy])
 }
 

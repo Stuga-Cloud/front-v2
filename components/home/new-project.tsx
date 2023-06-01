@@ -1,14 +1,13 @@
 "use client";
 import {
+    Close,
+    Description,
     Dialog,
     DialogContent,
     DialogTrigger,
-    Portal,
-    Root,
     Overlay,
+    Portal,
     Title,
-    Description,
-    Close,
 } from "@radix-ui/react-dialog";
 import { Cross2Icon } from "@radix-ui/react-icons";
 import axios from "axios";
@@ -16,13 +15,18 @@ import { Session } from "next-auth";
 import { useState } from "react";
 import LoadingDots from "../shared/icons/loading-dots";
 
-export default function NewProject({ session, afterCreate }: { session: Session | null, afterCreate: () => Promise<void> }) {
+export default function NewProject({
+    session,
+    afterCreate,
+}: {
+    session: Session | null;
+    afterCreate: () => Promise<void>;
+}) {
     const [name, setName] = useState("");
     const [loading, setLoading] = useState(false);
-    const [open , setOpen] = useState(false);
+    const [open, setOpen] = useState(false);
 
-
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e: any) => {
         e.preventDefault();
         try {
             setLoading(true);
@@ -36,9 +40,9 @@ export default function NewProject({ session, afterCreate }: { session: Session 
         }
     };
     return (
-        <Dialog open={open} onOpenChange={setOpen} >
+        <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <button className="Button violet flex h-12 items-center gap-2 ">
+                <button className="Button orange flex h-12 items-center gap-2 ">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="24"
@@ -84,7 +88,7 @@ export default function NewProject({ session, afterCreate }: { session: Session 
                         }}
                     >
                         <button
-                            className="Button green"
+                            className="Button orange"
                             onClick={(e) => handleSubmit(e)}
                         >
                             {loading ? (

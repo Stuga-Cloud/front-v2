@@ -7,6 +7,7 @@ import { Project } from "@/lib/models/project";
 import NewService from "./new-service";
 import "../shared/css/dialog.css";
 import { useRouter } from "next/navigation";
+import ProjectSettingsButton from "@/components/project/project-settings-button";
 
 export default function Project({
     session,
@@ -15,6 +16,7 @@ export default function Project({
     session: Session | null;
     projectId: string;
 }) {
+    // @ts-ignore
     const { email, image, name, id } = session?.user || {};
     const [loader, setLoader] = useState(false);
     const [services, setServices] = useState([]);
@@ -46,44 +48,29 @@ export default function Project({
 
     return (
         <div className="z-10 flex w-full flex-col items-center justify-center">
-            <div className="z-10 w-4/5 justify-start">
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                        <div className="overflow-hidden rounded-full">
-                            <Image
-                                alt={email}
-                                src={
-                                    image ||
-                                    `https://avatars.dicebear.com/api/micah/${email}.svg`
-                                }
-                                width={40}
-                                height={40}
-                            />
+            <div className="flex w-4/5 flex-row justify-between items-center mt-10">
+                <div className="z-10 w-4/5 justify-start">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                            <div className="overflow-hidden rounded-full">
+                                <Image
+                                    alt={email}
+                                    src={
+                                        image ||
+                                        `https://avatars.dicebear.com/api/micah/${email}.svg`
+                                    }
+                                    width={40}
+                                    height={40}
+                                />
+                            </div>
+                            <h6 className="my-4 text-4xl font-bold text-gray-700 md:text-4xl">
+                                {name}
+                            </h6>
                         </div>
-                        <h6 className="my-4 text-4xl font-bold text-gray-700 md:text-4xl">
-                            {name}
-                        </h6>
                     </div>
-                    {/* <button className="hover:bg-white-500 text-black-700 flex h-12 items-center gap-2 rounded border border-gray-700 bg-transparent px-4  py-2 text-sm font-semibold hover:border-none hover:bg-gray-200 hover:text-white" 
-                    onClick={() => router.push('/projects/new')}
-                >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                    >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M12 4v16m8-8H4"
-                        ></path>
-                    </svg>
-                    <text>New Project</text>
-                </button> */}
+                </div>
+                <div className="flex items-center justify-end gap-1 py-4">
+                    <ProjectSettingsButton session={session} projectId={id} />
                     <NewService
                         session={session}
                         afterCreate={(
@@ -121,36 +108,36 @@ export default function Project({
                         }}
                     />
                 </div>
-                {loader ? (
-                    <div className="flex h-[50vh] items-center justify-center">
-                        <LoadingSpinner />
-                    </div>
-                ) : services && services.length > 0 ? (
-                    <div className="grid grid-cols-3 gap-4">
-                        {services.map((service) => (
-                            <div key={service.name}>{service.name}</div>
-                        ))}
-                    </div>
-                ) : (
-                    <div className="flex h-[50vh] w-full items-center justify-center gap-2 border-2  border-dashed">
-                        <Image
-                            src="/stuga-logo.png"
-                            alt="Description de l'image"
-                            width="60"
-                            height="60"
-                        ></Image>
-                        <div className="flex h-16 flex-col justify-center overflow-hidden text-sm">
-                            <h5 className="text-2xl font-bold text-gray-500 md:text-2xl">
-                                Create a new service
-                            </h5>
-                            <p className="text-gray-500">
-                                Deploy containers, lambdas, secure database and
-                                more.
-                            </p>
-                        </div>
-                    </div>
-                )}
             </div>
+            {loader ? (
+                <div className="flex h-[50vh] items-center justify-center">
+                    <LoadingSpinner />
+                </div>
+            ) : services && services.length > 0 ? (
+                <div className="grid grid-cols-3 gap-4">
+                    {services.map((service) => (
+                        <div key={service.name}>{service.name}</div>
+                    ))}
+                </div>
+            ) : (
+                <div className="flex h-[70vh] w-4/5 items-center justify-center gap-2 border-2  border-dashed">
+                    <Image
+                        src="/stuga-logo.png"
+                        alt="Description de l'image"
+                        width="60"
+                        height="60"
+                    ></Image>
+                    <div className="flex h-16 flex-col justify-center overflow-hidden text-sm">
+                        <h5 className="text-2xl font-bold text-gray-500 md:text-2xl">
+                            Create a new service
+                        </h5>
+                        <p className="text-gray-500">
+                            Deploy containers, lambdas, secure database and
+                            more.
+                        </p>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

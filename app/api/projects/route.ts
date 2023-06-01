@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../auth/[...nextauth]/route";
 
@@ -49,7 +49,7 @@ export async function POST(request: Request) {
             },
         });
         return NextResponse.json(project, { status: 201 });
-    } catch (e) {
+    } catch (e: any) {
         return NextResponse.json(
             {
                 error: `Une erreur est survenue lors de la création du projet : ${e.message}`,

@@ -1,27 +1,28 @@
 "use client";
 import {
+    Close,
+    Description,
     Dialog,
     DialogContent,
     DialogTrigger,
-    Portal,
     Overlay,
+    Portal,
     Title,
-    Description,
-    Close,
 } from "@radix-ui/react-dialog";
 import { Cross2Icon } from "@radix-ui/react-icons";
 import axios from "axios";
 import { Session } from "next-auth";
 import { useState } from "react";
 import ServiceCard from "./service-card";
-import { useRouter } from "next/router";
 
 export default function NewService({
     session,
     afterCreate,
 }: {
     session: Session | null;
-    afterCreate: (service: "registry" | "lambda" | "container" | "database") => void;
+    afterCreate: (
+        service: "registry" | "lambda" | "container" | "database",
+    ) => void;
 }) {
     const [name, setName] = useState("");
     const [loading, setLoading] = useState(false);
@@ -43,7 +44,7 @@ export default function NewService({
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <button className="Button violet flex h-12 items-center gap-2 ">
+                <button className="Button orange flex h-12 items-center gap-2">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="24"
