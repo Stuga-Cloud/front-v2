@@ -1,5 +1,5 @@
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import RegistryForm from "@/components/services/registry/registry-form";
+import RegistryForm from "@/components/services/registry/create/registry-form";
 import { getServerSession } from "next-auth/next";
 
 export default async function RegistryNewPage({

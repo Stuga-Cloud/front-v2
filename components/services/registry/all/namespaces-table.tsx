@@ -6,6 +6,37 @@ import Settings from "./settings";
 import { Session } from "next-auth";
 import { toastEventEmitter } from "@/lib/event-emitter/toast-event-emitter";
 import { LoadingSpinner } from "@/components/shared/icons";
+import { useRouter } from "next/navigation";
+import { Namespace } from "@/lib/models/registry/namespace";
+
+const getNamespaces = async (projectId: string): Promise<Namespace[]> => {
+    try {
+        const res = await fetch(
+            `/api/projects/${projectId}/services/registry`,
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            },
+        );
+        const namespaces: {
+            id: string;
+            createdAt: string;
+            modifiedAt: string;
+            name: string;
+            registryId: string;
+            state: "public" | "private";
+        }[] = await res.json();
+
+        return namespaces.map((namespace) => ({
+            ...namespace,
+        }));
+    } catch (error) {
+        console.log(error);
+        return [];
+    }
+};
 
 export default function Namespaces({
     session,
@@ -17,24 +48,17 @@ export default function Namespaces({
     const [activeTab, setActiveTab] = useState<"dashboard" | "settings">(
         "dashboard",
     );
-    const [namespaces, setNamespaces] = useState([]);
+    const [namespaces, setNamespaces] = useState<Namespace[]>([]);
     const [loading, setLoading] = useState(true);
+    const router = useRouter();
 
     useEffect(() => {
         if (!projectId) return;
 
         setLoading(true);
-        fetch(`/api/projects/${projectId}/services/registry`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        })
-            .then((res) => res.json())
-            .then((res) => {
-                console.log("result");
-                console.log(res);
-                setNamespaces(res);
+        getNamespaces(projectId)
+            .then((namespaces) => {
+                setNamespaces(namespaces);
             })
             .catch((error) => {
                 toastEventEmitter.emit("pop", {
@@ -65,7 +89,13 @@ export default function Namespaces({
                 />
             )}
             {!loading && activeTab === "dashboard" ? (
-                <Dashboard />
+                <Dashboard 
+                namespaces={namespaces} 
+                onClick={(namespaceId: string) => {
+                    console.log("on déclenche le dashboard");
+                    router.push(`/projects/${projectId}/services/registry/namespace/${namespaceId}`);
+                }}
+                />
             ) : activeTab === "settings" ? (
                 <Settings />
             ) : null}

@@ -1,19 +1,20 @@
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import Namespaces from "@/components/services/registry/all/namespaces-table";
+import NamespaceDetail from "@/components/services/registry/detail/namespace-detail";
 import { getServerSession } from "next-auth";
 
-export default async function NamespacesPage({
+export default async function NamespaceDetailPage({
     params,
     searchParams,
   }: {
-    params: { project: string };
+    params: { namespace: string };
     searchParams?: { [key: string]: string | string[] | undefined };
   }) {
-    const project = params.project;
+
+    const namespaceId = params.namespace;
     const session = await getServerSession(authOptions);
     if (!session) return (<div>Not Authentified</div>);
-
+    
     return (
-        <Namespaces session={session} projectId={project} />
+        <NamespaceDetail session={session} namespaceId={namespaceId} />
     );
 }
