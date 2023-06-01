@@ -49,39 +49,6 @@ input {
     line-height: 1.5;
 }
 
-.Button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 4px;
-    padding: 0 15px;
-    font-size: 15px;
-    line-height: 1;
-    font-weight: 500;
-    height: 35px;
-}
-
-:root {
-    --custom-orange: rgba(254, 100, 11, 0.1);
-}
-
-.Button.orange {
-    background-color: var(--orange3);
-    color: var(--orange10);
-}
-
-.Button.orange:hover {
-    background-color: var(--orange4);
-}
-
-.Button.orange:focus {
-    box-shadow: 0 0 10px var(--orange7);
-}
-
-.Button.orange:active {
-    background-color: var(--orange6);
-}
-
 .Button.green {
     background-color: var(--green4);
     color: var(--green11);

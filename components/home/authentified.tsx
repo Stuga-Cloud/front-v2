@@ -4,15 +4,16 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import NewProject from "./new-project";
 import "../shared/css/dialog.css";
-import { useState, useEffect } from "react";
-import Card from "./card";
+import { useEffect, useState } from "react";
 import { LoadingSpinner } from "../shared/icons";
 import ProjectCard from "./project-card";
 import { pathEventEmitter } from "@/lib/event-emitter/path-event-emitter";
+import { Project } from "@/lib/models/project";
 
 export default function Authentified({ session }: { session: Session | null }) {
+    // @ts-ignore
     const { email, image, name, id } = session?.user || {};
-    const [projects, setProjects] = useState([]);
+    const [projects, setProjects] = useState([] as Project[]);
     const [loader, setLoader] = useState(true);
     const router = useRouter();
 
@@ -46,7 +47,7 @@ export default function Authentified({ session }: { session: Session | null }) {
     if (!email) return null;
 
     return (
-        <div className="flex z-10 flex-col items-center justify-center w-full">
+        <div className="z-10 flex w-full flex-col items-center justify-center">
             <div className=" w-4/5">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
@@ -65,7 +66,7 @@ export default function Authentified({ session }: { session: Session | null }) {
                             {name}
                         </h6>
                     </div>
-                    {/* <button className="hover:bg-white-500 text-black-700 flex h-12 items-center gap-2 rounded border border-gray-700 bg-transparent px-4  py-2 text-sm font-semibold hover:border-none hover:bg-gray-200 hover:text-white" 
+                    {/* <button className="hover:bg-white-500 text-black-700 flex h-12 items-center gap-2 rounded border border-gray-700 bg-transparent px-4  py-2 text-sm font-semibold hover:border-none hover:bg-gray-200 hover:text-white"
                     onClick={() => router.push('/projects/new')}
                 >
                     <svg

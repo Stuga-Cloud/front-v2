@@ -1,7 +1,7 @@
 "use client";
 import { Session } from "next-auth";
 import { useState } from "react";
-import Link from "next/link";
+import LoadingSpinner from "../../shared/icons/loading-spinner";
 
 export default function ProjectSettingsButton({
     session,
@@ -13,12 +13,16 @@ export default function ProjectSettingsButton({
     const [loading, setLoading] = useState(false);
 
     const openSettings = async (e: any) => {
-        console.log("Go to project settings");
-        console.log(e);
-        // Navigate to project settings, equivalent of <a href="/projects/[project]/settings">Settings</a>
+        setLoading(true);
+        window.location.href = `/projects/${projectId}/settings`;
     };
     return (
-        <Link href={`/projects/${projectId}/settings`} passHref>
+        <>
+            {loading && (
+                <div className="fixed inset-0 flex items-center justify-center">
+                    <LoadingSpinner />
+                </div>
+            )}
             <button
                 onClick={openSettings}
                 type="button"
@@ -50,6 +54,6 @@ export default function ProjectSettingsButton({
 
                 <span className="sr-only">Go to settings</span>
             </button>
-        </Link>
+        </>
     );
 }

@@ -44,7 +44,7 @@ export default function NewService({
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <button className="Button orange flex h-12 items-center gap-2">
+                <button className="Button stuga-primary-color">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="24"
@@ -60,7 +60,7 @@ export default function NewService({
                             d="M12 4v16m8-8H4"
                         ></path>
                     </svg>
-                    Create new service
+                    New service
                 </button>
             </DialogTrigger>
             <Portal className="z-20">

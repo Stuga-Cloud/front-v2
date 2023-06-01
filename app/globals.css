@@ -1,3 +1,44 @@
+@import '@radix-ui/colors/green.css';
+@import '@radix-ui/colors/orange.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.Button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    padding: 2px 15px !important;
+    font-size: 15px;
+    line-height: 1;
+    font-weight: 500;
+    height: 2.5rem;
+}
+
+:root {
+    --custom-orange: rgba(254, 100, 11, 0.1);
+}
+
+.Button.stuga-primary-color {
+    background-color: var(--green3);
+    /*background-color: var(--orange3);*/
+    color: var(--green10);
+    /*color: var(--orange10);*/
+}
+
+.Button.stuga-primary-color:hover {
+    background-color: var(--green4);
+    /*background-color: var(--orange4);*/
+}
+
+.Button.stuga-primary-color:focus {
+    box-shadow: 0 0 10px var(--green7);
+    /*box-shadow: 0 0 10px var(--orange7);*/
+}
+
+.Button.stuga-primary-color:active {
+    background-color: var(--green6);
+    /*background-color: var(--orange6);*/
+}

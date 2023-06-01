@@ -1,5 +1,3 @@
-import WebVitals from "@/components/home/web-vitals";
-import Image from "next/image";
 import UnAuthentified from "@/components/home/un-authentified";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";

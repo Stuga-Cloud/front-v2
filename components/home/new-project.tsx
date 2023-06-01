@@ -42,7 +42,7 @@ export default function NewProject({
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <button className="Button orange flex h-12 items-center gap-2 ">
+                <button className="Button stuga-primary-color">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="24"
@@ -88,7 +88,7 @@ export default function NewProject({
                         }}
                     >
                         <button
-                            className="Button orange"
+                            className="Button stuga-primary-color"
                             onClick={(e) => handleSubmit(e)}
                         >
                             {loading ? (

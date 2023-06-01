@@ -1,13 +1,13 @@
 "use client";
 import Image from "next/image";
 import LoadingSpinner from "@/components/shared/icons/loading-spinner";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Session } from "next-auth";
 import { Project } from "@/lib/models/project";
 import NewService from "./new-service";
 import "../shared/css/dialog.css";
 import { useRouter } from "next/navigation";
-import ProjectSettingsButton from "@/components/project/project-settings-button";
+import ProjectSettingsButton from "@/components/project/settings/project-settings-button";
 import { toastEventEmitter } from "@/lib/event-emitter/toast-event-emitter";
 
 export default function Project({
@@ -38,7 +38,7 @@ export default function Project({
         if (!projectId) return;
         getProject(projectId)
             .then((project) => {
-                setProject(project.project);
+                setProject(project);
             })
             .catch((error) => {
                 toastEventEmitter.emit("pop", {
@@ -76,7 +76,10 @@ export default function Project({
                     </div>
                 </div>
                 <div className="flex items-center justify-end gap-1 py-4">
-                    <ProjectSettingsButton session={session} projectId={id} />
+                    <ProjectSettingsButton
+                        session={session}
+                        projectId={projectId}
+                    />
                     <NewService
                         session={session}
                         afterCreate={(

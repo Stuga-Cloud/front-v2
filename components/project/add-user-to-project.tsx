@@ -51,7 +51,6 @@ export default function AddUserToProject({
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                {/* Gear button to drop down settings with Flowbite*/}
                 <button
                     type="button"
                     className="dark:orange-500 dark:focus:ring-gray-400:ring-offset-1 mr-2 inline-flex items-center rounded-full p-2.5 text-center text-sm font-medium text-white hover:bg-gray-100 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:hover:bg-orange-700"
@@ -107,7 +106,7 @@ export default function AddUserToProject({
                         }}
                     >
                         <button
-                            className="Button orange"
+                            className="Button stuga-primary-color"
                             onClick={(e) => handleSubmit(e)}
                         >
                             {loading ? (
