@@ -1,16 +1,14 @@
 "use client";
-import { Session } from "next-auth";
 import { Project } from "@/lib/models/project";
 import "../../shared/css/dialog.css";
 import { useState } from "react";
 import AddUserToProject from "@/components/project/settings/add-user-to-project";
 import LoadingSpinner from "../../shared/icons/loading-spinner";
+import Image from "next/image";
 
 export default function ProjectMembersSettings({
-    session,
     project,
 }: {
-    session: Session | null;
     project: Project;
 }) {
     const [loading, setLoading] = useState(false);
@@ -31,14 +29,10 @@ export default function ProjectMembersSettings({
     const removeMember = async (memberId: string, projectId: string) => {
         try {
             setLoading(true);
-            const response = await fetch(
-                `/api/projects/${project.id}/users/${memberId}`,
-                {
-                    method: "DELETE",
-                },
-            );
-            const data = await response.json();
-            reloadMembers();
+            await fetch(`/api/projects/${projectId}/users/${memberId}`, {
+                method: "DELETE",
+            });
+            await reloadMembers();
             setLoading(false);
         } catch (error) {
             setLoading(false);
@@ -55,10 +49,9 @@ export default function ProjectMembersSettings({
             <div className="flex w-4/5 flex-col justify-start">
                 <div className="flex items-center gap-2 py-4">
                     <AddUserToProject
-                        session={session}
                         project={project}
-                        afterCreate={() => {
-                            reloadMembers();
+                        afterAddedMember={async () => {
+                            await reloadMembers();
                         }}
                     />
                 </div>
@@ -80,12 +73,14 @@ export default function ProjectMembersSettings({
                                                 >
                                                     <div className="flex items-center">
                                                         <div className="h-10 w-10 flex-shrink-0">
-                                                            <img
-                                                                className="h-10 w-10 rounded-full"
+                                                            <Image
                                                                 src={
                                                                     member.image
                                                                 }
                                                                 alt=""
+                                                                width={40}
+                                                                height={40}
+                                                                className="rounded-full"
                                                             />
                                                         </div>
                                                     </div>
@@ -94,12 +89,14 @@ export default function ProjectMembersSettings({
                                                 <td className="px-6 py-4">
                                                     <div className="flex items-center">
                                                         <div className="h-10 w-10 flex-shrink-0">
-                                                            <img
-                                                                className="h-10 w-10 rounded-full"
+                                                            <Image
                                                                 src={
                                                                     "/stuga-logo.png"
                                                                 }
-                                                                alt=""
+                                                                alt="Stuga logo"
+                                                                width={40}
+                                                                height={40}
+                                                                className="rounded-full"
                                                             />
                                                         </div>
                                                     </div>
@@ -131,7 +128,7 @@ export default function ProjectMembersSettings({
                                                     type="button"
                                                     className="inline-flex items-center rounded-md border border-transparent bg-red-500 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
                                                     onClick={async () => {
-                                                        removeMember(
+                                                        await removeMember(
                                                             member.id,
                                                             project.id,
                                                         );

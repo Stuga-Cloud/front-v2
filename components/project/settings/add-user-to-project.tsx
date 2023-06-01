@@ -1,4 +1,3 @@
-"use client";
 import {
     Close,
     Description,
@@ -11,20 +10,17 @@ import {
 } from "@radix-ui/react-dialog";
 
 import axios from "axios";
-import { Session } from "next-auth";
 import { useState } from "react";
 import { Project } from "@/lib/models/project";
 import { Cross2Icon } from "@radix-ui/react-icons";
 import LoadingDots from "@/components/shared/icons/loading-dots";
 
 export default function AddUserToProject({
-    session,
     project,
-    afterCreate,
+    afterAddedMember,
 }: {
-    session: Session | null;
     project: Project;
-    afterCreate: () => void;
+    afterAddedMember: () => void;
 }) {
     const [email, setEmail] = useState("");
     const [loading, setLoading] = useState(false);
@@ -44,7 +40,7 @@ export default function AddUserToProject({
             setEmail("");
             setLoading(false);
             setOpen(false);
-            await afterCreate();
+            await afterAddedMember();
         } catch (error) {
             setLoading(false);
             console.error(

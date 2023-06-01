@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import ProjectSettingsTabs from "./project-settings-tabs";
 import ProjectGlobalSettings from "./project-global-settings";
 import ProjectMembersSettings from "./project-membership-settings";
-import { Session } from "next-auth";
 import { useRouter } from "next/navigation";
 import { toastEventEmitter } from "@/lib/event-emitter/toast-event-emitter";
 import { Project } from "@/lib/models/project";
@@ -12,10 +11,8 @@ import LoadingSpinner from "../../shared/icons/loading-spinner";
 export type ProjectSettingsPages = "global" | "members";
 
 export default function ProjectSettingsTab({
-    session,
     projectId,
 }: {
-    session: Session | null;
     projectId: string;
 }) {
     const [activeTab, setActiveTab] = useState<ProjectSettingsPages>("global");
@@ -45,6 +42,7 @@ export default function ProjectSettingsTab({
                     message: "error when try to get project settings",
                     duration: 2000,
                 });
+                console.error("error when try to get project settings", error);
                 router.push(`/`);
             });
     }, [projectId]);
@@ -65,16 +63,10 @@ export default function ProjectSettingsTab({
                 ) : (
                     <>
                         {activeTab === "global" && (
-                            <ProjectGlobalSettings
-                                session={session}
-                                project={project}
-                            />
+                            <ProjectGlobalSettings currentProject={project} />
                         )}
                         {activeTab === "members" && (
-                            <ProjectMembersSettings
-                                session={session}
-                                project={project}
-                            />
+                            <ProjectMembersSettings project={project} />
                         )}
                     </>
                 )}
