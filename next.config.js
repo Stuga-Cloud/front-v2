@@ -4,9 +4,18 @@ const nextConfig = {
     experimental: {
         appDir: true,
     },
+    pageExtensions: ['mdx', 'md', 'jsx', 'js', 'tsx', 'ts'],
     swcMinify: true,
     images: {
         domains: ["lh3.googleusercontent.com", "vercel.com"],
+        remotePatterns: [
+            {
+                protocol: "https",
+                hostname: "avatars.githubusercontent.com",
+                port: "",
+                pathname: "**",
+            },
+        ],
     },
     api: {
         bodyParser: false,
