@@ -13,7 +13,7 @@ import { Cross2Icon } from "@radix-ui/react-icons";
 import axios from "axios";
 import { Session } from "next-auth";
 import { useState } from "react";
-import ServiceCard from "./service-card";
+import ServicePopUpCard from "./service-popup-card";
 
 export default function NewService({
     session,
@@ -72,19 +72,19 @@ export default function NewService({
                         secure database.
                     </Description>
                     <div className="grid grid-cols-2 items-center gap-4">
-                        <ServiceCard
+                        <ServicePopUpCard
                             title="Container Registry"
                             onClick={() => afterCreate("registry")}
                         />
-                        <ServiceCard
+                        <ServicePopUpCard
                             title="Lambdas"
                             onClick={() => afterCreate("lambda")}
                         />
-                        <ServiceCard
+                        <ServicePopUpCard
                             title="Containers"
                             onClick={() => afterCreate("container")}
                         />
-                        <ServiceCard
+                        <ServicePopUpCard
                             title="Database"
                             onClick={() => afterCreate("database")}
                         />

@@ -9,6 +9,14 @@ import "../shared/css/dialog.css";
 import { useRouter } from "next/navigation";
 import ProjectSettingsButton from "@/components/project/settings/project-settings-button";
 import { toastEventEmitter } from "@/lib/event-emitter/toast-event-emitter";
+import ServiceCard from "./service-card";
+
+export interface GetServiceResponse {
+    registry: any | null;
+    lambda: any | null;
+    containers: any | null;
+    database: any | null;
+}
 
 export default function Project({
     session,
@@ -19,8 +27,11 @@ export default function Project({
 }) {
     // @ts-ignore
     const { email, image, name, id } = session?.user || {};
-    const [loader, setLoader] = useState(false);
+    const [loader, setLoader] = useState(true);
     const [services, setServices] = useState([]);
+    const [servicesSupported, setServicesSupported] = useState(
+        {} as GetServiceResponse,
+    );
     const [project, setProject] = useState({} as Project);
     const router = useRouter();
 
@@ -34,7 +45,22 @@ export default function Project({
         }
     };
 
+    const getServices = async (
+        projectId: string,
+    ): Promise<GetServiceResponse> => {
+        try {
+            const res = await fetch(`/api/projects/${projectId}/services`);
+
+            const servicesSupported = await res.json();
+            return servicesSupported;
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+    };
+
     useEffect(() => {
+        setLoader(true);
         if (!projectId) return;
         getProject(projectId)
             .then((project) => {
@@ -48,6 +74,20 @@ export default function Project({
                 });
                 router.push(`/`);
             });
+
+        getServices(projectId)
+            .then((servicesSupported) => {
+                setServicesSupported(servicesSupported);
+            })
+            .catch((error) => {
+                toastEventEmitter.emit("pop", {
+                    type: "danger",
+                    message: "error when try to get services informations",
+                    duration: 2000,
+                });
+                router.push(`/`);
+            })
+            .finally(() => setLoader(false));
     }, [projectId]);
 
     if (!email) return null;
@@ -122,13 +162,11 @@ export default function Project({
                 <div className="flex h-[50vh] items-center justify-center">
                     <LoadingSpinner />
                 </div>
-            ) : services && services.length > 0 ? (
-                <div className="grid grid-cols-3 gap-4">
-                    {services.map((service) => (
-                        <div key={service.name}>{service.name}</div>
-                    ))}
-                </div>
-            ) : (
+            ) : !servicesSupported ||
+              (!servicesSupported.registry &&
+                  !servicesSupported.containers &&
+                  !servicesSupported.lambda &&
+                  !servicesSupported.database) ? (
                 <div className="flex h-[70vh] w-4/5 items-center justify-center gap-2 border-2  border-dashed">
                     <Image
                         src="/stuga-logo.png"
@@ -146,7 +184,71 @@ export default function Project({
                         </p>
                     </div>
                 </div>
-            )}
+            ) : null}
+            <div className="ms-20 flex w-4/5 flex-row items-start justify-start">
+                <div className="grid w-full grid-cols-1 gap-4">
+                    {servicesSupported && servicesSupported.registry && (
+                        <>
+                            <ServiceCard
+                                key={servicesSupported.registry.id}
+                                title="Container registry"
+                                description="Your image storage"
+                                imageName="docker.png"
+                                onClick={() => {
+                                    router.push(
+                                        `/projects/${project.id}/services/registry`,
+                                    );
+                                }}
+                            />
+                        </>
+                    )}
+                    {servicesSupported && servicesSupported.containers && (
+                        <div key={servicesSupported.containers.id}>
+                            <ServiceCard
+                                key={servicesSupported.containers.id}
+                                title="Containers"
+                                description="your containers"
+                                imageName="docker.png"
+                                onClick={() => {
+                                    router.push(
+                                        `/projects/${project.id}/services/registry`,
+                                    );
+                                }}
+                            />
+                        </div>
+                    )}
+                    {servicesSupported && servicesSupported.lambda && (
+                        <div key={servicesSupported.lambda.id}>
+                            <ServiceCard
+                                key={servicesSupported.lambda.id}
+                                title="Lambdas"
+                                description="your serverless functions"
+                                imageName="docker.png"
+                                onClick={() => {
+                                    router.push(
+                                        `/projects/${project.id}/services/registry`,
+                                    );
+                                }}
+                            />
+                        </div>
+                    )}
+                    {servicesSupported && servicesSupported.database && (
+                        <div key={servicesSupported.database.id}>
+                            <ServiceCard
+                                key={servicesSupported.database.id}
+                                title="Lambdas"
+                                description="your managed secure database"
+                                imageName="docker.png"
+                                onClick={() => {
+                                    router.push(
+                                        `/projects/${project.id}/services/registry`,
+                                    );
+                                }}
+                            />
+                        </div>
+                    )}
+                </div>
+            </div>
         </div>
     );
 }

@@ -47,19 +47,19 @@ export async function GET(request: Request, { params }: NextRequest) {
     if (!project) {
         return NextResponse.json(
             {
-                error: "project not found"
+                error: "project not found",
             },
             { status: 404 },
         );
     }
-                
-
 
     const registry = await prisma.registry.findFirst({
         where: {
-            id: project.id,
+            projectId: project.id,
         },
     });
+    console.log("registry");
+    console.log(registry);
 
     return NextResponse.json(
         { registry, lambda: null, database: null, containers: null },
