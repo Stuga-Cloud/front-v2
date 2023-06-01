@@ -1,13 +1,14 @@
 "use client";
 import Image from "next/image";
 import LoadingSpinner from "@/components/shared/icons/loading-spinner";
-import { use, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Session } from "next-auth";
 import { Project } from "@/lib/models/project";
 import NewService from "./new-service";
 import "../shared/css/dialog.css";
 import { useRouter } from "next/navigation";
 import ProjectSettingsButton from "@/components/project/project-settings-button";
+import { toastEventEmitter } from "@/lib/event-emitter/toast-event-emitter";
 
 export default function Project({
     session,
@@ -40,6 +41,11 @@ export default function Project({
                 setProject(project.project);
             })
             .catch((error) => {
+                toastEventEmitter.emit("pop", {
+                    type: "danger",
+                    message: "error when try to get project informations",
+                    duration: 2000,
+                });
                 router.push(`/`);
             });
     }, [projectId]);
@@ -48,7 +54,7 @@ export default function Project({
 
     return (
         <div className="z-10 flex w-full flex-col items-center justify-center">
-            <div className="flex w-4/5 flex-row justify-between items-center mt-10">
+            <div className="mt-10 flex w-4/5 flex-row items-center justify-between">
                 <div className="z-10 w-4/5 justify-start">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">

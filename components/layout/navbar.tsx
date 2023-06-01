@@ -15,12 +15,9 @@ export default function NavBar({ session }: { session: Session | null }) {
     const scrolled = useScroll(50);
 
     useEffect(() => {
-        // Ecoute de l'EventEmitter pour des mises à jour
         pathEventEmitter.on("update", (path: { path: string }) => {
             setPathHeader(path.path);
         });
-
-        // N'oubliez pas de nettoyer en retournant une fonction de désabonnement
         return () => {
             pathEventEmitter.removeAllListeners("update");
         };
