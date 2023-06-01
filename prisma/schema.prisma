@@ -97,6 +97,8 @@ model RegistryNamespace {
   id    String    @id @default(cuid())
   name  String
   state String
+  modifiedAt DateTime @default(now())
+  createdAt DateTime @default(now())
   registryId  String
 
   registry Registry @relation(fields: [registryId], references: [id])

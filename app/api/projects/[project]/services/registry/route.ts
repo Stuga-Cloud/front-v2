@@ -91,7 +91,10 @@ export async function POST(request: Request, { params }: NextRequest) {
             });
             return NextResponse.json(registryNamespace, { status: 201 });
         }
+        const now = new Date();
+        const utcTimestamp = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds());
 
+        const dateInUtc = new Date(utcTimestamp);
         const results = await prisma.$transaction(async (tx) => {
             const registry = await tx.registry.create({
                 data: {
@@ -103,6 +106,8 @@ export async function POST(request: Request, { params }: NextRequest) {
                     registryId: registry.id,
                     state: req.visibility,
                     name: req.name,
+                    createdAt: dateInUtc,
+                    modifiedAt: dateInUtc,
                 },
             });
 
