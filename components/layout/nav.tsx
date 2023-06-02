@@ -13,8 +13,6 @@ export default function Nav({ session }: { session: Session | null }) {
     const [toast, setToast] = useState(
         {} as PayloadToastEventEmitter & { visible: boolean },
     );
-    console.log("session")
-    console.log(session)
 
     useEffect(() => {
         toastEventEmitter.on("pop", (toast) => {

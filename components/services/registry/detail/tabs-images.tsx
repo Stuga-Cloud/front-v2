@@ -1,14 +1,14 @@
 import { useState } from "react";
 
-export default function TabsNamespace({
+export default function TabsImages({
     onClick,
 }: {
-    onClick: (tab: "access" | "dashboard") => void;
+    onClick: (tab: "settings" | "dashboard") => void;
 }) {
-    const [activeTab, setActiveTab] = useState<"dashboard" | "access">(
+    const [activeTab, setActiveTab] = useState<"dashboard" | "settings">(
         "dashboard",
     );
-    const handleClick = (tab: "access" | "dashboard") => {
+    const handleClick = (tab: "settings" | "dashboard") => {
         onClick(tab);
         setActiveTab(tab);
     };
@@ -47,16 +47,16 @@ export default function TabsNamespace({
                     <a
                         href="#"
                         className={`group inline-flex rounded-t-lg p-4 ${
-                            activeTab === "access"
+                            activeTab === "settings"
                                 ? "border-b-2 border-blue-600 text-blue-600 dark:border-blue-500 dark:text-blue-500"
                                 : "border-transparent hover:border-gray-300 hover:text-gray-600 dark:hover:text-gray-300"
                         }`}
-                        onClick={() => handleClick("access")}
+                        onClick={() => handleClick("settings")}
                     >
                         <svg
                             aria-hidden="true"
                             className={`mr-2 h-5 w-5 ${
-                                activeTab === "access"
+                                activeTab === "settings"
                                     ? "text-blue-600 dark:text-blue-500"
                                     : "text-gray-400 group-hover:text-gray-500 dark:text-gray-500 dark:group-hover:text-gray-300"
                             }`}
@@ -66,7 +66,7 @@ export default function TabsNamespace({
                         >
                             <path d="M5 4a1 1 0 00-2 0v7.268a2 2 0 000 3.464V16a1 1 0 102 0v-1.268a2 2 0 000-3.464V4zM11 4a1 1 0 10-2 0v1.268a2 2 0 000 3.464V16a1 1 0 102 0V8.732a2 2 0 000-3.464V4zM16 3a1 1 0 011 1v7.268a2 2 0 010 3.464V16a1 1 0 11-2 0v-1.268a2 2 0 010-3.464V4a1 1 0 011-1z"></path>
                         </svg>
-                        Access
+                        Settings
                     </a>
                 </li>
             </ul>

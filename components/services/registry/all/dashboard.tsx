@@ -19,7 +19,7 @@ export default function Dashboard({
                                 accessibility
                             </th>
                             <th scope="col" className="px-6 py-3">
-                                Images
+                                endpoint
                             </th>
                             <th scope="col" className="px-6 py-3">
                                 last modification (UTC)
@@ -55,7 +55,8 @@ export default function Dashboard({
                                     className="px-6 py-4"
                                     onClick={() => onClick(namespace.id)}
                                 >
-                                    ...
+                                    {process.env.NEXT_PUBLIC_BASE_REGISTRY_ENDPOINT}{"/"}
+                                    {namespace.name}
                                 </td>
                                 <td
                                     className="px-6 py-4"

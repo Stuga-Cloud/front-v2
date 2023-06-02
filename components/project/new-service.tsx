@@ -36,7 +36,6 @@ export default function NewService({
             setName("");
             setLoading(false);
             setOpen(false);
-            await afterCreate();
         } catch (error) {
             setLoading(false);
         }

@@ -131,9 +131,6 @@ export default function Project({
                         ) => {
                             switch (service) {
                                 case "registry":
-                                    console.log(
-                                        `/projects/${project.id}/registries/new`,
-                                    );
                                     router.push(
                                         `/projects/${project.id}/services/registry/new`,
                                     );

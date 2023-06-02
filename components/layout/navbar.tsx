@@ -23,9 +23,6 @@ export default function NavBar({ session }: { session: Session | null }) {
         };
     }, []);
 
-    console.log("session NavBar")
-    console.log(session)
-
     return (
         <>
             <SignInModal />

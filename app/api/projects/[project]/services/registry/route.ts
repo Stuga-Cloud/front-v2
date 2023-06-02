@@ -174,8 +174,6 @@ export async function GET(request: Request, { params }: NextRequest) {
             projectId: projectFromDb!.id,
         },
     });
-    console.log("registry");
-    console.log(registry);
 
     if (!registry) {
         return NextResponse.json(

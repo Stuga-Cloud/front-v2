@@ -80,8 +80,6 @@ export async function GET(request: Request, { params }: NextRequest) {
                     },
                 );
                 const imageInfo = await req.json();
-                console.log("infoioio");
-                console.log(imageInfo);
                 return {
                     digest: imageInfo[0].digest,
                     size: imageInfo[0].size,
@@ -122,7 +120,6 @@ export async function GET(request: Request, { params }: NextRequest) {
             { status: 200 },
         );
     } catch (error) {
-        console.log(error);
         return NextResponse.json(
             {
                 error: "internal server error",
