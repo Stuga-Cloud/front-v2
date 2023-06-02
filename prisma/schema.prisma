@@ -69,7 +69,8 @@ model Project {
   members     ProjectMembership[]
   registry  Registry?
 
-  user User @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  user                User        @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  databases           Database[]  @relation("ProjectDatabases")
 
   @@index([createdBy])
 }
@@ -86,7 +87,7 @@ model ProjectMembership {
 }
 
 model Registry {
-  id    String    @id @default(cuid())
+  id         String @id @default(cuid())
   projectId  String @unique
   namespaces RegistryNamespace[]
 
@@ -94,12 +95,22 @@ model Registry {
 }
 
 model RegistryNamespace {
-  id    String    @id @default(cuid())
-  name  String
-  state String
-  modifiedAt DateTime @default(now())
-  createdAt DateTime @default(now())
+  id          String   @id @default(cuid())
+  name        String
+  state       String
+  modifiedAt  DateTime @default(now())
+  createdAt   DateTime @default(now())
   registryId  String
 
   registry Registry @relation(fields: [registryId], references: [id])
+}
+
+
+model Database {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  projectId   String
+  project     Project   @relation("ProjectDatabases", fields: [projectId], references: [id])
+
+  @@index([projectId])
 }

@@ -21,11 +21,11 @@ export const authOptions: NextAuthOptions = {
         error: "/",
     },
     callbacks: {
-        async jwt({ token, user, account, profile, isNewUser }) {
+        async jwt({ token, user, _account, _profile, _isNewUser }) {
             user && (token.user = user);
             return token;
         },
-        async session({ session, token, user }) {
+        async session({ session, _token, user }) {
             session = {
                 ...session,
                 user: {

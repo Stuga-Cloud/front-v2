@@ -44,23 +44,23 @@ export default function NewService({
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <button className="Button stuga-primary-color">
+                <button classname="button stuga-primary-color">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="24"
                         height="24"
                         fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
+                        viewbox="0 0 24 24"
+                        stroke="currentcolor"
                     >
                         <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M12 4v16m8-8H4"
+                            strokelinecap="round"
+                            strokelinejoin="round"
+                            strokewidth="2"
+                            d="m12 4v16m8-8h4"
                         ></path>
                     </svg>
-                    New service
+                    new service
                 </button>
             </DialogTrigger>
             <Portal className="z-20">

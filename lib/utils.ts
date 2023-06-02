@@ -1,4 +1,5 @@
 import ms from "ms";
+import { Session } from "next-auth";
 
 export const timeAgo = (timestamp: Date, timeOnly?: boolean): string => {
   if (!timestamp) return "never";
@@ -7,26 +8,18 @@ export const timeAgo = (timestamp: Date, timeOnly?: boolean): string => {
   }`;
 };
 
-export async function fetcher<JSON = any>(
-  input: RequestInfo,
-  init?: RequestInit,
-): Promise<JSON> {
-  const res = await fetch(input, init);
-
-  if (!res.ok) {
-    const json = await res.json();
-    if (json.error) {
-      const error = new Error(json.error) as Error & {
-        status: number;
-      };
-      error.status = res.status;
-      throw error;
-    } else {
-      throw new Error("An unexpected error occurred");
-    }
+export function isConnected(session: Session | null): boolean {
+  if (!session) {
+      console.log("sessionfalse");
+      return false;
   }
+  console.log("session", !!session?.user);
+  return !!session?.user;
+}
 
-  return res.json();
+export function generateRandomName() {
+  const randomString = Math.random().toString(36).substring(2, 8);
+  return `Database-${randomString}`;
 }
 
 export function nFormatter(num: number, digits?: number) {
