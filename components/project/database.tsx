@@ -4,8 +4,6 @@ import { generateRandomName } from "@/lib/utils";
 import {
     useQuery,
     useMutation,
-    QueryClient,
-    QueryClientProvider,
 } from "@tanstack/react-query";
 import { useState } from "react";
 
