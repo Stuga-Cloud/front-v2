@@ -27,8 +27,6 @@ export default function AddUserToProject({
     const [open, setOpen] = useState(false);
 
     const handleSubmit = async (e: any) => {
-        console.log("Add user to project submit with email : ", email);
-        console.log(e);
         e.preventDefault();
         try {
             setLoading(true);
@@ -36,16 +34,12 @@ export default function AddUserToProject({
                 email,
                 projectId: project.id,
             });
-            console.log("Response from add user to project : ", response);
             setEmail("");
             setLoading(false);
             setOpen(false);
             await afterAddedMember();
         } catch (error) {
             setLoading(false);
-            console.error(
-                "Il y'a eu une erreur lors de l'ajout d'un utilisateur à un projet",
-            );
             console.error(error);
         }
     };

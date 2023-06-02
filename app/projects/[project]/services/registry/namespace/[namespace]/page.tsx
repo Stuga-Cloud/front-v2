@@ -6,15 +6,16 @@ export default async function NamespaceDetailPage({
     params,
     searchParams,
   }: {
-    params: { namespace: string };
+    params: { namespace: string, project: string };
     searchParams?: { [key: string]: string | string[] | undefined };
   }) {
 
     const namespaceId = params.namespace;
+    const projectId = params.project;
     const session = await getServerSession(authOptions);
     if (!session) return (<div>Not Authentified</div>);
     
     return (
-        <NamespaceDetail session={session} namespaceId={namespaceId} />
+        <NamespaceDetail session={session} namespaceId={namespaceId} projectId={projectId} />
     );
 }

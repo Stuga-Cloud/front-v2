@@ -6,9 +6,9 @@ import { toastEventEmitter } from "@/lib/event-emitter/toast-event-emitter";
 import { LoadingSpinner } from "@/components/shared/icons";
 import { useRouter } from "next/navigation";
 import { Namespace } from "@/lib/models/registry/namespace";
-import TabsNamespace from "../all/tabs-namespace";
 import DetailDashboard from "./detail-dashboard";
-import Settings from "../all/settings";
+import Settings from "./settings";
+import TabsImages from "./tabs-images";
 
 export interface Image {
     digest: string;
@@ -37,8 +37,6 @@ const getNamespace = async (
         });
         const namespaceWithInfos: NamespaceWithImageInformationsResponse =
             await res.json();
-        console.log("avant NamespaceWithImageInformationsResponse");
-        console.log(namespaceWithInfos);
         return namespaceWithInfos;
     } catch (error) {
         console.log(error);
@@ -97,7 +95,7 @@ export default function NamespaceDetail({
                     <h2 className="mb-5 w-4/5 text-4xl font-bold">
                         Namespace {namespaceWithInfo?.namespace.name}
                     </h2>
-                    <TabsNamespace
+                    <TabsImages
                         onClick={(tab: "settings" | "dashboard") => {
                             setActiveTab(tab);
                         }}
@@ -109,13 +107,11 @@ export default function NamespaceDetail({
                     <DetailDashboard
                         images={namespaceWithInfo.images}
                         onClick={(namespaceId: string) => {
-                            console.log("on déclenche le dashboard");
-                            console.log(namespaceId);
                         }}
                     />
                 )
             ) : activeTab === "settings" ? (
-                <Settings />
+                <Settings session={session} namespace={namespaceWithInfo} />
             ) : null}
         </div>
     );

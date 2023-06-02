@@ -58,8 +58,6 @@ export async function GET(request: Request, { params }: NextRequest) {
             projectId: project.id,
         },
     });
-    console.log("registry");
-    console.log(registry);
 
     return NextResponse.json(
         { registry, lambda: null, database: null, containers: null },

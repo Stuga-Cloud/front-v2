@@ -1,13 +1,13 @@
 "use client";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import TabsNamespace from "./tabs-namespace";
 import Dashboard from "./dashboard";
-import Settings from "./settings";
 import { Session } from "next-auth";
 import { toastEventEmitter } from "@/lib/event-emitter/toast-event-emitter";
 import { LoadingSpinner } from "@/components/shared/icons";
 import { useRouter } from "next/navigation";
 import { Namespace } from "@/lib/models/registry/namespace";
+import Access from "./access/access";
 
 const getNamespaces = async (projectId: string): Promise<Namespace[]> => {
     try {
@@ -45,7 +45,7 @@ export default function Namespaces({
     session: Session;
     projectId: string;
 }) {
-    const [activeTab, setActiveTab] = useState<"dashboard" | "settings">(
+    const [activeTab, setActiveTab] = useState<"dashboard" | "access">(
         "dashboard",
     );
     const [namespaces, setNamespaces] = useState<Namespace[]>([]);
@@ -74,30 +74,58 @@ export default function Namespaces({
 
     return (
         <div className="z-10 flex w-full flex-col items-center justify-center">
-            <h2 className="mb-5 w-4/5 text-4xl font-bold">
-                Container Registry
-            </h2>
+            <div className="flex w-4/5 flex-row items-center justify-between">
+                <h2 className="mb-5 w-4/5 text-4xl font-bold">
+                    Container Registry
+                </h2>
+                <button
+                    className="Button stuga-primary-color cursor-pointer"
+                    onClick={() => {
+                        router.push(
+                            `/projects/${projectId}/services/registry/new`,
+                        );
+                    }}
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M12 4v16m8-8H4"
+                        ></path>
+                    </svg>
+                    New namespace
+                </button>
+            </div>
             {loading ? (
                 <div className="flex items-center justify-center">
                     <LoadingSpinner />
                 </div>
             ) : (
                 <TabsNamespace
-                    onClick={(tab: "settings" | "dashboard") => {
+                    onClick={(tab: "access" | "dashboard") => {
                         setActiveTab(tab);
                     }}
                 />
             )}
             {!loading && activeTab === "dashboard" ? (
-                <Dashboard 
-                namespaces={namespaces} 
-                onClick={(namespaceId: string) => {
-                    console.log("on déclenche le dashboard");
-                    router.push(`/projects/${projectId}/services/registry/namespace/${namespaceId}`);
-                }}
+                <Dashboard
+                    namespaces={namespaces}
+                    onClick={(namespaceId: string) => {
+                        router.push(
+                            `/projects/${projectId}/services/registry/namespace/${namespaceId}`,
+                        );
+                    }}
                 />
-            ) : activeTab === "settings" ? (
-                <Settings />
+            ) : !loading && activeTab === "access" ? (
+                <Access session={session} />
             ) : null}
         </div>
     );
