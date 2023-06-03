@@ -61,13 +61,34 @@ function Inner() {
     <>
       <button onClick={handleCreateDatabase}>Create Database</button>
       {createDatabaseMutation.isLoading && <p>Creating database...</p>}
-      {status != "loading" && <LoadingSpinner />}
+      {status === "loading" && <LoadingSpinner />}
       {data && (
-          <ul>
-              {data.map((database: Database) => (
-                  <li key={database.id}>{database.name}</li>
-              ))}
-          </ul>
+        <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+            <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                    <tr>
+                        <th scope="col" className="px-6 py-3">
+                            Database name
+                        </th>
+                        <th scope="col" className="px-6 py-3">
+                            id
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                  {data.map((database: Database) => (
+                    <tr className="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
+                        <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                            {database.name}
+                        </th>
+                        <td className="px-6 py-4">
+                            {database.id}
+                        </td>
+                    </tr>
+                  ))}
+                </tbody>
+            </table>
+        </div>
       )}
     </>
   );

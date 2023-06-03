@@ -12,7 +12,7 @@ export default async function DatabasePage({params}: ProjectParam) {
     ];
     return (
       <div className="z-10 flex w-full flex-col items-center justify-center">
-          <div className="mt-10 flex w-4/5 flex-row items-center justify-between">
+          <div className="mt-10 w-4/5">
               <Breadcrumb items={breadcrumbItem} />
               <DatabaseComponent />
           </div>
