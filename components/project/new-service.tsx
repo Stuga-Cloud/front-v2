@@ -28,7 +28,7 @@ export default function NewService({
     const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(false);
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e: Event) => {
         e.preventDefault();
         try {
             setLoading(true);
@@ -43,23 +43,23 @@ export default function NewService({
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <button className="Button stuga-primary-color">
+                <button className="button stuga-primary-color">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="24"
                         height="24"
                         fill="none"
                         viewBox="0 0 24 24"
-                        stroke="currentColor"
+                        stroke="currentcolor"
                     >
                         <path
                             strokeLinecap="round"
                             strokeLinejoin="round"
                             strokeWidth="2"
-                            d="M12 4v16m8-8H4"
+                            d="m12 4v16m8-8h4"
                         ></path>
                     </svg>
-                    New service
+                    new service
                 </button>
             </DialogTrigger>
             <Portal className="z-20">
