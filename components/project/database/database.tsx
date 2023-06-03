@@ -7,8 +7,9 @@ import {
 } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import { useState } from "react";
-import { LoadingSpinner } from "../shared/icons";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import Link from "next/link";
+import { LoadingSpinner } from "@/components/shared/icons";
 
 export interface Database {
     name: string;
@@ -35,18 +36,19 @@ function Inner() {
         enabled: !!fetchTrigger
     });
 
-    const createDatabaseMutation = useMutation(
-        async () => {
-            const randomName = generateRandomName();
-            return ApiService.post(
-                `/api/projects/${project}/services/databases`,
-                { name: randomName },
-            );
-        },
-        {
-          onSuccess: () => setFetchTrigger(fetchTrigger + 1),
-        },
-    );
+    const createDatabaseMutation = useMutation({
+      mutationFn: async () => {
+        const randomName = generateRandomName();
+        return ApiService.post(
+            `/api/projects/${project}/services/databases`,
+            { name: randomName },
+        );
+      },
+      onSettled: () => {
+        console.log(`fetchtrigger: ${fetchTrigger + 1}`);
+        setFetchTrigger(fetchTrigger + 1);
+      },
+    });
     const handleCreateDatabase = () => {
         createDatabaseMutation.mutate();
     };
@@ -65,7 +67,7 @@ function Inner() {
            Zero Knowledge Database
           </mark>
       </h1>
-      <button onClick={handleCreateDatabase}>Create Database</button>
+      <CreateDatabaseButton handleClick={handleCreateDatabase} />
       {createDatabaseMutation.isLoading && <p>Creating database...</p>}
       {status === "loading" && <LoadingSpinner />}
       {data && (
@@ -82,13 +84,13 @@ function Inner() {
                     </tr>
                 </thead>
                 <tbody>
-                  {data.map((database: Database) => (
-                    <tr className="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
+                  {data.map((database, index) => (
+                    <tr key={index} className="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
                         <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                             {database.name}
                         </th>
                         <td className="px-6 py-4">
-                            {database.id}
+                            <Link href={`/projects/${project}/services/database/${database.id}/key`}>{database.id}</Link>
                         </td>
                     </tr>
                   ))}
@@ -99,3 +101,19 @@ function Inner() {
     </>
   );
 }
+
+type CreateDatabaseButtonProps = {
+  handleClick: () => void;
+};
+
+const CreateDatabaseButton: React.FC<CreateDatabaseButtonProps> = ({ handleClick }) => {
+  return (
+    <button 
+      type="button" 
+      onClick={handleClick} 
+      className="focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-3 py-2.5 m-1 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900"
+    >
+      Create Database
+    </button>
+  );
+};

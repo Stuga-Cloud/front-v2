@@ -2,7 +2,7 @@ import { DatabaseComponent } from "@/components/project/database";
 import { Breadcrumb, BreadcrumbItem } from "@/components/shared/breadcrumb";
 import type { ProjectParam } from "types/param";
 
-export default async function DatabasePage({params}: ProjectParam) {
+export default function DatabaseList({params}: ProjectParam) {
   const { project } = params;
   const breadcrumbItem: BreadcrumbItem[] = [ 
       {text: "project", slug: `/projects/${project}`},
