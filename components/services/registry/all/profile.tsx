@@ -83,7 +83,7 @@ export default function Profile({
             .catch((error) => {
                 if (error.response.status === 500) {
                     toastEventEmitter.emit("pop", {
-                        type: "warn",
+                        type: "warning",
                         message: "Error while fetching user",
                         duration: 2000,
                     });

@@ -49,7 +49,7 @@ export default function Access({
                 .catch((error) => {
                     if (error.response.status === 500) {
                         toastEventEmitter.emit("pop", {
-                            type: "warn",
+                            type: "danger",
                             message: "Error while fetching user",
                             duration: 2000,
                         });
@@ -60,7 +60,7 @@ export default function Access({
                         error.response.data.error === "user-not-in-namespace"
                     ) {
                         toastEventEmitter.emit("pop", {
-                            type: "warn",
+                            type: "danger",
                             message: "the user in not in the namespace",
                             duration: 2000,
                         });
@@ -110,20 +110,20 @@ export default function Access({
             .catch((error) => {
                 if (error.response.status === 500) {
                     toastEventEmitter.emit("pop", {
-                        type: "warn",
+                        type: "warning",
                         message: "Error while fetching user",
                         duration: 2000,
                     });
                 }
 
                 if (
-                    error.response.status === 403 &&
-                    error.response.data.error === "user-not-in-namespace"
+                    error.response.status !== 403 &&
+                    error.response.data.error !== "user-not-in-namespace"
                 ) {
                     toastEventEmitter.emit("pop", {
-                        type: "warn",
-                        message: "the user in not in the namespace",
-                        duration: 2000,
+                        type: "danger",
+                        message: "Internal server error",
+                        duration: 3000,
                     });
                 }
             })
@@ -159,7 +159,45 @@ export default function Access({
                             access to this registry
                         </div>
                     </div>
+                    <div>
+                        <h3 className="mb-5 mt-10 w-4/5 text-3xl font-bold">
+                            Authenticate to the namespace
+                        </h3>
+                    </div>
                     <DockerLoginCode code={code} />
+
+                    <div>
+                        <h3 className="mb-5 mt-10 w-4/5 text-3xl font-bold">
+                            Push an image to the registry
+                        </h3>
+                    </div>
+                    <div className="mb-5">
+                        <DockerLoginCode
+                            code={"docker pull hello-world:latest"}
+                        />
+                    </div>
+                    <div className="mb-5">
+                        <DockerLoginCode
+                            code={
+                                "docker tag hello-world:latest " +
+                                process.env.NEXT_PUBLIC_BASE_REGISTRY_ENDPOINT +
+                                "/" +
+                                namespace.name +
+                                "/hello-world:latest"
+                            }
+                        />
+                    </div>
+                    <div className="mb-5">
+                        <DockerLoginCode
+                            code={
+                                "docker push " +
+                                process.env.NEXT_PUBLIC_BASE_REGISTRY_ENDPOINT +
+                                "/" +
+                                namespace.name +
+                                "/hello-world:latest"
+                            }
+                        />
+                    </div>
                 </>
             ) : null}
             {loading ? (
