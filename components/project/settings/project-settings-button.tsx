@@ -1,7 +1,6 @@
 "use client";
 import { Session } from "next-auth";
-import { useState } from "react";
-import LoadingSpinner from "../../shared/icons/loading-spinner";
+import { useRouter } from "next/navigation";
 
 export default function ProjectSettingsButton({
     session,
@@ -10,19 +9,13 @@ export default function ProjectSettingsButton({
     session: Session | null;
     projectId: string;
 }) {
-    const [loading, setLoading] = useState(false);
+    const router = useRouter();
 
     const openSettings = async (e: any) => {
-        setLoading(true);
-        window.location.href = `/projects/${projectId}/settings`;
+        router.push(`/projects/${projectId}/settings`);
     };
     return (
         <>
-            {loading && (
-                <div className="fixed inset-0 flex items-center justify-center">
-                    <LoadingSpinner />
-                </div>
-            )}
             <button
                 onClick={openSettings}
                 type="button"

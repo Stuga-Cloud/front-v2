@@ -1,5 +1,6 @@
 @import '@radix-ui/colors/green.css';
 @import '@radix-ui/colors/orange.css';
+@import '@radix-ui/colors/red.css';
 
 @tailwind base;
 @tailwind components;
@@ -10,11 +11,11 @@
     align-items: center;
     justify-content: center;
     border-radius: 4px;
-    padding: 0.5rem 1rem !important;
+    padding: 0.5rem 1rem;
     font-size: 15px;
     line-height: 1;
     font-weight: 500;
-    height: 2.5rem;
+    height: 2rem;
     gap: 0.5rem;
 }
 
@@ -23,19 +24,20 @@
 }
 
 .Button.stuga-primary-color {
-    background-color: var(--green3);
+    background-color: var(--green8);
     /*background-color: var(--orange3);*/
-    color: var(--green9);
+    color: white;
+    /*color: var(--green3);*/
     /*color: var(--orange10);*/
 }
 
 .Button.stuga-primary-color:hover {
-    background-color: var(--green4);
+    background-color: var(--green7);
     /*background-color: var(--orange4);*/
 }
 
 .Button.stuga-primary-color:focus {
-    box-shadow: 0 0 10px var(--green7);
+    box-shadow: 0 0 5px var(--green7);
     /*box-shadow: 0 0 10px var(--orange7);*/
 }
 
@@ -44,7 +46,62 @@
     /*background-color: var(--orange6);*/
 }
 
+.Button.stuga-primary-color:focus-visible {
+    outline: 1px solid var(--green9);
+}
+
 .Button.stuga-primary-color[aria-expanded='true'] {
     background-color: transparent;
     /*background-color: var(--orange4);*/
 }
+
+.Button.stuga-red-color {
+    background-color: var(--red9);
+    color: white;
+}
+
+.Button.stuga-red-color:hover {
+    background-color: var(--red8);
+}
+
+.Button.stuga-red-color:focus {
+    box-shadow: 0 0 5px var(--red8);
+}
+
+.Button.stuga-red-color:active {
+    background-color: var(--red7);
+}
+
+.Button.stuga-red-color:focus-visible {
+    outline: 1px solid var(--red8);
+}
+
+.Button.stuga-red-color[aria-expanded='true'] {
+    background-color: transparent;
+}
+
+.Button.stuga-orange-color {
+    background-color: var(--custom-orange);
+    color: var(--orange10);
+}
+
+.Button.stuga-orange-color:hover {
+    background-color: var(--orange3);
+}
+
+.Button.stuga-orange-color:focus {
+    box-shadow: 0 0 5px var(--orange7);
+}
+
+.Button.stuga-orange-color:active {
+    background-color: var(--orange6);
+}
+
+.Button.stuga-orange-color:focus-visible {
+    outline: 1px solid var(--orange7);
+}
+
+.Button.stuga-orange-color[aria-expanded='true'] {
+    background-color: transparent;
+}
+
