@@ -5,56 +5,70 @@ import {
     useQuery,
     useMutation,
 } from "@tanstack/react-query";
+import { useParams } from "next/navigation";
 import { useState } from "react";
+import { LoadingSpinner } from "../shared/icons";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-interface Database {
+export interface Database {
     name: string;
+    projectId: string;
     id: string;
 }
 
-export function DatabasePage() {
-    const projectId = "clie9ta990007atvfiuhvqpwu";
-    const [refresh, setRefresh] = useState(0);
-    const { data: databases, isError: isFetchError } = useQuery(
-        ["databases", projectId, refresh],
-        () => ApiService.get(`/api/projects/${projectId}/services/databases`),
-        { enabled: !!refresh },
+const queryClient = new QueryClient();
+
+export function DatabaseComponent() {
+    return (
+        <QueryClientProvider client={queryClient}>
+          <Inner/>
+        </QueryClientProvider>
     );
+}
+
+function Inner() {
+    const { project } = useParams();
+    const [fetchTrigger, setFetchTrigger] = useState(1);
+    const { status, data, error } = useQuery<Database[]>({
+        queryKey: [project, fetchTrigger],
+        queryFn: () => ApiService.get<Database[]>(`/api/projects/${project}/services/databases`),
+        enabled: !!fetchTrigger
+    });
+
     const createDatabaseMutation = useMutation(
         async () => {
             const randomName = generateRandomName();
             return ApiService.post(
-                `/api/projects/${projectId}/services/databases`,
+                `/api/projects/${project}/services/databases`,
                 { name: randomName },
             );
         },
         {
-            onSuccess: () => {
-                setRefresh(refresh + 1);
-            },
+          onSuccess: () => setFetchTrigger(fetchTrigger + 1),
         },
     );
     const handleCreateDatabase = () => {
         createDatabaseMutation.mutate();
     };
-    if (isFetchError || createDatabaseMutation.isError) {
+    if (error || createDatabaseMutation.isError) {
         console.error(
             "Error:",
-            isFetchError ? databases : createDatabaseMutation.error,
+            error ? data : createDatabaseMutation.error,
         );
         return <p>Failed to create database</p>;
     }
-    return (
-        <div>
-            <button onClick={handleCreateDatabase}>Create Database</button>
-            {createDatabaseMutation.isLoading && <p>Creating database...</p>}
-            {databases && (
-                <ul>
-                    {databases.map((database: Database) => (
-                        <li key={database.id}>{database.name}</li>
-                    ))}
-                </ul>
-            )}
-        </div>
-    );
+  return (
+    <>
+      <button onClick={handleCreateDatabase}>Create Database</button>
+      {createDatabaseMutation.isLoading && <p>Creating database...</p>}
+      {status != "loading" && <LoadingSpinner />}
+      {data && (
+          <ul>
+              {data.map((database: Database) => (
+                  <li key={database.id}>{database.name}</li>
+              ))}
+          </ul>
+      )}
+    </>
+  );
 }

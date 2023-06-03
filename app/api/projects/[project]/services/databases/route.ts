@@ -34,16 +34,20 @@ export async function POST(req: NextRequest, { params }: { params: { project: st
 
 export async function GET(_req: NextRequest, { params }: { params: { project: string } }) {
     const session = await getServerSession(authOptions);
-    console.log(session)
+    console.log("session front", session);
 
     if (!isConnected(session)) {
         return ResponseService.unauthorized();
     }
     try {
-        const databases = await prisma.database.findMany({
-            where: { projectId: params.project },
-        });
+        // const databases = await prisma.database.findMany({
+        //     where: { projectId: params.project },
+        // });
 
+        const databases = [
+          {id: "uuuehofhowefibefobwo", projectId: "clie9ta990007atvfiuhvqpwu", name: "db-1" },
+          {id: "xugghfhowefiobowwoth", projectId: "clie9ta990007atvfiuhvqpwu", name: "db-2" },
+        ];
         console.log("databases:", databases);
         return ResponseService.success(databases);
     } catch (error) {

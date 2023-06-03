@@ -7,7 +7,7 @@ export interface BreadcrumbItem {
 }
 
 function createUrl(slug: string) {
-return location.protocol + '//' + location.host + slug;
+  return location.protocol + '//' + location.host + slug;
 }
 
 export const Breadcrumb = ({ items }: { items: BreadcrumbItem[] }) => {

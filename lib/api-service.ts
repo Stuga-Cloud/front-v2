@@ -16,11 +16,11 @@ export class ApiService {
     return res.json();
   }
 
-  static get(input: RequestInfo) {
+  static get<T = any>(input: RequestInfo): Promise<T> {
     return this.fetcher(input);
   }
 
-  static async post(input: RequestInfo, body: Record<string, any>) {
+  static async post<T = any>(input: RequestInfo, body: Record<string, any>): Promise<T> {
     return this.fetcher(input, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

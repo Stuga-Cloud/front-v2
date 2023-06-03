@@ -147,7 +147,7 @@ export default function Project({
                                     break;
                                 case "database":
                                     router.push(
-                                        `/projects/${project.id}/services/database/new`,
+                                        `/projects/${project.id}/services/database`,
                                     );
                                     break;
                             }
