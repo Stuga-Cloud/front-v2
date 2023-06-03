@@ -7,7 +7,8 @@ import { toastEventEmitter } from "@/lib/event-emitter/toast-event-emitter";
 import { LoadingSpinner } from "@/components/shared/icons";
 import { useRouter } from "next/navigation";
 import { Namespace } from "@/lib/models/registry/namespace";
-import Access from "./access/access";
+import Access from "../detail/access/access";
+import Profile from "./profile";
 
 const getNamespaces = async (projectId: string): Promise<Namespace[]> => {
     try {
@@ -45,11 +46,12 @@ export default function Namespaces({
     session: Session;
     projectId: string;
 }) {
-    const [activeTab, setActiveTab] = useState<"dashboard" | "access">(
+    const [activeTab, setActiveTab] = useState<"dashboard" | "profile">(
         "dashboard",
     );
     const [namespaces, setNamespaces] = useState<Namespace[]>([]);
     const [loading, setLoading] = useState(true);
+    const [user, setUser] = useState();
     const router = useRouter();
 
     useEffect(() => {
@@ -110,9 +112,10 @@ export default function Namespaces({
                 </div>
             ) : (
                 <TabsNamespace
-                    onClick={(tab: "access" | "dashboard") => {
+                    onClick={(tab: "profile" | "dashboard") => {
                         setActiveTab(tab);
                     }}
+                    tabsHidden={[]}
                 />
             )}
             {!loading && activeTab === "dashboard" ? (
@@ -124,9 +127,9 @@ export default function Namespaces({
                         );
                     }}
                 />
-            ) : !loading && activeTab === "access" ? (
-                <Access session={session} />
-            ) : null}
+            ) : !loading && activeTab === "profile" ? (
+                <Profile session={session} projectId={projectId} />
+            ): null}
         </div>
     );
 }

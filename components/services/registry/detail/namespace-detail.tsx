@@ -9,6 +9,7 @@ import { Namespace } from "@/lib/models/registry/namespace";
 import DetailDashboard from "./detail-dashboard";
 import Settings from "./settings";
 import TabsImages from "./tabs-images";
+import Access from "./access/access";
 
 export interface Image {
     digest: string;
@@ -28,37 +29,29 @@ export interface NamespaceWithImageInformationsResponse {
 const getNamespace = async (
     namespaceId: string,
 ): Promise<NamespaceWithImageInformationsResponse> => {
-    try {
-        const res = await fetch(`/api/registry/namespace/${namespaceId}`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        });
-        const namespaceWithInfos: NamespaceWithImageInformationsResponse =
-            await res.json();
-        return namespaceWithInfos;
-    } catch (error) {
-        console.log(error);
-        toastEventEmitter.emit("pop", {
-            type: "danger",
-            message: "error when try to get namespace",
-            duration: 5000,
-        });
-        throw error;
-    }
+    const res = await fetch(`/api/registry/namespace/${namespaceId}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+    const namespaceWithInfos: NamespaceWithImageInformationsResponse =
+        await res.json();
+    return namespaceWithInfos;
 };
 
 export default function NamespaceDetail({
     session,
     namespaceId,
+    projectId,
 }: {
     session: Session;
     namespaceId: string;
+    projectId: string;
 }) {
-    const [activeTab, setActiveTab] = useState<"dashboard" | "settings">(
-        "dashboard",
-    );
+    const [activeTab, setActiveTab] = useState<
+        "dashboard" | "settings" | "access"
+    >("dashboard");
     const [namespaceWithInfo, setNamespaceWithInfo] =
         useState<NamespaceWithImageInformationsResponse>();
     const [loading, setLoading] = useState(true);
@@ -82,7 +75,7 @@ export default function NamespaceDetail({
             .finally(() => {
                 setLoading(false);
             });
-    }, []);
+    }, [namespaceId]);
 
     return (
         <div className="z-10 flex w-full flex-col items-center justify-center">
@@ -95,10 +88,14 @@ export default function NamespaceDetail({
                     <h2 className="mb-5 w-4/5 text-4xl font-bold">
                         Namespace {namespaceWithInfo?.namespace.name}
                     </h2>
+
                     <TabsImages
-                        onClick={(tab: "settings" | "dashboard") => {
+                        onClick={(tab: "settings" | "dashboard" | "access") => {
                             setActiveTab(tab);
                         }}
+                        accessDisplay={
+                            namespaceWithInfo?.namespace.state === "private"
+                        }
                     />
                 </>
             )}
@@ -106,12 +103,18 @@ export default function NamespaceDetail({
                 namespaceWithInfo && (
                     <DetailDashboard
                         images={namespaceWithInfo.images}
-                        onClick={(namespaceId: string) => {
-                        }}
+                        onClick={(namespaceId: string) => {}}
                     />
                 )
             ) : activeTab === "settings" ? (
-                <Settings session={session} namespace={namespaceWithInfo} />
+                <Settings session={session} namespace={namespaceWithInfo!} />
+            ) : namespaceWithInfo?.namespace.state === "private" &&
+              activeTab === "access" ? (
+                <Access
+                    session={session}
+                    namespace={namespaceWithInfo?.namespace!}
+                    projectId={projectId}
+                />
             ) : null}
         </div>
     );

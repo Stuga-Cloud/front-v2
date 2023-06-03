@@ -2,13 +2,15 @@ import { useState } from "react";
 
 export default function TabsNamespace({
     onClick,
+    tabsHidden,
 }: {
-    onClick: (tab: "access" | "dashboard") => void;
+    onClick: (tab: "profile" | "dashboard") => void;
+    tabsHidden: string[];
 }) {
-    const [activeTab, setActiveTab] = useState<"dashboard" | "access">(
+    const [activeTab, setActiveTab] = useState<"dashboard" | "profile">(
         "dashboard",
     );
-    const handleClick = (tab: "access" | "dashboard") => {
+    const handleClick = (tab: "profile" | "dashboard") => {
         onClick(tab);
         setActiveTab(tab);
     };
@@ -43,32 +45,38 @@ export default function TabsNamespace({
                         Dashboard
                     </a>
                 </li>
-                <li className="mr-2">
-                    <a
-                        href="#"
-                        className={`group inline-flex rounded-t-lg p-4 ${
-                            activeTab === "access"
-                                ? "border-b-2 border-blue-600 text-blue-600 dark:border-blue-500 dark:text-blue-500"
-                                : "border-transparent hover:border-gray-300 hover:text-gray-600 dark:hover:text-gray-300"
-                        }`}
-                        onClick={() => handleClick("access")}
-                    >
-                        <svg
-                            aria-hidden="true"
-                            className={`mr-2 h-5 w-5 ${
-                                activeTab === "access"
-                                    ? "text-blue-600 dark:text-blue-500"
-                                    : "text-gray-400 group-hover:text-gray-500 dark:text-gray-500 dark:group-hover:text-gray-300"
+                {!tabsHidden.includes("profile") && (
+                    <li className="mr-2">
+                        <a
+                            href="#"
+                            className={`group inline-flex rounded-t-lg p-4 ${
+                                activeTab === "profile"
+                                    ? "border-b-2 border-blue-600 text-blue-600 dark:border-blue-500 dark:text-blue-500"
+                                    : "border-transparent hover:border-gray-300 hover:text-gray-600 dark:hover:text-gray-300"
                             }`}
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                            xmlns="http://www.w3.org/2000/svg"
+                            onClick={() => handleClick("profile")}
                         >
-                            <path d="M5 4a1 1 0 00-2 0v7.268a2 2 0 000 3.464V16a1 1 0 102 0v-1.268a2 2 0 000-3.464V4zM11 4a1 1 0 10-2 0v1.268a2 2 0 000 3.464V16a1 1 0 102 0V8.732a2 2 0 000-3.464V4zM16 3a1 1 0 011 1v7.268a2 2 0 010 3.464V16a1 1 0 11-2 0v-1.268a2 2 0 010-3.464V4a1 1 0 011-1z"></path>
-                        </svg>
-                        Access
-                    </a>
-                </li>
+                            <svg
+                                aria-hidden="true"
+                                className={`mr-2 h-5 w-5 ${
+                                    activeTab === "profile"
+                                        ? "text-blue-600 dark:text-blue-500"
+                                        : "text-gray-400 group-hover:text-gray-500 dark:text-gray-500 dark:group-hover:text-gray-300"
+                                }`}
+                                fill="currentColor"
+                                viewBox="0 0 20 20"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <path
+                                    fillRule="evenodd"
+                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z"
+                                    clipRule="evenodd"
+                                ></path>
+                            </svg>
+                            Profile
+                        </a>
+                    </li>
+                )}
             </ul>
         </div>
     );
