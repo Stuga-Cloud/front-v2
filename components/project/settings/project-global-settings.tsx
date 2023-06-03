@@ -1,6 +1,7 @@
 import { Project } from "@/lib/models/project";
 import { useState } from "react";
 import LoadingSpinner from "../../shared/icons/loading-spinner";
+import { toastEventEmitter } from "@/lib/event-emitter/toast-event-emitter";
 
 export default function ProjectGlobalSettings({
     currentProject,
@@ -13,6 +14,14 @@ export default function ProjectGlobalSettings({
     const updateProject = async (event: any) => {
         event.preventDefault();
         const name = event.target.name.value;
+        if (project.name === name) {
+            toastEventEmitter.emit("pop", {
+                type: "warning",
+                message: "Project didn't change",
+                duration: 5000,
+            });
+            return;
+        }
         try {
             setLoading(true);
             const response = await fetch(`/api/projects/${project.id}`, {
@@ -28,8 +37,18 @@ export default function ProjectGlobalSettings({
             console.log("Updated project", updateProject);
             setProject(updateProject);
             setLoading(false);
+            toastEventEmitter.emit("pop", {
+                type: "success",
+                message: "Project updated",
+                duration: 5000,
+            });
         } catch (error) {
             setLoading(false);
+            toastEventEmitter.emit("pop", {
+                type: "danger",
+                message: "Error when try to update project",
+                duration: 5000,
+            });
         }
     };
 
@@ -40,7 +59,10 @@ export default function ProjectGlobalSettings({
                     <LoadingSpinner />
                 </div>
             )}
-            <form onSubmit={updateProject} className="flex flex-col gap-4">
+            <form
+                onSubmit={updateProject}
+                className="flex w-4/5 flex-col gap-4"
+            >
                 <div className="mb-6">
                     <label
                         htmlFor="name"
@@ -51,18 +73,20 @@ export default function ProjectGlobalSettings({
                     <input
                         type="name"
                         id="name"
-                        className="dark:shadow-sm-light block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+                        className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-2 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500"
                         placeholder="The Stuga Cloud Project"
                         defaultValue={project.name}
                         required
                     />
                 </div>
-                <button
-                    type="submit"
-                    className="rounded-lg bg-blue-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                >
-                    Save modifications
-                </button>
+                <div className="flex-grow">
+                    <button
+                        type="submit"
+                        className="Button stuga-primary-color"
+                    >
+                        Save modifications
+                    </button>
+                </div>
             </form>
         </div>
     );

@@ -40,4 +40,3 @@ export const Breadcrumb = ({ items }: { items: BreadcrumbItem[] }) => {
     </nav>
   );
 };
-

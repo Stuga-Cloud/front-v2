@@ -1,7 +1,7 @@
 import React from "react";
 import * as RadioGroup from "@radix-ui/react-radio-group";
 import { styled } from "@stitches/react";
-import { violet, blackA } from "@radix-ui/colors";
+import { blackA, green } from "@radix-ui/colors";
 
 export default function RadioButtons({
     onChange,
@@ -46,7 +46,7 @@ const RadioGroupItem = styled(RadioGroup.Item, {
     height: 25,
     borderRadius: "100%",
     boxShadow: `0 2px 10px ${blackA.blackA7}`,
-    "&:hover": { backgroundColor: violet.violet3 },
+    "&:hover": { backgroundColor: green.green3 },
     "&:focus": { boxShadow: `0 0 0 2px black` },
 });
 
@@ -63,7 +63,7 @@ const RadioGroupIndicator = styled(RadioGroup.Indicator, {
         width: 11,
         height: 11,
         borderRadius: "50%",
-        backgroundColor: violet.violet11,
+        backgroundColor: green.green11,
     },
 });
 

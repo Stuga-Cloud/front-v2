@@ -18,7 +18,7 @@ export default function RegistryForm({
     const [visibility, setVisibility] = useState("public");
     const [loading, setLoading] = useState(false);
     const router = useRouter();
-    const handleSubmit = async (event) => {
+    const handleSubmit = async (event: { preventDefault: () => void }) => {
         event.preventDefault();
         try {
             setLoading(true);
@@ -49,9 +49,21 @@ export default function RegistryForm({
                     <LoadingSpinner />
                 </div>
             )}
-            <div className="w-5/5 z-10 flex flex-col items-center justify-center">
-                <h1 className="mb-20 md:text-5xl">Create a namespace</h1>
-                <form onSubmit={handleSubmit} className="flex w-4/5 flex-col">
+            <div className="w-5/5 z-10 flex flex-col items-center justify-center px-5">
+                <h1 className="mb-4 py-5 text-4xl font-extrabold leading-none tracking-tight text-gray-900 dark:text-white md:text-5xl lg:text-6xl">
+                    Create a{" "}
+                    <mark className="rounded bg-green-400 px-2 text-white dark:bg-green-300">
+                        namespace
+                    </mark>
+                </h1>
+                <p className="pb-10 text-lg font-normal text-gray-500 dark:text-gray-400 lg:text-xl">
+                    Store your images in our registry organized by namespaces.
+                </p>
+
+                <form
+                    onSubmit={handleSubmit}
+                    className="flex w-4/5 flex-col py-10"
+                >
                     <label
                         htmlFor="name"
                         className="mb-5 text-lg text-gray-700 md:text-3xl"
@@ -65,7 +77,7 @@ export default function RegistryForm({
                                 https://registry-cloud.machavoine.fr/
                             </p>
                             <input
-                                className="ms-5 rounded-md border-2 border-orange-300 px-3 py-2 text-lg text-gray-700 placeholder-gray-600 focus:border-orange-700 focus:outline-none"
+                                className="ms-5 rounded-md border-2 border-green-300 px-3 py-2 text-lg text-gray-700 placeholder-gray-600 focus:border-green-700 focus:outline-none"
                                 type="text"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
@@ -99,7 +111,7 @@ export default function RegistryForm({
                     </div>
                     <button
                         type="submit"
-                        className="mt-20 rounded bg-orange-300 px-4 py-2 text-center font-bold text-white hover:bg-orange-700 "
+                        className="mt-20 rounded bg-green-400 px-4 py-2 text-center font-bold text-white hover:bg-orange-700 "
                     >
                         Create
                     </button>
