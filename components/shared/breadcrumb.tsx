@@ -13,7 +13,7 @@ function createUrl(slug: string) {
 export const Breadcrumb = ({ items }: { items: BreadcrumbItem[] }) => {
   const localUrl = location.protocol + '//' + location.host;
   return (
-    <nav className="absolute top-2 left-1/2 transform -translate-x-1/2 flex px-5 py-3 text-gray-700 border border-gray-200 rounded-lg bg-gray-50" aria-label="Breadcrumb">
+    <nav className="fixed z-50 top-2 left-1/2 transform -translate-x-1/2 flex px-5 py-3 text-gray-700 border border-gray-200 rounded-lg bg-gray-50" aria-label="Breadcrumb">
       <ol className="inline-flex items-center space-x-1 md:space-x-3">
         <li className="inline-flex items-center">
           <a href={localUrl} className="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600">

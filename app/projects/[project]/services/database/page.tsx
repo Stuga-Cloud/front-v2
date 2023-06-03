@@ -1,8 +1,6 @@
 import { DatabaseComponent } from "@/components/project/database";
 import { Breadcrumb, BreadcrumbItem } from "@/components/shared/breadcrumb";
-
-
-type ProjectParam = {params: { project: string }};
+import type { ProjectParam } from "types/param";
 
 export default async function DatabasePage({params}: ProjectParam) {
   const { project } = params;

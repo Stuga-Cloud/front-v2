@@ -7,7 +7,6 @@ import Footer from "@/components/layout/footer";
 import { Suspense } from "react";
 import { getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]/route";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 // export const metadata = {
 //     title: "Precedent - Building blocks for your Next.js project",
@@ -40,7 +39,7 @@ export default async function RootLayout({
           <Suspense fallback="...">
             <Nav session={session} />
           </Suspense>
-          <main className="flex min-h-screen w-full flex-col py-32">
+          <main className="flex min-h-screen w-full flex-col py-16">
             {children}
           </main>
           <Footer />

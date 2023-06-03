@@ -4,8 +4,9 @@ import prisma from "@/lib/prisma";
 import { NextRequest } from "next/server";
 import { isConnected } from "@/lib/utils";
 import ResponseService from "@/lib/next-response";
+import type { ProjectParam } from "types/param";
 
-export async function POST(req: NextRequest, { params }: { params: { project: string } }) {
+export async function POST(req: NextRequest, { params }: ProjectParam) {
     const session = await getServerSession(authOptions);
     console.log('session back', session)
 
@@ -32,7 +33,7 @@ export async function POST(req: NextRequest, { params }: { params: { project: st
     }
 }
 
-export async function GET(_req: NextRequest, { params }: { params: { project: string } }) {
+export async function GET(_req: NextRequest, { params }: ProjectParam) {
     const session = await getServerSession(authOptions);
     console.log("session front", session);
 

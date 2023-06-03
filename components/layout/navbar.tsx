@@ -6,22 +6,10 @@ import useScroll from "@/lib/hooks/use-scroll";
 import { useSignInModal } from "./sign-in-modal";
 import UserDropdown from "./user-dropdown";
 import { Session } from "next-auth";
-import { useEffect, useState } from "react";
-import { pathEventEmitter } from "@/lib/event-emitter/path-event-emitter";
 
 export default function NavBar({ session }: { session: Session | null }) {
     const { SignInModal, setShowSignInModal } = useSignInModal();
-    const [pathHeader, setPathHeader] = useState("");
     const scrolled = useScroll(50);
-
-    useEffect(() => {
-        pathEventEmitter.on("update", (path: { path: string }) => {
-            setPathHeader(path.path);
-        });
-        return () => {
-            pathEventEmitter.removeAllListeners("update");
-        };
-    }, []);
 
     return (
         <>
@@ -45,11 +33,6 @@ export default function NavBar({ session }: { session: Session | null }) {
                             height="30"
                             className="mr-2 rounded-sm"
                         ></Image>
-                        {pathHeader !== "" ? (
-                            <p>{pathHeader}</p>
-                        ) : (
-                            <p>Stuga-cloud</p>
-                        )}
                     </Link>
                     <div>
                         {session ? (

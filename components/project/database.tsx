@@ -59,6 +59,12 @@ function Inner() {
     }
   return (
     <>
+      <h1 className="mb-2 text-center text-3xl font-extrabold leading-loose leading-relaxed tracking-tight text-gray-900 dark:text-white md:text-4xl lg:text-5xl">
+          Deploy {" "} your {" "}
+          <mark className="rounded bg-rose-400 px-2 leading-relaxed text-white dark:bg-green-300">
+           Zero Knowledge Database
+          </mark>
+      </h1>
       <button onClick={handleCreateDatabase}>Create Database</button>
       {createDatabaseMutation.isLoading && <p>Creating database...</p>}
       {status === "loading" && <LoadingSpinner />}
