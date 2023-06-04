@@ -11,7 +11,6 @@ export default function Dashboard({
 }) {
     return (
         <div className="flex w-4/5 justify-center">
-            <ConfirmDeleteModal />
             <div className="w-full text-gray-500 shadow-md dark:text-gray-400 sm:rounded-lg">
                 <table className="w-full text-left text-sm text-gray-500 dark:text-gray-400">
                     <thead className="bg-gray-50 text-xs uppercase text-gray-700  dark:text-gray-400">
@@ -89,7 +88,14 @@ export default function Dashboard({
                                             );
                                         }}
                                     >
-                                        <DropdownAction />
+                                        <DropdownAction
+                                            deleteAction={() => {
+                                                console.log(
+                                                    "je delete le namespace " +
+                                                        namespace.name,
+                                                );
+                                            }}
+                                        />
                                     </a>
                                 </td>
                             </tr>

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import ConfirmDeleteModal from "./modal-delete-confirm";
 
-export const DropdownAction = () => {
+export const DropdownAction = ({deleteAction}: {deleteAction: () => void}) => {
     const [isOpen, setIsOpen] = useState(false);
     const [isOpenDeleteModal, setIsOpenDeleteModal] = useState(false);
     const ref = useRef(null);
@@ -45,7 +45,10 @@ export const DropdownAction = () => {
                     aria-orientation="vertical"
                     aria-labelledby="menu-button"
                     tabIndex={-1}
-                    onClick={() => setIsOpenDeleteModal(true)}
+                    onClick={() => {
+                        setIsOpenDeleteModal(true);
+                        handleButtonClick();
+                    }}
                 >
                     <div className="py-1" role="none">
                         <a
@@ -61,8 +64,10 @@ export const DropdownAction = () => {
                 </div>
             )}
             <ConfirmDeleteModal
+                text="Are you sure you want to delete this namespace?"
                 onClose={() => setIsOpenDeleteModal(false)}
                 isOpenFromParent={isOpenDeleteModal}
+                deleteAction={deleteAction}
             />
         </div>
     );

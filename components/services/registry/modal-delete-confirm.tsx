@@ -1,11 +1,15 @@
 import { useState } from "react";
 
 export default function ConfirmDeleteModal({
+    text,
     onClose,
     isOpenFromParent,
+    deleteAction,
 }: {
+    text: string;
     onClose: () => void;
     isOpenFromParent: boolean;
+    deleteAction: () => void;
 }) {
     return (
         <>
@@ -61,12 +65,12 @@ export default function ConfirmDeleteModal({
                                     ></path>
                                 </svg>
                                 <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
-                                    Are you sure you want to delete this
-                                    product?
+                                    {text}
                                 </h3>
                                 <button
                                     data-modal-hide="popup-modal"
                                     type="button"
+                                    onClick={deleteAction}
                                     className="mr-2 inline-flex items-center rounded-lg bg-red-600 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 dark:focus:ring-red-800"
                                 >
                                     Yes, I'm sure
