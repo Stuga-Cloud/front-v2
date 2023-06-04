@@ -1,7 +1,7 @@
 import prisma from "@/lib/prisma";
 import { InternalServerError, StugaError } from "../error";
-import { Namespace } from "@/lib/models/registry/namespace";
 import { RegistryNamespace } from "@prisma/client";
+
 export const GetNamespaceById = async (namespaceId: string):  Promise<RegistryNamespace> => {
     try {
         const namespace = await prisma.registryNamespace.findUnique({

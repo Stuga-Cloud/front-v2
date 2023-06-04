@@ -1,4 +1,6 @@
+import { Dropdown } from "@/components/shared/dropdown";
 import { Namespace } from "../../../../lib/models/registry/namespace";
+import { DropdownAction } from "../dropdown-action";
 export default function Dashboard({
     namespaces,
     onClick,
@@ -55,7 +57,11 @@ export default function Dashboard({
                                     className="px-6 py-4"
                                     onClick={() => onClick(namespace.id)}
                                 >
-                                    {process.env.NEXT_PUBLIC_BASE_REGISTRY_ENDPOINT}{"/"}
+                                    {
+                                        process.env
+                                            .NEXT_PUBLIC_BASE_REGISTRY_ENDPOINT
+                                    }
+                                    {"/"}
                                     {namespace.name}
                                 </td>
                                 <td
@@ -81,7 +87,7 @@ export default function Dashboard({
                                             );
                                         }}
                                     >
-                                        Actions
+                                        <DropdownAction />
                                     </a>
                                 </td>
                             </tr>
