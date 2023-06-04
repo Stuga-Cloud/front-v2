@@ -1,6 +1,7 @@
 import { Dropdown } from "@/components/shared/dropdown";
 import { Namespace } from "../../../../lib/models/registry/namespace";
 import { DropdownAction } from "../dropdown-action";
+import ConfirmDeleteModal from "../modal-delete-confirm";
 export default function Dashboard({
     namespaces,
     onClick,
@@ -10,6 +11,7 @@ export default function Dashboard({
 }) {
     return (
         <div className="flex w-4/5 justify-center">
+            <ConfirmDeleteModal />
             <div className="w-full text-gray-500 shadow-md dark:text-gray-400 sm:rounded-lg">
                 <table className="w-full text-left text-sm text-gray-500 dark:text-gray-400">
                     <thead className="bg-gray-50 text-xs uppercase text-gray-700  dark:text-gray-400">

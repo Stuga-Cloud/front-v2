@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from "react";
+import ConfirmDeleteModal from "./modal-delete-confirm";
 
 export const DropdownAction = () => {
     const [isOpen, setIsOpen] = useState(false);
+    const [isOpenDeleteModal, setIsOpenDeleteModal] = useState(false);
     const ref = useRef(null);
 
     const handleButtonClick = () => {
@@ -15,10 +17,10 @@ export const DropdownAction = () => {
             }
         };
 
-        document.addEventListener('click', handleClickOutside);
+        document.addEventListener("click", handleClickOutside);
 
         return () => {
-            document.removeEventListener('click', handleClickOutside);
+            document.removeEventListener("click", handleClickOutside);
         };
     }, []);
 
@@ -27,7 +29,7 @@ export const DropdownAction = () => {
             <div>
                 <button
                     type="button"
-                    className="inline-flex w-full text-blue-700 justify-center gap-x-1.5 rounded-md bg-transparent px-3 py-2 text-sm font-semibold ring-inset ring-gray-300 border-none"
+                    className="inline-flex w-full justify-center gap-x-1.5 rounded-md border-none bg-transparent px-3 py-2 text-sm font-semibold text-blue-700 ring-inset ring-gray-300"
                     id="menu-button"
                     aria-expanded={isOpen}
                     aria-haspopup="true"
@@ -38,11 +40,12 @@ export const DropdownAction = () => {
             </div>{" "}
             {isOpen && (
                 <div
-                    className="bg-white hover:bg-gray-100 absolute right-0 z-20 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                    className="absolute right-0 z-20 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 hover:bg-gray-100 focus:outline-none"
                     role="menu"
                     aria-orientation="vertical"
                     aria-labelledby="menu-button"
                     tabIndex={-1}
+                    onClick={() => setIsOpenDeleteModal(true)}
                 >
                     <div className="py-1" role="none">
                         <a
@@ -57,6 +60,10 @@ export const DropdownAction = () => {
                     </div>
                 </div>
             )}
+            <ConfirmDeleteModal
+                onClose={() => setIsOpenDeleteModal(false)}
+                isOpenFromParent={isOpenDeleteModal}
+            />
         </div>
     );
 };
