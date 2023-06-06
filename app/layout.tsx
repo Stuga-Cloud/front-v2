@@ -36,7 +36,7 @@ export default async function RootLayout({
             className={cx(sfPro.variable, inter.variable)}
             suppressHydrationWarning={true}
           >
-          <div className="fixed h-screen w-full bg-gradient-to-br from-indigo-50 via-white to-cyan-100" />
+          { /*<div className="fixed h-screen w-full bg-gradient-to-br from-indigo-50 via-white to-cyan-100" />*/ }
           <Suspense fallback="...">
             <Nav session={session} />
           </Suspense>
