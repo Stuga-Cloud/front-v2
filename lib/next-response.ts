@@ -26,4 +26,5 @@ class ResponseService {
   }
 }
 
+
 export default ResponseService;

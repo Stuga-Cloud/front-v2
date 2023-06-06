@@ -1,4 +1,7 @@
+import { Dropdown } from "@/components/shared/dropdown";
 import { Namespace } from "../../../../lib/models/registry/namespace";
+import { DropdownAction } from "../dropdown-action";
+import ConfirmDeleteModal from "../modal-delete-confirm";
 export default function Dashboard({
     namespaces,
     onClick,
@@ -55,7 +58,11 @@ export default function Dashboard({
                                     className="px-6 py-4"
                                     onClick={() => onClick(namespace.id)}
                                 >
-                                    {process.env.NEXT_PUBLIC_BASE_REGISTRY_ENDPOINT}{"/"}
+                                    {
+                                        process.env
+                                            .NEXT_PUBLIC_BASE_REGISTRY_ENDPOINT
+                                    }
+                                    {"/"}
                                     {namespace.name}
                                 </td>
                                 <td
@@ -81,7 +88,14 @@ export default function Dashboard({
                                             );
                                         }}
                                     >
-                                        Actions
+                                        <DropdownAction
+                                            deleteAction={() => {
+                                                console.log(
+                                                    "je delete le namespace " +
+                                                        namespace.name,
+                                                );
+                                            }}
+                                        />
                                     </a>
                                 </td>
                             </tr>

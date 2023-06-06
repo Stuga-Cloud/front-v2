@@ -7,6 +7,7 @@ import { InfoCircledIcon } from "@radix-ui/react-icons";
 import { capitalize } from "../../../../lib/utils";
 import { yellow } from "@radix-ui/colors";
 import { Session } from "next-auth";
+import DockerLoginCode from "./docker-login-code";
 
 export default function Settings({
     session,
@@ -19,7 +20,8 @@ export default function Settings({
     const code =
         "docker login " +
         " -u " +
-        session.user?.email + " " +
+        session.user?.email +
+        " " +
         process.env.NEXT_PUBLIC_BASE_REGISTRY_ENDPOINT +
         "/" +
         namespace.namespace.name;
@@ -68,46 +70,20 @@ export default function Settings({
                     </p>
                 </div>
             </div>
-            <h2 className="mb-5 mt-10 w-4/5 text-3xl font-bold">
-                Connect your docker client to the namespace
-            </h2>
             {namespace.namespace.state === "public" ? (
                 <>
+                    <h2 className="mb-5 mt-10 w-4/5 text-3xl font-bold">
+                        You can pull your images with the following command:
+                    </h2>
                     <div style={{ position: "relative" }}>
-                        <CodeBlock
-                            text={
+                        <DockerLoginCode
+                            code={
                                 "docker pull " +
                                 process.env.NEXT_PUBLIC_BASE_REGISTRY_ENDPOINT +
                                 "/image-example:latest"
                             }
-                            language={"bash"}
-                            showLineNumbers={true}
-                            theme={nord}
                         />
-                        <CopyToClipboard
-                            text={
-                                "docker pull " +
-                                process.env.NEXT_PUBLIC_BASE_REGISTRY_ENDPOINT +
-                                "/image-example:latest"
-                            }
-                        >
-                            <button
-                                aria-label="Copy to clipboard"
-                                className="absolute right-2 top-2 cursor-pointer border-none bg-transparent text-white"
-                                onClick={handleCopy}
-                            >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    height="24"
-                                    viewBox="0 0 24 24"
-                                    width="24"
-                                    className="bg-white text-white"
-                                >
-                                    <path d="M0 0h24v24H0z" fill="none" />
-                                    <path d="M8 8H6v9h10V8h-2V3H8v5zm-2 0V3a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v5H6zm3 3h4v4h-4v-4z" />
-                                </svg>
-                            </button>
-                        </CopyToClipboard>
+
                         {copied && (
                             <div className="absolute right-2 top-10 z-10 rounded bg-gray-500 px-2 py-1 text-sm text-white">
                                 Copied!
@@ -123,37 +99,13 @@ export default function Settings({
                     </div>
                 </>
             ) : (
-                <div style={{ position: "relative" }}>
-                    <CodeBlock
-                        text={code}
-                        language={"bash"}
-                        showLineNumbers={false}
-                        theme={nord}
-                    />
-                    <CopyToClipboard text={code}>
-                        <button
-                            aria-label="Copy to clipboard"
-                            className="absolute right-2 top-2 cursor-pointer border-none bg-transparent text-white"
-                            onClick={handleCopy}
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                height="24"
-                                viewBox="0 0 24 24"
-                                width="24"
-                                className="bg-white text-white"
-                            >
-                                <path d="M0 0h24v24H0z" fill="none" />
-                                <path d="M8 8H6v9h10V8h-2V3H8v5zm-2 0V3a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v5H6zm3 3h4v4h-4v-4z" />
-                            </svg>
-                        </button>
-                    </CopyToClipboard>
-                    {copied && (
-                        <div className="absolute right-2 top-10 z-10 rounded bg-gray-500 px-2 py-1 text-sm text-white">
-                            Copied!
-                        </div>
-                    )}
-                </div>
+                <>
+                    <h2 className="mb-5 mt-10 w-4/5 text-3xl font-bold">
+                        Connect your docker client to the namespace (if you have
+                        the access setup)
+                    </h2>
+                    <DockerLoginCode code={code} />
+                </>
             )}
         </div>
     );

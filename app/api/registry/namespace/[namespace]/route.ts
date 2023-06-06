@@ -53,7 +53,7 @@ export async function GET(request: Request, { params }: NextRequest) {
     try {
         const res = await fetch(
             process.env.BASE_REGISTRY_ENDPOINT +
-                `/api/v2.0/projects/newp_roject_again/repositories?page_size=30&page=1`,
+                `/api/v2.0/projects/${namespace.name}/repositories?page_size=30&page=1`,
             {
                 method: "GET",
                 headers: {
