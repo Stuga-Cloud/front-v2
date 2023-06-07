@@ -110,6 +110,7 @@ model Database {
   id          String    @id @default(cuid())
   name        String    @unique
   projectId   String
+  createdAt   DateTime @default(now())
   project     Project   @relation("ProjectDatabases", fields: [projectId], references: [id])
 
   @@index([projectId])
