@@ -3,7 +3,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import NewContainerForm from "@/components/services/containers/create/new-container-form";
 import { Breadcrumb, BreadcrumbItem } from "@/components/shared/breadcrumb";
 
-export default async function ContainerNewPage({
+export default async function ContainerNewNamespacePage({
     params,
 }: {
     params: { project: string };
@@ -18,6 +18,10 @@ export default async function ContainerNewPage({
             slug: `/projects/${projectId}/services/containers/`,
         },
         {
+            text: "namespaces",
+            slug: `/projects/${projectId}/services/containers/namespaces`,
+        },
+        {
             text: "new",
             slug: `/projects/${projectId}/services/containers/new`,
         },
@@ -25,7 +29,7 @@ export default async function ContainerNewPage({
 
     return (
         <>
-            <div className="z-10 mt-5 flex flex w-full flex-col">
+            <div className="z-50 flex flex w-full flex-col">
                 <Breadcrumb items={breadcrumbItem} />
                 <NewContainerForm session={session} projectId={projectId} />
             </div>

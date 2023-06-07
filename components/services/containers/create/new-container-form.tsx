@@ -1,15 +1,21 @@
 "use client";
 import { Session } from "next-auth";
 import React, { useEffect, useState } from "react";
-import { InfoCircledIcon } from "@radix-ui/react-icons";
 import LoadingSpinner from "@/components/shared/icons/loading-spinner";
 import { toastEventEmitter } from "@/lib/event-emitter/toast-event-emitter";
 import { useRouter } from "next/navigation";
 import { Project } from "@/lib/models/project";
 import * as process from "process";
-import { ApplicationType } from "@/lib/models/containers/application.type";
-import { EnvironmentVariable } from "@/lib/models/containers/environment-variable";
-import { Secret } from "@/lib/models/containers/secret";
+import { ContainerApplicationType } from "@/lib/models/containers/container-application-type";
+import { InfoCircledIcon } from "@radix-ui/react-icons";
+import Link from "next/link";
+import { ScalingOptions } from "@/lib/models/containers/scaling-specifications";
+import axios from "axios";
+import { CreateContainerApplicationBody } from "@/lib/services/containers/create-container-application.body";
+import { ContainerEnvironmentVariable } from "@/lib/models/containers/container-application-environment-variables";
+import { ContainerApplicationSecret } from "@/lib/models/containers/container-application-secrets";
+import { ContainerLimitUnit } from "@/lib/models/containers/container-application-specifications";
+import { StugaError } from "@/lib/services/error";
 
 interface Step {
     name: string;
@@ -51,6 +57,16 @@ const findRegistryByName = (
     return availableRegistries[0];
 };
 
+interface ApplicationCPULimit {
+    value: number;
+    unit: "mCPU" | "CPU";
+}
+
+interface ApplicationMemoryLimit {
+    value: number;
+    unit: "MB" | "GB";
+}
+
 export default function NewContainerForm({
     session,
     projectId,
@@ -58,7 +74,73 @@ export default function NewContainerForm({
     session: Session | null;
     projectId: string;
 }) {
+    const user = session?.user;
     const [step, setStep] = useState(1);
+    const [project, setProject] = useState({} as Project);
+    // const [applicationNamespace, setApplicationNamespace] = useState<
+    //     string | undefined
+    // >(undefined);
+    const [applicationName, setApplicationName] = useState<string | undefined>(
+        undefined,
+    );
+    const [registry, setRegistry] = useState<AvailableRegistriesInformation>(
+        findRegistryByName("Docker hub"),
+    );
+    const [applicationImage, setApplicationImage] = useState<string>("");
+    const [applicationPort, setApplicationPort] = useState<number | undefined>(
+        undefined,
+    );
+    const [applicationType, setApplicationType] =
+        useState<ContainerApplicationType>("LOAD_BALANCED");
+    const [
+        applicationEnvironmentVariables,
+        setApplicationEnvironmentVariables,
+    ] = useState<ContainerEnvironmentVariable[]>([]);
+    const [applicationSecrets, setApplicationSecrets] = useState<
+        ContainerApplicationSecret[]
+    >([]);
+
+    const cpuLimitsChoices: ApplicationCPULimit[] = [
+        { value: 70, unit: "mCPU" },
+        { value: 140, unit: "mCPU" },
+        { value: 280, unit: "mCPU" },
+        { value: 560, unit: "mCPU" },
+        { value: 1120, unit: "mCPU" },
+        { value: 1680, unit: "mCPU" },
+        { value: 2240, unit: "mCPU" },
+    ];
+    const memoryLimitsChoices: ApplicationMemoryLimit[] = [
+        { value: 128, unit: "MB" },
+        { value: 256, unit: "MB" },
+        { value: 512, unit: "MB" },
+        { value: 1024, unit: "MB" },
+        { value: 2048, unit: "MB" },
+        { value: 4096, unit: "MB" },
+        { value: 8192, unit: "MB" },
+    ];
+
+    const [applicationCpuLimit, setApplicationCpuLimit] = useState<string>(
+        cpuLimitsChoices[0].value.toString(),
+    );
+    useState<string>("");
+    const [applicationMemoryLimit, setApplicationMemoryLimit] =
+        useState<string>(memoryLimitsChoices[0].value.toString());
+
+    const [isAutoscalingEnabled, setIsAutoscalingEnabled] =
+        useState<boolean>(false);
+    const [scalingSpecifications, setScalingSpecifications] =
+        useState<ScalingOptions>("Manual");
+    const [cpuUsageThreshold, setCpuUsageThreshold] = useState<number>(80);
+    const [memoryUsageThreshold, setMemoryUsageThreshold] =
+        useState<number>(80);
+    const [replicas, setReplicas] = useState<number>(1);
+
+    const [administatorEmail, setAdministratorEmail] = useState<
+        string | undefined
+    >(undefined);
+
+    const [loading, setLoading] = useState(false);
+    const router = useRouter();
 
     const handleNext = () => {
         setStep((prevStep) => prevStep + 1);
@@ -68,10 +150,10 @@ export default function NewContainerForm({
         setStep((prevStep) => prevStep - 1);
     };
 
-    const steps: Step[] = [
+    const stepsBase: Step[] = [
         {
-            name: "Namespace and application name",
-            description: "Enter your namespace and application name",
+            name: "Application name",
+            description: "Enter your application name",
             svgPath: (
                 <path
                     strokeLinecap="round"
@@ -115,6 +197,28 @@ export default function NewContainerForm({
             ),
         },
         {
+            name: "Container(s) specifications",
+            description: "Set container(s) specifications (CPU & Memory)",
+            svgPath: (
+                <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6 13.5V3.75m0 9.75a1.5 1.5 0 010 3m0-3a1.5 1.5 0 000 3m0 3.75V16.5m12-3V3.75m0 9.75a1.5 1.5 0 010 3m0-3a1.5 1.5 0 000 3m0 3.75V16.5m-6-9V3.75m0 3.75a1.5 1.5 0 010 3m0-3a1.5 1.5 0 000 3m0 9.75V10.5"
+                ></path>
+            ),
+        },
+        {
+            name: "Scalability Configuration",
+            description: "Choose your application scalability configuration",
+            svgPath: (
+                <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 3v17.25m0 0c-1.472 0-2.882.265-4.185.75M12 20.25c1.472 0 2.882.265 4.185.75M18.75 4.97A48.416 48.416 0 0012 4.5c-2.291 0-4.545.16-6.75.47m13.5 0c1.01.143 2.01.317 3 .52m-3-.52l2.62 10.726c.122.499-.106 1.028-.589 1.202a5.988 5.988 0 01-2.031.352 5.988 5.988 0 01-2.031-.352c-.483-.174-.711-.703-.59-1.202L18.75 4.971zm-16.5.52c.99-.203 1.99-.377 3-.52m0 0l2.62 10.726c.122.499-.106 1.028-.589 1.202a5.989 5.989 0 01-2.031.352 5.989 5.989 0 01-2.031-.352c-.483-.174-.711-.703-.59-1.202L5.25 4.971z"
+                ></path>
+            ),
+        },
+        {
             name: "Environment variables",
             description: "Set environment variables",
             svgPath: (
@@ -137,28 +241,6 @@ export default function NewContainerForm({
             ),
         },
         {
-            name: "Container(s) specifications",
-            description: "Set container(s) specifications (CPU, RAM & Disk)",
-            svgPath: (
-                <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M6 13.5V3.75m0 9.75a1.5 1.5 0 010 3m0-3a1.5 1.5 0 000 3m0 3.75V16.5m12-3V3.75m0 9.75a1.5 1.5 0 010 3m0-3a1.5 1.5 0 000 3m0 3.75V16.5m-6-9V3.75m0 3.75a1.5 1.5 0 010 3m0-3a1.5 1.5 0 000 3m0 9.75V10.5"
-                ></path>
-            ),
-        },
-        {
-            name: "Scalability Configuration",
-            description: "Choose your application scalability configuration",
-            svgPath: (
-                <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 3v17.25m0 0c-1.472 0-2.882.265-4.185.75M12 20.25c1.472 0 2.882.265 4.185.75M18.75 4.97A48.416 48.416 0 0012 4.5c-2.291 0-4.545.16-6.75.47m13.5 0c1.01.143 2.01.317 3 .52m-3-.52l2.62 10.726c.122.499-.106 1.028-.589 1.202a5.988 5.988 0 01-2.031.352 5.988 5.988 0 01-2.031-.352c-.483-.174-.711-.703-.59-1.202L18.75 4.971zm-16.5.52c.99-.203 1.99-.377 3-.52m0 0l2.62 10.726c.122.499-.106 1.028-.589 1.202a5.989 5.989 0 01-2.031.352 5.989 5.989 0 01-2.031-.352c-.483-.174-.711-.703-.59-1.202L5.25 4.971z"
-                ></path>
-            ),
-        },
-        {
             name: "Administrator",
             description:
                 "Set administrator email for scalability notifications",
@@ -171,26 +253,15 @@ export default function NewContainerForm({
         },
     ];
 
-    const [project, setProject] = useState({} as Project);
-    const [namespace, setNamespace] = useState<string>("");
-    const [applicationName, setApplicationName] = useState<string>("");
-    const [registry, setRegistry] = useState<AvailableRegistriesInformation>(
-        findRegistryByName("Docker hub"),
-    );
-    const [applicationImage, setApplicationImage] = useState<string>("");
-    const [applicationPort, setApplicationPort] = useState<number | undefined>(
-        undefined,
-    );
-    const [applicationType, setApplicationType] =
-        useState<ApplicationType>("SINGLE_INSTANCE");
-    const [
-        applicationEnvironmentVariables,
-        setApplicationEnvironmentVariables,
-    ] = useState<EnvironmentVariable[]>([]);
-    const [applicationSecrets, setApplicationSecrets] = useState<Secret[]>([]);
+    const [steps, setSteps] = useState<Step[]>(stepsBase);
 
-    const [loading, setLoading] = useState(false);
-    const router = useRouter();
+    useEffect(() => {
+        if (applicationType === "SINGLE_INSTANCE") {
+            setSteps(stepsBase.slice(0, 7).concat(stepsBase.slice(8)));
+        } else {
+            setSteps(stepsBase);
+        }
+    }, [applicationType]);
 
     const getProject = async (projectId: string) => {
         try {
@@ -221,42 +292,77 @@ export default function NewContainerForm({
                     error,
                 );
                 setLoading(false);
-                router.push(`/`);
+                // router.push(`/`);
             });
     }, [projectId]);
 
     const isApplicationNameAvailableInNamespace = () => {
         console.log(
-            "TODO : Check if application name is available in namespace",
+            "TODO : Check if application name is available in applicationNamespace",
         );
     };
     const isNamespaceAvailable = () => {
-        console.log("TODO : Check if namespace is available or is user's one");
+        console.log(
+            "TODO : Check if applicationNamespace is available or is user's one",
+        );
     };
 
     const applicationNameUpdated = (e: any) => {
         setApplicationName(e.target.value);
         isApplicationNameAvailableInNamespace();
     };
-    const namespaceUpdated = (e: any) => {
-        setNamespace(e.target.value);
-        isNamespaceAvailable();
-        isApplicationNameAvailableInNamespace();
+
+    // const namespaceUpdated = (e: any) => {
+    //     setApplicationNamespace(e.target.value);
+    //     isNamespaceAvailable();
+    //     isApplicationNameAvailableInNamespace();
+    // };
+
+    const stringInSubdomainRegex = new RegExp(
+        "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+    );
+    const isNamespaceValid = (namespace: string | undefined): boolean => {
+        return (
+            namespace == undefined ||
+            (namespace.length > 0 && stringInSubdomainRegex.test(namespace))
+        );
+    };
+
+    const isApplicationNameValid = (
+        applicationName: string | undefined,
+    ): boolean => {
+        return (
+            applicationName == undefined ||
+            (applicationName.length > 0 &&
+                stringInSubdomainRegex.test(applicationName))
+        );
     };
 
     const isPortValid = (port: number | undefined) => {
         return port == undefined || (port >= 1 && port <= 65535);
     };
 
+    const validateEmail = (email: string): boolean => {
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailPattern.test(email);
+    };
+
+    const isEmailValid = (email: string | undefined) => {
+        return email == undefined || (email.length > 0 && validateEmail(email));
+    };
+
+    const applicationImageUpdated = (e: any) => {
+        setApplicationImage(e.target.value);
+    };
+
     const handleEnvironmentVariableChange = (
         index: number,
-        whereToChange: "key" | "value",
+        whereToChange: "name" | "value",
         value: string,
     ) => {
         const newEnvironmentVariables = [...applicationEnvironmentVariables];
         newEnvironmentVariables[index][whereToChange] = value;
         setApplicationEnvironmentVariables(newEnvironmentVariables);
-        console.log("newEnvironmentVariables", newEnvironmentVariables);
     };
     const handleRemoveEnvironmentVariable = (index: number) => {
         const newEnvironmentVariables = [...applicationEnvironmentVariables];
@@ -265,13 +371,13 @@ export default function NewContainerForm({
     };
     const handleAddEnvironmentVariable = () => {
         const newEnvironmentVariables = [...applicationEnvironmentVariables];
-        newEnvironmentVariables.push({ key: "", value: "" });
+        newEnvironmentVariables.push({ name: "", value: "" });
         setApplicationEnvironmentVariables(newEnvironmentVariables);
     };
 
     const handleSecretChange = (
         index: number,
-        whereToChange: "key" | "value",
+        whereToChange: "name" | "value",
         value: string,
     ) => {
         const newSecrets = [...applicationSecrets];
@@ -285,33 +391,122 @@ export default function NewContainerForm({
     };
     const handleAddSecret = () => {
         const newSecrets = [...applicationSecrets];
-        newSecrets.push({ key: "", value: "" });
+        newSecrets.push({ name: "", value: "" });
         setApplicationSecrets(newSecrets);
     };
 
+    const updateReplicas = (e: any) => {
+        const removeFirstZeros = e.target.value.replace(/^0+/, "");
+        const numberOfReplicas = parseInt(removeFirstZeros);
+        setReplicas(numberOfReplicas);
+    };
+
+    const updateCpuUsageThreshold = (e: any) => {
+        const removeFirstZeros = e.target.value.replace(/^0+/, "");
+        const cpuUsageThreshold = parseInt(removeFirstZeros);
+        setCpuUsageThreshold(cpuUsageThreshold);
+    };
+
+    const updateMemoryUsageThreshold = (e: any) => {
+        const removeFirstZeros = e.target.value.replace(/^0+/, "");
+        const memoryUsageThreshold = parseInt(removeFirstZeros);
+        setMemoryUsageThreshold(memoryUsageThreshold);
+    };
+
+    const isReplicasValid = (replicas: number | undefined) => {
+        return replicas == undefined || (replicas >= 1 && replicas <= 10);
+    };
+
+    const isCpuUsageThresholdValid = (
+        cpuUsageThreshold: number | undefined,
+    ): boolean => {
+        return cpuUsageThreshold == undefined || cpuUsageThreshold >= 0;
+    };
+
+    const isMemoryUsageThresholdValid = (
+        memoryUsageThreshold: number | undefined,
+    ): boolean => {
+        return memoryUsageThreshold == undefined || memoryUsageThreshold >= 0;
+    };
+
+    const handleKeyDown = (event: any) => {
+        if (event.key === "Enter") {
+            event.preventDefault();
+        }
+    };
     const handleSubmit = async (event: { preventDefault: () => void }) => {
-        // event.preventDefault();
-        // try {
-        //     setLoading(true);
-        //     await fetch(`/api/projects/${projectId}/services/registry`, {
-        //         method: "POST",
-        //         // body: JSON.stringify({ name: applicationName, visibility }),
-        //     });
-        //     toastEventEmitter.emit("pop", {
-        //         type: "success",
-        //         message: "namespace created",
-        //         duration: 4000,
-        //     });
-        //     router.push(`/projects/${projectId}/services/registry`);
-        // } catch (error) {
-        //     toastEventEmitter.emit("pop", {
-        //         type: "danger",
-        //         message: "error when try to create namespace",
-        //         duration: 4000,
-        //     });
-        // } finally {
-        //     setLoading(false);
-        // }
+        event.preventDefault();
+        try {
+            setLoading(true);
+            // Query back to verify that the application and namespace are available
+            console.log("Application CPU Limit : ", applicationCpuLimit);
+            const createContainerApplicationBody: CreateContainerApplicationBody =
+                {
+                    name: applicationName!,
+                    description: "",
+                    zone: "",
+                    image: applicationImage!,
+                    port: applicationPort!,
+                    applicationType: applicationType!,
+                    environmentVariables: applicationEnvironmentVariables,
+                    secrets: applicationSecrets,
+                    containerSpecifications: {
+                        cpuLimit: {
+                            value: parseInt(applicationCpuLimit!),
+                            unit: "mCPU",
+                        }!,
+                        memoryLimit: {
+                            value: parseInt(applicationMemoryLimit!),
+                            unit: ContainerLimitUnit.MB,
+                        },
+                    },
+                    scalabilitySpecifications: {
+                        replicas: replicas!,
+                        memoryUsagePercentageThreshold: memoryUsageThreshold!,
+                        cpuUsagePercentageThreshold: cpuUsageThreshold!,
+                        isAutoScaled: isAutoscalingEnabled!,
+                    },
+                    administratorEmail: administatorEmail!,
+                    userId: "",
+                    namespaceId: "",
+                };
+            const createdContainer = await axios(
+                `/api/projects/${projectId}/services/containers`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    data: createContainerApplicationBody,
+                },
+            );
+            console.log("createdContainer", createdContainer);
+            toastEventEmitter.emit("pop", {
+                type: "success",
+                message: "Application created",
+                duration: 4000,
+            });
+            router.push(
+                `/projects/${projectId}/services/containers/${createdContainer.data.id}`,
+            );
+        } catch (error) {
+            console.log("Error while creating application", error);
+            if (error instanceof StugaError) {
+                toastEventEmitter.emit("pop", {
+                    type: "danger",
+                    message: error.message,
+                    duration: 4000,
+                });
+            }
+            toastEventEmitter.emit("pop", {
+                type: "danger",
+                message:
+                    "Couldn't create application and namespace, try again or contact support",
+                duration: 4000,
+            });
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -343,6 +538,7 @@ export default function NewContainerForm({
                 ) : (
                     <form
                         onSubmit={handleSubmit}
+                        onKeyDown={handleKeyDown}
                         className="flex w-11/12 flex-col py-10"
                     >
                         {/* Place stepper information on left side and form on right side */}
@@ -351,78 +547,89 @@ export default function NewContainerForm({
                             <div className="w-3/10 flex flex-col pt-5">
                                 <div>
                                     <ol className="relative border-l border-gray-200 text-gray-500 dark:border-gray-700 dark:text-gray-400">
-                                        {steps.map((stepItem, index) => (
-                                            <a
-                                                className=""
-                                                key={index}
-                                                onClick={() => {
-                                                    console.log(
-                                                        "clicked on step " +
-                                                            index,
-                                                    );
-                                                    setStep(index + 1);
-                                                }}
-                                                href="#step-name"
-                                            >
-                                                <li
+                                        {steps.length <= 0 && (
+                                            <div className="flex flex-col items-center justify-center">
+                                                <p className="text-gray-500 dark:text-gray-400">
+                                                    No steps found
+                                                </p>
+                                                <p className="text-gray-500 dark:text-gray-400">
+                                                    Please add steps in the
+                                                    configuration file
+                                                </p>
+                                            </div>
+                                        )}
+                                        {steps.length > 0 &&
+                                            steps.map((stepItem, index) => (
+                                                <a
+                                                    className=""
                                                     key={index}
-                                                    className={`mb-10 ml-6 ${
-                                                        step === index + 1
-                                                            ? "text-green-500 dark:text-green-400"
-                                                            : "text-gray-500 dark:text-gray-400"
-                                                    }`}
+                                                    onClick={() => {
+                                                        setStep(index + 1);
+                                                    }}
+                                                    href="#step-name"
                                                 >
-                                                    <span
-                                                        className={`absolute -left-4 flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 ring-4 ring-white dark:bg-gray-700 dark:ring-gray-900 ${
+                                                    <li
+                                                        key={index}
+                                                        className={`mb-10 ml-6 ${
                                                             step === index + 1
-                                                                ? "bg-green-200 dark:bg-green-900"
-                                                                : "bg-white dark:bg-white"
+                                                                ? "text-green-500 dark:text-green-400"
+                                                                : "text-gray-500 dark:text-gray-400"
                                                         }`}
                                                     >
-                                                        {/* TODO Maybe display check if fields are validate in steps  ? */}
-                                                        {/*{step === index + 1 ? (*/}
-                                                        {/*    <svg*/}
-                                                        {/*        aria-hidden="true"*/}
-                                                        {/*        className="h-5 w-5 text-green-500 dark:text-green-400"*/}
-                                                        {/*        fill="currentColor"*/}
-                                                        {/*        viewBox="0 0 20 20"*/}
-                                                        {/*        xmlns="http://www.w3.org/2000/svg"*/}
-                                                        {/*    >*/}
-                                                        {/*        <path*/}
-                                                        {/*            fillRule="evenodd"*/}
-                                                        {/*            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"*/}
-                                                        {/*            clipRule="evenodd"*/}
-                                                        {/*        />*/}
-                                                        {/*    </svg>*/}
-                                                        {/*) : (*/}
-                                                        <svg
-                                                            xmlns="http://www.w3.org/2000/svg"
-                                                            fill="white"
-                                                            viewBox="0 0 24 24"
-                                                            stroke="currentColor"
-                                                            className="h-6 w-6 text-gray-500 dark:text-gray-400"
+                                                        <span
+                                                            className={`absolute -left-4 flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 ring-4 ring-white dark:bg-gray-700 dark:ring-gray-900 ${
+                                                                step ===
+                                                                index + 1
+                                                                    ? "bg-green-200 dark:bg-green-900"
+                                                                    : "bg-white dark:bg-white"
+                                                            }`}
                                                         >
-                                                            {stepItem.svgPath}
-                                                        </svg>
-                                                        {/*)}*/}
-                                                    </span>
-                                                    <h3 className="font-medium leading-tight">
-                                                        {index + 1} -{" "}
-                                                        {stepItem.name}
-                                                    </h3>
-                                                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                                                        {stepItem.description}
-                                                    </p>
-                                                </li>
-                                            </a>
-                                        ))}
+                                                            {/* TODO Maybe display check if fields are validate in steps  ? */}
+                                                            {/*{step === index + 1 ? (*/}
+                                                            {/*    <svg*/}
+                                                            {/*        aria-hidden="true"*/}
+                                                            {/*        className="h-5 w-5 text-green-500 dark:text-green-400"*/}
+                                                            {/*        fill="currentColor"*/}
+                                                            {/*        viewBox="0 0 20 20"*/}
+                                                            {/*        xmlns="http://www.w3.org/2000/svg"*/}
+                                                            {/*    >*/}
+                                                            {/*        <path*/}
+                                                            {/*            fillRule="evenodd"*/}
+                                                            {/*            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"*/}
+                                                            {/*            clipRule="evenodd"*/}
+                                                            {/*        />*/}
+                                                            {/*    </svg>*/}
+                                                            {/*) : (*/}
+                                                            <svg
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                fill="white"
+                                                                viewBox="0 0 24 24"
+                                                                stroke="currentColor"
+                                                                className="h-6 w-6 text-gray-500 dark:text-gray-400"
+                                                            >
+                                                                {
+                                                                    stepItem.svgPath
+                                                                }
+                                                            </svg>
+                                                            {/*)}*/}
+                                                        </span>
+                                                        <h3 className="font-medium leading-tight">
+                                                            {index + 1} -{" "}
+                                                            {stepItem.name}
+                                                        </h3>
+                                                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                                                            {
+                                                                stepItem.description
+                                                            }
+                                                        </p>
+                                                    </li>
+                                                </a>
+                                            ))}
                                     </ol>
                                 </div>
                             </div>
                             {/* Form */}
-                            <div className="w-2/10 flex flex-col"></div>
-                            {/* Take the rest of the width */}
-                            <div className="flex h-full w-full flex-col px-5">
+                            <div className="flex w-full flex-col px-5">
                                 <h4 className="py-4 text-2xl font-bold dark:text-white">
                                     <label
                                         htmlFor="name"
@@ -433,26 +640,69 @@ export default function NewContainerForm({
                                 </h4>
 
                                 {step === 1 && (
-                                    <>
-                                        <div className="mb-20 ms-5 flex h-full w-full flex-col">
-                                            <div className="mb-2 ms-5 flex flex-row items-center">
-                                                <p className="text-1xl font-semibold leading-normal text-blue-800 dark:text-white">
-                                                    https://
-                                                </p>
+                                    <div className="mb-10 ms-5 flex h-96 w-full flex-col">
+                                        <div className="mb-2 ms-5 flex flex-col">
+                                            {/*<div className="mb-2 flex flex-col">*/}
+                                            {/*    <label*/}
+                                            {/*        htmlFor="namespace"*/}
+                                            {/*        className={*/}
+                                            {/*            `pb-1 text-sm font-medium text-gray-700 dark:text-white` +*/}
+                                            {/*            (!isNamespaceValid(*/}
+                                            {/*                applicationNamespace,*/}
+                                            {/*            )*/}
+                                            {/*                ? "gray-900 dark:text-white"*/}
+                                            {/*                : "red-700 dark:text-red-500")*/}
+                                            {/*        }*/}
+                                            {/*    >*/}
+                                            {/*        Namespace*/}
+                                            {/*    </label>*/}
+                                            {/*    <input*/}
+                                            {/*        className={`bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500 ${*/}
+                                            {/*            !isNamespaceValid(*/}
+                                            {/*                applicationNamespace,*/}
+                                            {/*            )*/}
+                                            {/*                ? "border-red-500 bg-red-50 p-2.5 text-sm text-red-900 placeholder-red-700 focus:border-red-500 focus:ring-red-500 dark:border-red-500 dark:bg-gray-700 dark:text-red-500 dark:placeholder-red-500"*/}
+                                            {/*                : ""*/}
+                                            {/*        }`}*/}
+                                            {/*        type="text"*/}
+                                            {/*        value={applicationNamespace}*/}
+                                            {/*        onChange={(e) => {*/}
+                                            {/*            namespaceUpdated(e);*/}
+                                            {/*        }}*/}
+                                            {/*        placeholder="my-first-namespace"*/}
+                                            {/*        required*/}
+                                            {/*    />*/}
+                                            {/*    {!isNamespaceValid(*/}
+                                            {/*        applicationNamespace,*/}
+                                            {/*    ) && (*/}
+                                            {/*        <p className="text-sm text-red-500">*/}
+                                            {/*            Please enter a valid*/}
+                                            {/*            namespace.*/}
+                                            {/*        </p>*/}
+                                            {/*    )}*/}
+                                            {/*</div>*/}
+                                            <div className="mb-1 flex flex-col">
+                                                <label
+                                                    htmlFor="applicationName"
+                                                    className={
+                                                        `pb-1 text-sm font-medium text-gray-700 dark:text-white` +
+                                                        (!isApplicationNameValid(
+                                                            applicationName,
+                                                        )
+                                                            ? "gray-900 dark:text-white"
+                                                            : "red-700 dark:text-red-500")
+                                                    }
+                                                >
+                                                    Application Name
+                                                </label>
                                                 <input
-                                                    className="text-md mx-1 rounded-md px-3 py-2 text-center text-gray-700 placeholder-gray-600 focus:border-blue-600 focus:outline-none focus:ring-1"
-                                                    type="text"
-                                                    value={namespace}
-                                                    onChange={(e) => {
-                                                        namespaceUpdated(e);
-                                                    }}
-                                                    placeholder="my-first-namespace"
-                                                />
-                                                <p className="text-1xl font-semibold leading-normal text-blue-800 dark:text-white">
-                                                    .
-                                                </p>
-                                                <input
-                                                    className="text-md mx-1 rounded-md px-3 py-2 text-center text-gray-700 placeholder-gray-600 focus:border-blue-600 focus:outline-none focus:ring-1"
+                                                    className={`bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500 ${
+                                                        !isApplicationNameValid(
+                                                            applicationName,
+                                                        )
+                                                            ? "border-red-500 bg-red-50 p-2.5 text-sm text-red-900 placeholder-red-700 focus:border-red-500 focus:ring-red-500 dark:border-red-500 dark:bg-gray-700 dark:text-red-500 dark:placeholder-red-500"
+                                                            : ""
+                                                    }`}
                                                     type="text"
                                                     value={applicationName}
                                                     onChange={(e) => {
@@ -462,28 +712,65 @@ export default function NewContainerForm({
                                                     }}
                                                     placeholder="my-first-application"
                                                 />
-                                                <p className="text-1xl font-semibold leading-normal text-blue-800 dark:text-white">
-                                                    .
-                                                    {
-                                                        process.env
-                                                            .NEXT_PUBLIC_BASE_CONTAINER_DOMAIN
-                                                    }
-                                                </p>
+                                                {!isApplicationNameValid(
+                                                    applicationName,
+                                                ) && (
+                                                    <p className="text-sm text-red-500">
+                                                        Please enter a valid
+                                                        application name.
+                                                    </p>
+                                                )}
                                             </div>
-                                            <div className="ms-5 flex flex-row items-center gap-2">
+                                            <div className="flex flex-row items-center gap-2">
                                                 <InfoCircledIcon />
                                                 <p className="text-sm font-semibold text-gray-500">
                                                     The application name can
                                                     only contain alphanumeric
-                                                    characters and hyphens
+                                                    characters and hyphens.
                                                 </p>
                                             </div>
+                                            {applicationName &&
+                                                // applicationNamespace &&
+                                                isApplicationNameValid(
+                                                    applicationName,
+                                                ) && (
+                                                    // isNamespaceValid(
+                                                    //     applicationNamespace,
+                                                    // ) &&
+                                                    <div className="flex flex-col items-center gap-2">
+                                                        {/* Recap of the final URL where the application will be available */}
+                                                        <h4 className="pt-12 text-2xl font-bold dark:text-white">
+                                                            Your application
+                                                            will be available
+                                                            at:
+                                                        </h4>
+                                                        <a
+                                                            className="text-1xl font-semibold leading-normal text-blue-800 dark:text-white"
+                                                            href={`https://${applicationName}.${project.name}.${process.env.NEXT_PUBLIC_BASE_CONTAINER_DOMAIN}`}
+                                                            target="_blank"
+                                                            rel="noreferrer"
+                                                        >
+                                                            https://
+                                                            {applicationName}.
+                                                            {project.name}.
+                                                            {
+                                                                process.env
+                                                                    .NEXT_PUBLIC_BASE_CONTAINER_DOMAIN
+                                                            }
+                                                        </a>
+                                                        <p className="text-sm font-semibold text-gray-500">
+                                                            (This URL will be
+                                                            available once you
+                                                            have completed the
+                                                            next steps)
+                                                        </p>
+                                                    </div>
+                                                )}
                                         </div>
-                                    </>
+                                    </div>
                                 )}
                                 {step === 2 && (
-                                    // <div className="mb-20 ms-5 flex w-full flex-col">
-                                    <div className="mb-20 ms-5 flex w-full flex-col">
+                                    <div className="mb-10 ms-5 flex h-96 w-full flex-col">
                                         {/*    Remember that step 2 is concerning the docker image (or other registry) */}
                                         <div className="mb-2 ms-5 flex flex-col items-start">
                                             {/* Choice between docker and our private registry */}
@@ -496,7 +783,7 @@ export default function NewContainerForm({
                                             </label>
                                             <select
                                                 id="image-registries"
-                                                className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500"
+                                                className="bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500"
                                                 onChange={(e) => {
                                                     setRegistry(
                                                         findRegistryByName(
@@ -525,294 +812,566 @@ export default function NewContainerForm({
                                                 )}
                                             </select>
                                         </div>
-                                        <div className="mb-2 ms-5 flex flex-row items-center gap-1">
-                                            <p className="text-1xl font-semibold leading-normal text-blue-800 dark:text-white">
-                                                {registry.url}
-                                            </p>
-                                            {/* Enter image name (for docker example : williamqch/basic-api:latest) */}
+                                        <div className="mb-2 ms-5 flex flex-col gap-1">
+                                            <label
+                                                htmlFor="image-name"
+                                                className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+                                            >
+                                                Image from {registry.name}
+                                            </label>
                                             <input
-                                                className="block w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-700 placeholder-gray-600 focus:border-blue-600 focus:outline-none focus:ring-1 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+                                                id="image-name"
+                                                className={`bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500 ${!isApplicationNameValid(
+                                                    applicationImage,
+                                                )}`}
                                                 type="text"
-                                                value={applicationName}
+                                                value={applicationImage}
                                                 onChange={(e) => {
-                                                    applicationNameUpdated(e);
+                                                    applicationImageUpdated(e);
                                                 }}
-                                                placeholder="my-first-application:latest"
+                                                placeholder="organization/my-first-application:latest"
                                             />
+                                            <h4 className="pt-8 text-2xl font-bold dark:text-white">
+                                                The used image is at:
+                                            </h4>
+                                            <p className="text-1xl font-semibold leading-normal text-blue-800 dark:text-white">
+                                                <Link
+                                                    href={
+                                                        registry.url +
+                                                        "/r/" +
+                                                        applicationImage
+                                                    }
+                                                    target="_blank"
+                                                >
+                                                    {registry.url}/r/
+                                                    {applicationImage}
+                                                </Link>
+                                            </p>
                                         </div>
                                     </div>
                                 )}
 
                                 {step === 3 && (
-                                    <>
-                                        <div className="mb-20 ms-5 flex w-full flex-col">
-                                            <div>
-                                                <label
-                                                    htmlFor="port"
-                                                    // className="mb-2 block text-sm font-medium text-red-700 dark:text-red-500"
-                                                    className={
-                                                        "text- mb-2 block text-sm font-medium" +
-                                                        (isPortValid(
-                                                            applicationPort,
-                                                        )
-                                                            ? "gray-900 dark:text-white"
-                                                            : "red-700 dark:text-red-500")
-                                                    }
-                                                >
-                                                    Port exposed by your
-                                                    application
-                                                </label>
-                                                <input
-                                                    id="port"
-                                                    type="number"
-                                                    className={`block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500 ${
-                                                        !isPortValid(
-                                                            applicationPort,
-                                                        )
-                                                            ? "border-red-500 bg-red-50 p-2.5 text-sm text-red-900 placeholder-red-700 focus:border-red-500 focus:ring-red-500 dark:border-red-500 dark:bg-gray-700 dark:text-red-500 dark:placeholder-red-500"
-                                                            : ""
-                                                    }`}
-                                                    value={applicationPort}
-                                                    onChange={(e: {
-                                                        target: {
-                                                            value: string;
-                                                        };
-                                                    }) =>
-                                                        setApplicationPort(
-                                                            parseInt(
-                                                                e.target.value,
-                                                            ),
-                                                        )
-                                                    }
-                                                    placeholder="3000"
-                                                    min="1" // Minimum port number
-                                                    max="65535" // Maximum port number
-                                                    required // Mark the field as required
-                                                />
-                                                {!isPortValid(
-                                                    applicationPort,
-                                                ) ? (
-                                                    <p className="mt-2 text-sm text-red-600 dark:text-red-500">
-                                                        Please enter a valid
-                                                        port number between 1
-                                                        and 65535.
-                                                    </p>
-                                                ) : null}
-                                            </div>
-                                        </div>
-                                    </>
-                                )}
-                                {step === 4 && (
-                                    <>
-                                        <div className="mb-20 ms-5 flex w-full flex-col">
+                                    <div className="mb-10 ms-5 flex h-96 w-full flex-col">
+                                        <div>
+                                            <p className="font-semi-bold pb-6 dark:text-white">
+                                                We recommend you to define the
+                                                port you have defined in the{" "}
+                                                <code>$PORT</code> environment
+                                                variable of your container.
+                                            </p>
+
                                             <label
-                                                htmlFor="application-type"
-                                                className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+                                                htmlFor="port"
+                                                // className="mb-2 block text-sm font-medium text-red-700 dark:text-red-500"
+                                                className={
+                                                    "mb-2 block text-sm font-medium" +
+                                                    (isPortValid(
+                                                        applicationPort,
+                                                    )
+                                                        ? "gray-900 dark:text-white"
+                                                        : "red-700 dark:text-red-500")
+                                                }
                                             >
-                                                Application Type
+                                                Port
                                             </label>
-                                            <select
-                                                id="application-type"
-                                                className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500"
-                                                value={applicationType}
-                                                onChange={(e) =>
-                                                    setApplicationType(
-                                                        e.target
-                                                            .value as ApplicationType,
+                                            <input
+                                                id="port"
+                                                type="number"
+                                                className={`bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500 ${
+                                                    !isPortValid(
+                                                        applicationPort,
+                                                    )
+                                                        ? "border-red-500 bg-red-50 p-2.5 text-sm text-red-900 placeholder-red-700 focus:border-red-500 focus:ring-red-500 dark:border-red-500 dark:bg-gray-700 dark:text-red-500 dark:placeholder-red-500"
+                                                        : ""
+                                                }`}
+                                                value={applicationPort}
+                                                onChange={(e: {
+                                                    target: {
+                                                        value: string;
+                                                    };
+                                                }) =>
+                                                    setApplicationPort(
+                                                        parseInt(
+                                                            e.target.value,
+                                                        ),
                                                     )
                                                 }
-                                            >
-                                                <option value="SINGLE_INSTANCE">
-                                                    Single Instance
-                                                </option>
-                                                <option value="LOAD_BALANCED">
-                                                    Load Balanced
-                                                </option>
-                                            </select>
+                                                placeholder="3000"
+                                                min="1" // Minimum port number
+                                                max="65535" // Maximum port number
+                                                required // Mark the field as required
+                                            />
+                                            {!isPortValid(applicationPort) ? (
+                                                <p className="mt-2 text-sm text-red-600 dark:text-red-500">
+                                                    Please enter a valid port
+                                                    number between 1 and 65535.
+                                                </p>
+                                            ) : null}
                                         </div>
-                                    </>
+                                    </div>
+                                )}
+                                {step === 4 && (
+                                    <div className="mb-10 ms-5 flex h-96 w-full flex-col">
+                                        <label
+                                            htmlFor="application-type"
+                                            className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+                                        >
+                                            Application Type
+                                        </label>
+                                        <select
+                                            id="application-type"
+                                            className="bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500"
+                                            value={applicationType}
+                                            onChange={(e) =>
+                                                setApplicationType(
+                                                    e.target
+                                                        .value as ContainerApplicationType,
+                                                )
+                                            }
+                                        >
+                                            <option value="SINGLE_INSTANCE">
+                                                Single Instance
+                                            </option>
+                                            <option value="LOAD_BALANCED">
+                                                Load Balanced
+                                            </option>
+                                        </select>
+                                    </div>
                                 )}
                                 {step === 5 && (
-                                    <>
-                                        <div className="mb-20 ms-5 flex w-full flex-col">
-                                            <label
-                                                htmlFor="environment-variables"
-                                                className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
-                                            >
-                                                Environment Variables : (key{" "}
-                                                {"=>"} value)
-                                            </label>
-                                            <div>
-                                                {applicationEnvironmentVariables.map(
-                                                    (variable, index) => (
-                                                        <div
-                                                            key={index}
-                                                            className="mb-2 flex items-center"
-                                                        >
-                                                            <input
-                                                                type="text"
-                                                                className="rounded-lg border border-gray-300 px-3 py-2 text-gray-700 placeholder-gray-400 focus:border-blue-600 focus:outline-none focus:ring-1 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-                                                                placeholder="Key"
-                                                                value={
-                                                                    variable.key
-                                                                }
-                                                                onChange={(e) =>
-                                                                    handleEnvironmentVariableChange(
-                                                                        index,
-                                                                        "key",
-                                                                        e.target
-                                                                            .value,
-                                                                    )
-                                                                }
-                                                            />
-                                                            <span className="mx-2">
-                                                                →
-                                                            </span>
-                                                            <input
-                                                                type="text"
-                                                                className="rounded-lg border border-gray-300 px-3 py-2 text-gray-700 placeholder-gray-400 focus:border-blue-600 focus:outline-none focus:ring-1 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-                                                                placeholder="Value"
-                                                                value={
-                                                                    variable.value
-                                                                }
-                                                                onChange={(e) =>
-                                                                    handleEnvironmentVariableChange(
-                                                                        index,
-                                                                        "value",
-                                                                        e.target
-                                                                            .value,
-                                                                    )
-                                                                }
-                                                            />
-                                                            <button
-                                                                className="Button stuga-red-color mx-3"
-                                                                onClick={() =>
-                                                                    handleRemoveEnvironmentVariable(
-                                                                        index,
-                                                                    )
-                                                                }
-                                                            >
-                                                                Remove
-                                                            </button>
-                                                        </div>
-                                                    ),
+                                    <div className="mb-10 ms-5 flex h-96 w-full flex-col">
+                                        <label
+                                            htmlFor="cpu-limit"
+                                            className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+                                        >
+                                            CPU Limit (milliCPU)
+                                        </label>
+                                        <select
+                                            className="bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500"
+                                            value={applicationCpuLimit}
+                                            onChange={(e) =>
+                                                setApplicationCpuLimit(
+                                                    e.target.value,
+                                                )
+                                            }
+                                        >
+                                            {cpuLimitsChoices.map((choice) => (
+                                                <option
+                                                    key={choice.value}
+                                                    value={`${choice.value}${choice.unit}`}
+                                                >
+                                                    {choice.value} {choice.unit}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        <label
+                                            htmlFor="memory-limit"
+                                            className="mb-2 mt-3 block text-sm font-medium text-gray-900 dark:text-white"
+                                        >
+                                            Memory Limit (MB)
+                                        </label>
+                                        <select
+                                            className="bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500"
+                                            value={applicationMemoryLimit}
+                                            onChange={(e) =>
+                                                setApplicationMemoryLimit(
+                                                    e.target.value,
+                                                )
+                                            }
+                                        >
+                                            {memoryLimitsChoices.map(
+                                                (choice) => (
+                                                    <option
+                                                        key={choice.value}
+                                                        value={`${choice.value}${choice.unit}`}
+                                                    >
+                                                        {choice.value}{" "}
+                                                        {choice.unit}
+                                                    </option>
+                                                ),
+                                            )}
+                                        </select>
+                                    </div>
+                                )}
+                                {step === 6 &&
+                                    applicationType === "LOAD_BALANCED" && (
+                                        <>
+                                            <div className="mb-6 ms-5 flex flex-col">
+                                                <label className="relative inline-flex cursor-pointer items-center">
+                                                    <input
+                                                        type="checkbox"
+                                                        onChange={() => {
+                                                            setIsAutoscalingEnabled(
+                                                                !isAutoscalingEnabled,
+                                                            );
+                                                        }}
+                                                        className="peer sr-only"
+                                                    />
+                                                    <div className="peer-focus:ring-3 peer h-7 w-14 rounded-full bg-gray-200 after:absolute after:left-[4px] after:top-0.5 after:h-6 after:w-6 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-green-400 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-green-200 dark:border-gray-600 dark:bg-gray-700 dark:peer-focus:ring-green-500"></div>
+                                                    <span className="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">
+                                                        Enable autoscaling
+                                                    </span>
+                                                </label>
+                                                {/* Display a message that explains the autoscaling feature */}
+                                                {isAutoscalingEnabled && (
+                                                    <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                                                        Your application will
+                                                        automatically scale up
+                                                        or down based on the CPU
+                                                        and Memory usage and the
+                                                        scaling specifications
+                                                        you provide bellow.
+                                                    </p>
+                                                )}
+                                                {!isAutoscalingEnabled && (
+                                                    <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                                                        You will have to
+                                                        manually scale your
+                                                        application. We will
+                                                        notify you when your
+                                                        application is running
+                                                        out of resources
+                                                        according to the scaling
+                                                        specifications you
+                                                        provide bellow.
+                                                    </p>
                                                 )}
                                             </div>
-                                            <button
-                                                type="button"
-                                                className="Button stuga-primary-color w-fit"
-                                                onClick={
-                                                    handleAddEnvironmentVariable
-                                                }
-                                            >
-                                                Add Environment Variable
-                                            </button>
-                                        </div>
-                                    </>
-                                )}
-                                {step === 6 && (
-                                    <>
-                                        <>
-                                            <div className="mb-20 ms-5 flex w-full flex-col">
-                                                <label
-                                                    htmlFor="application-secrets"
-                                                    className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
-                                                >
-                                                    Application Secrets
-                                                </label>
-                                                <div>
-                                                    {applicationSecrets.map(
-                                                        (secret, index) => (
-                                                            <div
-                                                                key={index}
-                                                                className="mb-2 flex items-center"
-                                                            >
-                                                                <input
-                                                                    type="text"
-                                                                    className="rounded-lg border border-gray-300 px-3 py-2 text-gray-700 placeholder-gray-400 focus:border-blue-600 focus:outline-none focus:ring-1 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-                                                                    placeholder="Key"
-                                                                    value={
-                                                                        secret.key
-                                                                    }
-                                                                    onChange={(
-                                                                        e,
-                                                                    ) =>
-                                                                        handleSecretChange(
-                                                                            index,
-                                                                            "key",
-                                                                            e
-                                                                                .target
-                                                                                .value,
-                                                                        )
-                                                                    }
-                                                                />
-                                                                <span className="mx-2">
-                                                                    →
-                                                                </span>
-                                                                <input
-                                                                    type="text"
-                                                                    className="rounded-lg border border-gray-300 px-3 py-2 text-gray-700 placeholder-gray-400 focus:border-blue-600 focus:outline-none focus:ring-1 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-                                                                    placeholder="Value"
-                                                                    value={
-                                                                        secret.value
-                                                                    }
-                                                                    onChange={(
-                                                                        e,
-                                                                    ) =>
-                                                                        handleSecretChange(
-                                                                            index,
-                                                                            "value",
-                                                                            e
-                                                                                .target
-                                                                                .value,
-                                                                        )
-                                                                    }
-                                                                />
-                                                                <button
-                                                                    className="Button stuga-red-color mx-3"
-                                                                    onClick={() =>
-                                                                        handleRemoveSecret(
-                                                                            index,
-                                                                        )
-                                                                    }
-                                                                >
-                                                                    Remove
-                                                                </button>
-                                                            </div>
-                                                        ),
-                                                    )}
+                                            {scalingSpecifications && (
+                                                <div className="mb-10 ms-5 flex flex-col">
+                                                    <div className="mb-2 flex flex-col">
+                                                        <label
+                                                            htmlFor="replicas"
+                                                            className={
+                                                                "mb-2 block text-sm font-medium" +
+                                                                (isReplicasValid(
+                                                                    replicas,
+                                                                )
+                                                                    ? "gray-900 dark:text-white"
+                                                                    : "red-700 dark:text-red-500")
+                                                            }
+                                                        >
+                                                            Number of Replicas
+                                                        </label>
+                                                        <input
+                                                            id="replicas"
+                                                            type="number"
+                                                            className={`bg-gray-40 mb-1 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500 ${
+                                                                !isReplicasValid(
+                                                                    replicas,
+                                                                )
+                                                                    ? "border-red-500 bg-red-50 p-2.5 text-sm text-red-900 placeholder-red-700 focus:border-red-500 focus:ring-red-500 dark:border-red-500 dark:bg-gray-700 dark:text-red-500 dark:placeholder-red-500"
+                                                                    : ""
+                                                            }`}
+                                                            value={replicas}
+                                                            onChange={(e) => {
+                                                                updateReplicas(
+                                                                    e,
+                                                                );
+                                                            }}
+                                                            placeholder="Enter Number of Replicas"
+                                                            min="0"
+                                                            max="10"
+                                                            required
+                                                        />
+                                                        {!isReplicasValid(
+                                                            replicas,
+                                                        ) ? (
+                                                            <p className="mt-2 text-sm text-red-600 dark:text-red-500">
+                                                                Please enter a
+                                                                valid number
+                                                                between 0 and
+                                                                10.
+                                                            </p>
+                                                        ) : null}
+                                                    </div>
+
+                                                    <div className="mb-2 flex flex-col">
+                                                        <label
+                                                            htmlFor="cpuUsage"
+                                                            className={
+                                                                "mb-2 block text-sm font-medium" +
+                                                                (isCpuUsageThresholdValid(
+                                                                    cpuUsageThreshold,
+                                                                )
+                                                                    ? "gray-900 dark:text-white"
+                                                                    : "red-700 dark:text-red-500")
+                                                            }
+                                                        >
+                                                            CPU Usage Threshold
+                                                            (%)
+                                                        </label>
+                                                        <input
+                                                            id="cpuUsage"
+                                                            type="number"
+                                                            className={`bg-gray-40 mb-1 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500 ${
+                                                                !isCpuUsageThresholdValid(
+                                                                    cpuUsageThreshold,
+                                                                )
+                                                                    ? "border-red-500 bg-red-50 p-2.5 text-sm text-red-900 placeholder-red-700 focus:border-red-500 focus:ring-red-500 dark:border-red-500 dark:bg-gray-700 dark:text-red-500 dark:placeholder-red-500"
+                                                                    : ""
+                                                            }`}
+                                                            value={
+                                                                cpuUsageThreshold
+                                                            }
+                                                            onChange={(e) =>
+                                                                updateCpuUsageThreshold(
+                                                                    e,
+                                                                )
+                                                            }
+                                                            placeholder="Enter CPU Usage Threshold"
+                                                            min="0"
+                                                            max="100"
+                                                            required
+                                                        />
+                                                        {!isCpuUsageThresholdValid(
+                                                            cpuUsageThreshold,
+                                                        ) ? (
+                                                            <p className="mt-2 text-sm text-red-600 dark:text-red-500">
+                                                                Please enter a
+                                                                valid number
+                                                                between 0 and
+                                                                100.
+                                                            </p>
+                                                        ) : null}
+                                                    </div>
+
+                                                    <div className="mb-2 flex flex-col">
+                                                        <label
+                                                            htmlFor="memoryUsage"
+                                                            className={
+                                                                "mb-2 block text-sm font-medium" +
+                                                                (isMemoryUsageThresholdValid(
+                                                                    memoryUsageThreshold,
+                                                                )
+                                                                    ? "gray-900 dark:text-white"
+                                                                    : "red-700 dark:text-red-500")
+                                                            }
+                                                        >
+                                                            Memory Usage
+                                                            Threshold (%)
+                                                        </label>
+                                                        <input
+                                                            id="memoryUsage"
+                                                            type="number"
+                                                            className={`bg-gray-40 mb-1 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500 ${
+                                                                !isMemoryUsageThresholdValid(
+                                                                    memoryUsageThreshold,
+                                                                )
+                                                                    ? "border-red-500 bg-red-50 p-2.5 text-sm text-red-900 placeholder-red-700 focus:border-red-500 focus:ring-red-500 dark:border-red-500 dark:bg-gray-700 dark:text-red-500 dark:placeholder-red-500"
+                                                                    : ""
+                                                            }`}
+                                                            value={
+                                                                memoryUsageThreshold
+                                                            }
+                                                            onChange={(e) =>
+                                                                updateMemoryUsageThreshold(
+                                                                    e,
+                                                                )
+                                                            }
+                                                            placeholder="Enter Memory Usage Threshold"
+                                                            min="0"
+                                                            max="100"
+                                                            required
+                                                        />
+                                                        {!isMemoryUsageThresholdValid(
+                                                            memoryUsageThreshold,
+                                                        ) ? (
+                                                            <p className="mt-2 text-sm text-red-600 dark:text-red-500">
+                                                                Please enter a
+                                                                valid number
+                                                                between 0 and
+                                                                100.
+                                                            </p>
+                                                        ) : null}
+                                                    </div>
                                                 </div>
-                                                <button
-                                                    type="button"
-                                                    className="Button stuga-primary-color w-fit"
-                                                    onClick={handleAddSecret}
-                                                >
-                                                    Add Secret
-                                                </button>
-                                            </div>
+                                            )}
                                         </>
-                                    </>
-                                )}
+                                    )}
                                 {step === 7 && (
-                                    <>
-                                        <div className="mb-20 ms-5 flex w-full flex-col">
-                                            STEP 7
+                                    <div className="mb-10 ms-5 flex h-96 w-full flex-col">
+                                        <label
+                                            htmlFor="environment-variables"
+                                            className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+                                        >
+                                            Environment Variables :
+                                        </label>
+                                        <div>
+                                            {applicationEnvironmentVariables.map(
+                                                (variable, index) => (
+                                                    <div
+                                                        key={index}
+                                                        className="mb-2 flex items-center"
+                                                    >
+                                                        <input
+                                                            type="text"
+                                                            className="bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500"
+                                                            placeholder="Key"
+                                                            value={
+                                                                variable.name
+                                                            }
+                                                            onChange={(e) =>
+                                                                handleEnvironmentVariableChange(
+                                                                    index,
+                                                                    "name",
+                                                                    e.target
+                                                                        .value,
+                                                                )
+                                                            }
+                                                        />
+                                                        <span className="mx-2">
+                                                            →
+                                                        </span>
+                                                        <input
+                                                            type="text"
+                                                            className="bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500"
+                                                            placeholder="Value"
+                                                            value={
+                                                                variable.value
+                                                            }
+                                                            onChange={(e) =>
+                                                                handleEnvironmentVariableChange(
+                                                                    index,
+                                                                    "value",
+                                                                    e.target
+                                                                        .value,
+                                                                )
+                                                            }
+                                                        />
+                                                        <button
+                                                            className="Button stuga-red-color mx-3"
+                                                            onClick={() =>
+                                                                handleRemoveEnvironmentVariable(
+                                                                    index,
+                                                                )
+                                                            }
+                                                        >
+                                                            Remove
+                                                        </button>
+                                                    </div>
+                                                ),
+                                            )}
                                         </div>
-                                    </>
+                                        <button
+                                            type="button"
+                                            className="Button stuga-primary-color w-fit"
+                                            onClick={
+                                                handleAddEnvironmentVariable
+                                            }
+                                        >
+                                            Add Environment Variable
+                                        </button>
+                                    </div>
                                 )}
                                 {step === 8 && (
-                                    <>
-                                        <div className="mb-20 ms-5 flex w-full flex-col">
-                                            STEP 8
+                                    <div className="mb-10 ms-5 flex h-96 w-full flex-col">
+                                        <label
+                                            htmlFor="application-secrets"
+                                            className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+                                        >
+                                            Application Secrets
+                                        </label>
+                                        <div>
+                                            {applicationSecrets.map(
+                                                (secret, index) => (
+                                                    <div
+                                                        key={index}
+                                                        className="mb-2 flex items-center"
+                                                    >
+                                                        <input
+                                                            type="text"
+                                                            className="bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500"
+                                                            placeholder="Key"
+                                                            value={secret.name}
+                                                            onChange={(e) =>
+                                                                handleSecretChange(
+                                                                    index,
+                                                                    "name",
+                                                                    e.target
+                                                                        .value,
+                                                                )
+                                                            }
+                                                        />
+                                                        <span className="mx-2">
+                                                            →
+                                                        </span>
+                                                        <input
+                                                            type="text"
+                                                            className="bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500"
+                                                            placeholder="Value"
+                                                            value={secret.value}
+                                                            onChange={(e) =>
+                                                                handleSecretChange(
+                                                                    index,
+                                                                    "value",
+                                                                    e.target
+                                                                        .value,
+                                                                )
+                                                            }
+                                                        />
+                                                        <button
+                                                            className="Button stuga-red-color mx-3"
+                                                            onClick={() =>
+                                                                handleRemoveSecret(
+                                                                    index,
+                                                                )
+                                                            }
+                                                        >
+                                                            Remove
+                                                        </button>
+                                                    </div>
+                                                ),
+                                            )}
                                         </div>
-                                    </>
+                                        <button
+                                            type="button"
+                                            className="Button stuga-primary-color w-fit"
+                                            onClick={handleAddSecret}
+                                        >
+                                            Add Secret
+                                        </button>
+                                    </div>
                                 )}
                                 {step === 9 && (
-                                    <>
-                                        <div className="mb-20 ms-5 flex w-full flex-col">
-                                            STEP 9
-                                        </div>
-                                    </>
+                                    <div className="mb-10 ms-5 flex h-96 w-full flex-col">
+                                        <label
+                                            htmlFor="admin-email"
+                                            className={
+                                                "mb-2 block text-sm font-medium" +
+                                                (isEmailValid(administatorEmail)
+                                                    ? "gray-900 dark:text-white"
+                                                    : "red-700 dark:text-red-500")
+                                            }
+                                        >
+                                            Administrator Email
+                                        </label>
+                                        <input
+                                            type="email"
+                                            id="admin-email"
+                                            className={`bg-gray-40 mb-1 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500 ${
+                                                !isEmailValid(administatorEmail)
+                                                    ? "border-red-500 bg-red-50 p-2.5 text-sm text-red-900 placeholder-red-700 focus:border-red-500 focus:ring-red-500 dark:border-red-500 dark:bg-gray-700 dark:text-red-500 dark:placeholder-red-500"
+                                                    : ""
+                                            }`}
+                                            value={administatorEmail}
+                                            onChange={(e) =>
+                                                setAdministratorEmail(
+                                                    e.target.value,
+                                                )
+                                            }
+                                            placeholder="admin@example.com"
+                                            required
+                                        />
+
+                                        {!isEmailValid(administatorEmail) ? (
+                                            <p className="mt-2 text-sm text-red-600 dark:text-red-500">
+                                                Please enter a valid email
+                                                address.
+                                            </p>
+                                        ) : null}
+                                    </div>
                                 )}
 
                                 {/*FIELDS : */}
