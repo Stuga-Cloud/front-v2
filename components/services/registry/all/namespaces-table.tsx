@@ -51,7 +51,6 @@ export default function Namespaces({
     );
     const [namespaces, setNamespaces] = useState<Namespace[]>([]);
     const [loading, setLoading] = useState(true);
-    const [user, setUser] = useState();
     const router = useRouter();
 
     useEffect(() => {

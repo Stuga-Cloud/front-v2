@@ -1,7 +1,7 @@
 import { Namespace } from "@/lib/models/registry/namespace";
 import { RegistryNamespace } from "@prisma/client";
 import axios from "axios";
-import { InternalServerError } from "../error";
+import { InternalServerError } from "../error/error";
 
 export interface GetMemberResponse {
     entity_id: number;

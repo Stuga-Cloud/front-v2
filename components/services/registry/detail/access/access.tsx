@@ -9,7 +9,7 @@ import { CodeBlock, nord } from "react-code-blocks";
 import CopyToClipboard from "react-copy-to-clipboard";
 import DockerLoginCode from "../docker-login-code";
 import { AddAccountInNamespace } from "../../services/add-account-in-namespace";
-import { StugaError } from "@/lib/services/error";
+import { StugaError } from "@/lib/services/error/error";
 export default function Access({
     session,
     namespace,

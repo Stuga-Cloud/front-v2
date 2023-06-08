@@ -1,4 +1,4 @@
-import { StugaError } from "@/lib/services/error";
+import { StugaError } from "@/lib/services/error/error";
 import axios, { AxiosError } from "axios";
 
 export const AddAccountInNamespace = async (

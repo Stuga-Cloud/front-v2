@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import axios, { Axios, AxiosError } from "axios";
 import { GetUserInNamespace } from "@/lib/services/harbor/get-user-in-namespace";
-import { GetUser } from "@/lib/services/harbor/get-user";
+import { GetUser } from "@/lib/services/harbor/user/get-user";
 
 export interface GetMemberResponse {
     entity_id: number;

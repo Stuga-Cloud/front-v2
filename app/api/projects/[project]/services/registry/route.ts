@@ -20,7 +20,7 @@ export async function POST(request: Request, { params }: NextRequest) {
     if (!session) {
         return NextResponse.json(
             {
-                error: "Vous devez être connecté pour créer un projet.",
+                error: "You must be logged in to create a project.",
             },
             { status: 401 },
         );
