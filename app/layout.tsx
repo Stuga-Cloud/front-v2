@@ -36,22 +36,6 @@ export default async function RootLayout({
             className={cx(sfPro.variable, inter.variable)}
             suppressHydrationWarning={true}
           >
-          { /*<div className="fixed h-screen w-full bg-gradient-to-br from-indigo-50 via-white to-cyan-100" />*/ }
-          <Suspense fallback="...">
-            <Nav session={session} />
-          </Suspense>
-          <main className="flex min-h-screen w-full flex-col py-16">
-            {children}
-          </main>
-          <Footer />
-          <Analytics />
-        </body>
-      </html>
-      <html lang="en">
-          <body
-            className={cx(sfPro.variable, inter.variable)}
-            suppressHydrationWarning={true}
-          >
           <div className="fixed h-screen w-full bg-gradient-to-br from-indigo-50 via-white to-cyan-100" />
           <Suspense fallback="...">
             <Nav session={session} />
