@@ -119,6 +119,7 @@ export default function Namespaces({
             )}
             {!loading && activeTab === "dashboard" ? (
                 <Dashboard
+                projectId={projectId}
                     namespaces={namespaces}
                     onClick={(namespaceId: string) => {
                         router.push(

@@ -2,13 +2,27 @@ import { Dropdown } from "@/components/shared/dropdown";
 import { Namespace } from "../../../../lib/models/registry/namespace";
 import { DropdownAction } from "../dropdown-action";
 import ConfirmDeleteModal from "../modal-delete-confirm";
+import { DeleteNamespace } from "../services/delete-namespace";
+import { toastEventEmitter } from "@/lib/event-emitter/toast-event-emitter";
 export default function Dashboard({
+    projectId,
     namespaces,
     onClick,
 }: {
+    projectId: string;
     namespaces: Namespace[];
     onClick: (namespaceId: string) => void;
 }) {
+
+    const deleteNamespace = async (namespaceId: string, projectId: string) => {
+        try {
+            await DeleteNamespace(namespaceId, projectId);
+            toastEventEmitter.emit("pop", {type: "success", mesage: "Namespace deleted successfully", duration: 2000});
+        } catch (error) {
+            toastEventEmitter.emit("pop", {type: "error", message: "Failed to delete namespace", duration: 2000});
+        }
+    }
+
     return (
         <div className="flex w-4/5 justify-center">
             <div className="w-full text-gray-500 shadow-md dark:text-gray-400 sm:rounded-lg">
@@ -89,12 +103,9 @@ export default function Dashboard({
                                         }}
                                     >
                                         <DropdownAction
-                                            deleteAction={() => {
-                                                console.log(
-                                                    "je delete le namespace " +
-                                                        namespace.name,
-                                                );
-                                            }}
+                                            deleteAction={async () =>
+                                                await deleteNamespace(namespace.id, projectId)
+                                            }
                                         />
                                     </a>
                                 </td>
