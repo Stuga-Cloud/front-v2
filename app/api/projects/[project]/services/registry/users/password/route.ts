@@ -54,6 +54,6 @@ export async function PATCH(request: Request, { params }: NextRequest) {
                 { status: e.status },
             );
         }
-        return InternalServerError;
+        return InternalServerError(e);
     }
 }

@@ -10,6 +10,7 @@ import { VerifyIfNamespaceIsInProject } from "@/lib/services/namespace/verify-if
 import { VerifyIfUserCanAccessProject } from "@/lib/services/project/verify-user-access";
 import { getServerSession } from "next-auth/next";
 import { NextRequest } from "next/server";
+import prisma from "@/lib/prisma";
 
 export async function DELETE(request: Request, { params }: NextRequest) {
     try {
@@ -38,6 +39,8 @@ export async function DELETE(request: Request, { params }: NextRequest) {
         }
 
         const imagesInNamespace = await GetNamespaceImages(namespace.name);
+        console.log("imagesInNamespace");
+        console.log(imagesInNamespace);
 
         await Promise.all(
             imagesInNamespace.map(async (image) => {
@@ -48,11 +51,22 @@ export async function DELETE(request: Request, { params }: NextRequest) {
             }),
         );
 
+        await prisma.registryNamespace.delete({
+            where: {
+                id: namespaceId,
+            },
+        });
         await DeleteNamespace(namespace.name);
+        return ResponseService.success({
+            message: "namespace-deleted",
+        });
     } catch (error) {
         if (error instanceof StugaError) {
             return StugaErrorToNextResponse(error);
         }
-        return ResponseService.internalServerError("internal-server-error");
+        return ResponseService.internalServerError(
+            "internal-server-error",
+            error,
+        );
     }
 }

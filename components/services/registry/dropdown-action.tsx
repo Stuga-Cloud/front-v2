@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import ConfirmDeleteModal from "./modal-delete-confirm";
 
-export const DropdownAction = ({deleteAction}: {deleteAction: () => void}) => {
+export const DropdownAction = ({deleteAction, messagePopup}: {deleteAction: () => void, messagePopup: string}) => {
     const [isOpen, setIsOpen] = useState(false);
     const [isOpenDeleteModal, setIsOpenDeleteModal] = useState(false);
     const ref = useRef(null);
@@ -64,7 +64,7 @@ export const DropdownAction = ({deleteAction}: {deleteAction: () => void}) => {
                 </div>
             )}
             <ConfirmDeleteModal
-                text="Are you sure you want to delete this namespace?"
+                text={messagePopup}
                 onClose={() => setIsOpenDeleteModal(false)}
                 isOpenFromParent={isOpenDeleteModal}
                 deleteAction={deleteAction}

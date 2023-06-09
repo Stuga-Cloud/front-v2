@@ -14,7 +14,9 @@ export default function Access({
     session,
     namespace,
     projectId,
+    isPrivateNamesapce,
 }: {
+    isPrivateNamesapce: boolean;
     session: Session;
     namespace: Namespace;
     projectId: string;
@@ -159,12 +161,16 @@ export default function Access({
                             access to this registry
                         </div>
                     </div>
-                    <div>
-                        <h3 className="mb-5 mt-10 w-4/5 text-3xl font-bold">
-                            Authenticate to the namespace
-                        </h3>
-                    </div>
-                    <DockerLoginCode code={code} />
+                    {!isPrivateNamesapce && (
+                        <>
+                            <div>
+                                <h3 className="mb-5 mt-10 w-4/5 text-3xl font-bold">
+                                    Authenticate to the namespace
+                                </h3>
+                            </div>
+                            <DockerLoginCode code={code} />
+                        </>
+                    )}
 
                     <div>
                         <h3 className="mb-5 mt-10 w-4/5 text-3xl font-bold">

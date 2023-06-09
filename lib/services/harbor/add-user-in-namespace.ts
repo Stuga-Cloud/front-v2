@@ -36,6 +36,6 @@ export const AddUserInNamespace = async (
         );
     } catch (e) {
         console.error(e);
-        throw InternalServerError;
+        throw InternalServerError(e);
     }
 };

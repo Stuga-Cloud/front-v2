@@ -17,6 +17,6 @@ export const DeleteNamespace = async (
                 error: e.response?.data?.errors,
             });
         }
-        throw InternalServerError;
+        throw InternalServerError(e);
     }
 };

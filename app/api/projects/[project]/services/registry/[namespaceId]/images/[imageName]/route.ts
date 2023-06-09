@@ -40,10 +40,17 @@ export async function DELETE(request: Request, { params }: NextRequest) {
             namespaceName: namespace.name,
             imageName: imageName,
         });
+
+        return ResponseService.success({
+            message: "image-deleted",
+        });
     } catch (error) {
         if (error instanceof StugaError) {
             return StugaErrorToNextResponse(error);
         }
-        return ResponseService.internalServerError("internal-server-error");
+        return ResponseService.internalServerError(
+            "internal-server-error",
+            error,
+        );
     }
 }

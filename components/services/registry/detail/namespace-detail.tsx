@@ -79,38 +79,54 @@ export default function NamespaceDetail({
 
     return (
         <div className="z-10 flex w-full flex-col items-center justify-center">
-            {loading ? (
+            <>
+                <h2 className="mb-5 w-4/5 text-4xl font-bold">
+                    Namespace {namespaceWithInfo?.namespace.name}
+                </h2>
+
+                <TabsImages
+                    onClick={(tab: "settings" | "dashboard" | "access") => {
+                        setActiveTab(tab);
+                    }}
+                />
+            </>
+            {loading && (
                 <div className="flex items-center justify-center">
                     <LoadingSpinner />
                 </div>
-            ) : (
-                <>
-                    <h2 className="mb-5 w-4/5 text-4xl font-bold">
-                        Namespace {namespaceWithInfo?.namespace.name}
-                    </h2>
-
-                    <TabsImages
-                        onClick={(tab: "settings" | "dashboard" | "access") => {
-                            setActiveTab(tab);
-                        }}
-                        accessDisplay={
-                            namespaceWithInfo?.namespace.state === "private"
-                        }
-                    />
-                </>
             )}
             {!loading && activeTab === "dashboard" ? (
                 namespaceWithInfo && (
                     <DetailDashboard
+                        projectId={projectId}
+                        namespace={namespaceWithInfo.namespace}
                         images={namespaceWithInfo.images}
                         onClick={(namespaceId: string) => {}}
+                        setLoading={setLoading}
+                        afterDelete={async () => {
+                            try {
+                                const namespaceWithInfo = await getNamespace(
+                                    namespaceId,
+                                );
+                                setNamespaceWithInfo(namespaceWithInfo);
+                            } catch (error) {
+                                toastEventEmitter.emit("pop", {
+                                    type: "danger",
+                                    message:
+                                        "error when try to get namespace with info",
+                                    duration: 5000,
+                                });
+                            }
+                        }}
                     />
                 )
             ) : activeTab === "settings" ? (
                 <Settings session={session} namespace={namespaceWithInfo!} />
-            ) : namespaceWithInfo?.namespace.state === "private" &&
-              activeTab === "access" ? (
+            ) : activeTab === "access" ? (
                 <Access
+                    isPrivateNamesapce={
+                        namespaceWithInfo?.namespace.state === "private"
+                    }
                     session={session}
                     namespace={namespaceWithInfo?.namespace!}
                     projectId={projectId}

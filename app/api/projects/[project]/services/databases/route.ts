@@ -28,7 +28,7 @@ export async function POST(req: NextRequest, { params }: ProjectParam) {
         return ResponseService.created(newDatabase);
     } catch (error) {
         console.error("Error creating database:", error);
-        return ResponseService.internalServerError();
+        return ResponseService.internalServerError("internal-server-error", error);
     }
 }
 
@@ -47,6 +47,6 @@ export async function GET(_req: NextRequest, { params }: ProjectParam) {
         return ResponseService.success(databases);
     } catch (error) {
         console.error("Error fetching databases:", error);
-        return ResponseService.internalServerError();
+        return ResponseService.internalServerError("internal-server-error", error);
     }
 }

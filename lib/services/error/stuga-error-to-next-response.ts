@@ -6,6 +6,7 @@ export const StugaErrorToNextResponse = (error: StugaError): NextResponse => {
     return NextResponse.json(
         {
             error: error.message,
+            context: error.context,
         },
         { status: error.status },
     );

@@ -119,17 +119,30 @@ export default function Namespaces({
             )}
             {!loading && activeTab === "dashboard" ? (
                 <Dashboard
-                projectId={projectId}
+                    projectId={projectId}
                     namespaces={namespaces}
                     onClick={(namespaceId: string) => {
                         router.push(
                             `/projects/${projectId}/services/registry/namespace/${namespaceId}`,
                         );
                     }}
+                    afterDelete={async () => {
+                        try {
+
+                            const namespaces = await getNamespaces(projectId);
+                            setNamespaces(namespaces);
+                        } catch (error) {
+                            toastEventEmitter.emit("pop", {
+                                type: "danger",
+                                message: "error when try to get namespaces",
+                                duration: 5000,
+                            });
+                        }
+                    }}
                 />
             ) : !loading && activeTab === "profile" ? (
                 <Profile session={session} projectId={projectId} />
-            ): null}
+            ) : null}
         </div>
     );
 }

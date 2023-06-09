@@ -15,7 +15,7 @@ export const GetUserInNamespace = async (
     userId: number,
 ): Promise<{ userId: number; username: string } | null> => {
     try {
-        const req = await axios.get(
+        const req = await axios.get<GetMemberInNamespaceResponse[]>(
             process.env.BASE_REGISTRY_ENDPOINT +
                 `/api/v2.0/projects/${namespaceName}/members?page=1&page_size=10`,
             {
@@ -25,7 +25,7 @@ export const GetUserInNamespace = async (
                 },
             },
         );
-        const usersInNamespace: GetMemberInNamespaceResponse[] = await req.data;
+        const usersInNamespace = req.data;
 
         const user = usersInNamespace.find((user) => user.entity_id === userId);
 
