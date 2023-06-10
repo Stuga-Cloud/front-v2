@@ -10,6 +10,10 @@ import { AvailableRegistriesInformation } from "./lambda-image-form";
 import LambdaEnvVarForm, { LambdaEnvironmentVariable } from "./lambda-env-var";
 import LambdaConfidentialityForm from "./lambda-confidentiality-form";
 import { ContainerEnvironmentVariable } from "@/lib/models/containers/container-application-environment-variables";
+import LambdaSettingsForm from "./lambda-settings-form";
+import { cpuLimitsChoices, memoryLimitsChoices } from "./types/lambda-create";
+import LambdaScalabilityForm from "./lambda-scalability-form";
+import { m } from "framer-motion";
 
 export default function NewLambdaForm({
     session,
@@ -18,6 +22,8 @@ export default function NewLambdaForm({
     session: Session | null;
     projectId: string;
 }) {
+    const [minInstanceNumber, setMinInstanceNumber] = useState(0);
+    const [maxInstanceNumber, setMaxInstanceNumber] = useState(2);
     const [confidentiality, setConfidentiality] = useState<
         "public" | "private"
     >("public");
@@ -29,6 +35,8 @@ export default function NewLambdaForm({
         setApplicationEnvironmentVariables,
     ] = useState<ContainerEnvironmentVariable[]>([]);
     const [registry, setRegistry] = useState<AvailableRegistriesInformation>();
+    const [cpuConfig, setCpuConfig] = useState("1000 mCPU");
+    const [memoryConfig, setMemoryConfig] = useState("256 Mo");
     const [loading, setLoading] = useState(false);
 
     const stepsBase: Step[] = [
@@ -99,17 +107,17 @@ export default function NewLambdaForm({
                 ></path>
             ),
         },
-        {
-            name: "Price",
-            description:
-                "See price estimation of your configuration before deploying",
-            svgPath: (
-                <path
-                    strokeLinecap="round"
-                    d="M16.5 12a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zm0 0c0 1.657 1.007 3 2.25 3S21 13.657 21 12a9 9 0 10-2.636 6.364M16.5 12V8.25"
-                ></path>
-            ),
-        },
+        // {
+        //     name: "Price",
+        //     description:
+        //         "See price estimation of your configuration before deploying",
+        //     svgPath: (
+        //         <path
+        //             strokeLinecap="round"
+        //             d="M16.5 12a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zm0 0c0 1.657 1.007 3 2.25 3S21 13.657 21 12a9 9 0 10-2.636 6.364M16.5 12V8.25"
+        //         ></path>
+        //     ),
+        // },
     ];
 
     return (
@@ -240,6 +248,49 @@ export default function NewLambdaForm({
                                         value: "public" | "private",
                                     ) => {
                                         setConfidentiality(value);
+                                    }}
+                                />
+                            )}
+                            {activeStep === 5 && (
+                                <LambdaSettingsForm
+                                    cpuChoices={cpuLimitsChoices}
+                                    memoryChoices={memoryLimitsChoices}
+                                    cpuConfig={cpuConfig}
+                                    memoryConfig={memoryConfig}
+                                    onChange={(
+                                        cpuConfig: string,
+                                        memoryConfig: string,
+                                    ) => {
+                                        setCpuConfig(cpuConfig);
+                                        setMemoryConfig(memoryConfig);
+                                    }}
+                                />
+                            )}
+                            {activeStep === 6 && (
+                                <LambdaScalabilityForm
+                                    maxInstanceNumber={maxInstanceNumber}
+                                    minInstanceNumber={minInstanceNumber}
+                                    setMinInstanceNumber={(value: number) => {
+                                        setMinInstanceNumber(value);
+                                    }}
+                                    setMaxInstanceNumber={(value: number) => {
+                                        setMaxInstanceNumber(value);
+                                    }}
+                                    isMaxInstanceNumberValid={(
+                                        value: number,
+                                    ) => {
+                                        return (
+                                            value <= 10 &&
+                                            value >= minInstanceNumber
+                                        );
+                                    }}
+                                    isMinInstanceNumberValid={(
+                                        value: number,
+                                    ) => {
+                                        return (
+                                            value >= 0 &&
+                                            value <= maxInstanceNumber
+                                        );
                                     }}
                                 />
                             )}
