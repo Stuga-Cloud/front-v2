@@ -1,13 +1,12 @@
 "use client";
 
-import Image from "next/image";
-import Link from "next/link";
 import useScroll from "@/lib/hooks/use-scroll";
 import { useSignInModal } from "./sign-in-modal";
 import UserDropdown from "./user-dropdown";
 import { Session } from "next-auth";
+import { Breadcrumb, BreadcrumbItem } from "../shared/breadcrumb";
 
-export default function NavBar({ session }: { session: Session | null }) {
+export default function NavBar({ session, breadcrumbItems }: { session: Session | null, breadcrumbItems: BreadcrumbItem[] }) {
     const { SignInModal, setShowSignInModal } = useSignInModal();
     const scrolled = useScroll(50);
 
@@ -21,19 +20,8 @@ export default function NavBar({ session }: { session: Session | null }) {
                         : "bg-white/0"
                 } z-30 transition-all`}
             >
-                <div className="mx-5 flex h-16 max-w-screen-xl items-center justify-between xl:mx-auto">
-                    <Link
-                        href="/"
-                        className="flex items-center font-display text-2xl"
-                    >
-                        <Image
-                            src="/stuga-logo.png"
-                            alt="stuga logo"
-                            width="30"
-                            height="30"
-                            className="mr-2 rounded-sm"
-                        ></Image>
-                    </Link>
+                <div className="mx-5 flex h-16 max-w-screen-xl items-center justify-end xl:mx-auto">
+                  <Breadcrumb items={breadcrumbItems} />
                     <div>
                         {session ? (
                             <UserDropdown session={session} />

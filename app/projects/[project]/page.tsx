@@ -2,7 +2,8 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "../../api/auth/[...nextauth]/route";
 import Project from "@/components/project/project";
 import type { ProjectParam } from "types/param";
-import { Breadcrumb } from "@/components/shared/breadcrumb";
+import { Suspense } from "react";
+import Nav from "@/components/layout/nav";
 
 export default async function ProjectPage({ params }: ProjectParam) {
     const session = await getServerSession(authOptions);
@@ -10,7 +11,9 @@ export default async function ProjectPage({ params }: ProjectParam) {
     const projectId = params.project;
     return (
         <>
-            <Breadcrumb items={[{text: "Project", slug: `project/${params.project}` }]} />
+            <Suspense fallback="...">
+              <Nav session={session} breadcrumbItems={[{text: "Project", slug: `project/${params.project}` }]} />
+            </Suspense>
             {session ? (
                 <Project session={session} projectId={projectId} />
             ) : (

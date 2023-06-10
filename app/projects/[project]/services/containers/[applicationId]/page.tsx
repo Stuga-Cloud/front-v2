@@ -2,6 +2,8 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { Breadcrumb, BreadcrumbItem } from "@/components/shared/breadcrumb";
 import ContainerDetails from "@/components/services/containers/container-details";
+import { Suspense } from "react";
+import Nav from "@/components/layout/nav";
 
 export default async function ContainerDetailsPage({
     params,
@@ -12,7 +14,7 @@ export default async function ContainerDetailsPage({
     const projectId = params.project;
     const applicationId = params.applicationId;
 
-    const breadcrumbItem: BreadcrumbItem[] = [
+    const breadcrumbItems: BreadcrumbItem[] = [
         { text: "project", slug: `/projects/${projectId}` },
         {
             text: "containers",
@@ -26,8 +28,10 @@ export default async function ContainerDetailsPage({
 
     return (
         <>
+          <Suspense fallback="...">
+            <Nav session={session} breadcrumbItems={breadcrumbItems} />
+          </Suspense>
             <div className="z-10 flex flex w-full flex-col">
-                <Breadcrumb items={breadcrumbItem} />
                 <ContainerDetails
                     session={session}
                     projectId={projectId}

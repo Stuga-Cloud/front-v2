@@ -3,11 +3,7 @@ import "./globals.css";
 import { Analytics } from "@vercel/analytics/react";
 import cx from "classnames";
 import { inter, sfPro } from "./fonts";
-import Nav from "@/components/layout/nav";
 import Footer from "@/components/layout/footer";
-import { Suspense } from "react";
-import { getServerSession } from "next-auth";
-import { authOptions } from "./api/auth/[...nextauth]/route";
 
 // export const metadata = {
 //     title: "Precedent - Building blocks for your Next.js project",
@@ -29,7 +25,6 @@ export default async function RootLayout({
 }: {
     children: React.ReactNode;
 }) {
-    const session = await getServerSession(authOptions);
     return (
       <html lang="en">
           <body
@@ -37,9 +32,6 @@ export default async function RootLayout({
             suppressHydrationWarning={true}
           >
           <div className="fixed h-screen w-full bg-gradient-to-br from-indigo-50 via-white to-cyan-100" />
-          <Suspense fallback="...">
-            <Nav session={session} />
-          </Suspense>
           <main className="flex min-h-screen w-full flex-col py-32">
             {children}
           </main>

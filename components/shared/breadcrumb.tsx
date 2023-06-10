@@ -1,5 +1,7 @@
 "use client";
+import Link from "next/link";
 import React from "react";
+import Image from "next/image";
 
 export interface BreadcrumbItem {
     text: string;
@@ -14,26 +16,24 @@ export const Breadcrumb = ({ items }: { items: BreadcrumbItem[] }) => {
     const localUrl = location.protocol + "//" + location.host;
     return (
         <nav
-            className="fixed left-1/2 top-2 z-50 flex -translate-x-1/2 transform rounded-lg border border-gray-200 bg-gray-50 px-5 py-3 text-gray-700"
+            className="fixed left-2 top-2 z-50 flex rounded-lg border border-gray-200 bg-gray-50 px-5 py-3 text-gray-700"
             aria-label="Breadcrumb"
         >
             <ol className="inline-flex items-center space-x-1 md:space-x-3">
                 <li className="inline-flex items-center">
-                    <a
+                    <Link
                         href={localUrl}
                         className="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600"
                     >
-                        <svg
-                            aria-hidden="true"
-                            className="mr-2 h-4 w-4"
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                            xmlns="http://www.w3.org/2000/svg"
-                        >
-                            <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
-                        </svg>
-                        Home
-                    </a>
+                      <Image
+                          src="/stuga-logo.png"
+                          alt="stuga logo"
+                          width="30"
+                          height="30"
+                          className="mr-2 rounded-sm"
+                      />
+                      Home
+                    </Link>
                 </li>
 
                 {items.map((item, index) => (

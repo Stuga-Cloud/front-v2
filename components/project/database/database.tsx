@@ -5,11 +5,14 @@ import {
     useQuery,
     useMutation,
 } from "@tanstack/react-query";
-import { useParams } from "next/navigation";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Link from "next/link";
 import { LoadingSpinner } from "@/components/shared/icons";
+import Nav from "@/components/layout/nav";
+import { Session } from "@prisma/client";
+import { Params } from "next/dist/shared/lib/router/utils/route-matcher";
+import project from "../project";
 
 export interface Database {
     name: string;
@@ -19,16 +22,15 @@ export interface Database {
 
 const queryClient = new QueryClient();
 
-export function DatabaseComponent() {
+export function DatabaseComponent({session,  params}: {session: Session, params: Params}) {
     return (
         <QueryClientProvider client={queryClient}>
-          <Inner/>
+          <Inner session={session} params={params} />
         </QueryClientProvider>
     );
 }
 
-function Inner() {
-    const { project } = useParams();
+function Inner({ session, params }: { session: Session, params: Params }) {
     const [fetchTrigger, setFetchTrigger] = useState(1);
     const { status, data, error } = useQuery<Database[]>({
         queryKey: [project, fetchTrigger],
@@ -61,7 +63,10 @@ function Inner() {
     }
   return (
     <>
-      <h1 className="mb-2 text-center text-3xl font-extrabold leading-loose leading-relaxed tracking-tight text-gray-900 dark:text-white md:text-4xl lg:text-5xl">
+      <Suspense fallback="...">
+        <Nav session={session} breadcrumbItems={[{text: "Project", slug: `project/${params.project}` }]} />
+      </Suspense>
+      <h1 className="mb-2 text-center text-3xl font-extrabold leading-relaxed tracking-tight text-gray-900 dark:text-white md:text-4xl lg:text-5xl">
           Deploy {" "} your {" "}
           <mark className="rounded bg-rose-400 px-2 leading-relaxed text-white dark:bg-green-300">
            Zero Knowledge Database

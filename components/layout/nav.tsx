@@ -1,6 +1,5 @@
 "use client";
 import Navbar from "./navbar";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import {
     PayloadToastEventEmitter,
     toastEventEmitter,
@@ -8,8 +7,9 @@ import {
 import { useEffect, useState } from "react";
 import Toast from "../shared/toast/toast";
 import { Session } from "next-auth";
+import { BreadcrumbItem } from "../shared/breadcrumb";
 
-export default function Nav({ session }: { session: Session | null }) {
+export default function Nav({ session, breadcrumbItems }: { session: Session | null, breadcrumbItems: BreadcrumbItem[] }) {
     const [toast, setToast] = useState(
         {} as PayloadToastEventEmitter & { visible: boolean },
     );
@@ -35,7 +35,7 @@ export default function Nav({ session }: { session: Session | null }) {
                     duration={(toast.duration ?? 10000)}
                 ></Toast>
             )}
-            <Navbar session={session} />
+            <Navbar session={session} breadcrumbItems={breadcrumbItems} />
             );
         </>
     );
