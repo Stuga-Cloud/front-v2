@@ -50,9 +50,9 @@ export default function RegistryForm({
                 </div>
             )}
             <div className="w-5/5 z-10 flex flex-col items-center justify-center px-5">
-                <h1 className="mb-4 py-5 text-4xl font-extrabold leading-none tracking-tight text-gray-900 dark:text-white md:text-5xl lg:text-6xl">
+                <h1 className="mb-4 py-5 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl">
                     Create a{" "}
-                    <mark className="rounded bg-green-400 px-2 text-white dark:bg-green-300">
+                    <mark className="rounded bg-green-400 px-2 text-white">
                         namespace
                     </mark>
                 </h1>

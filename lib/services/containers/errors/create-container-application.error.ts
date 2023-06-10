@@ -1,4 +1,4 @@
-import { StugaError } from "@/lib/services/error";
+import { StugaError } from '@/lib/services/error/error';
 
 export class CreateContainerApplicationError extends StugaError {
     constructor(message: string) {

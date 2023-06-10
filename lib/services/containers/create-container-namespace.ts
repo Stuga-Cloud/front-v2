@@ -1,6 +1,6 @@
 import { ContainerNamespace } from "@/lib/models/containers/container-namespace";
 import axios from "axios";
-import { UpsertContainerNamespaceError } from "@/lib/services/errors/upsert-container-namespace.error";
+import { UpsertContainerNamespaceError } from "@/lib/services/containers/errors/upsert-container-namespace.error";
 import { GetContainerNamespaceByName } from "@/lib/services/containers/get-container-namespace";
 
 export const UpsertContainerNamespace = async (

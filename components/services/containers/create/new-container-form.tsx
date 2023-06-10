@@ -15,7 +15,7 @@ import { CreateContainerApplicationBody } from "@/lib/services/containers/create
 import { ContainerEnvironmentVariable } from "@/lib/models/containers/container-application-environment-variables";
 import { ContainerApplicationSecret } from "@/lib/models/containers/container-application-secrets";
 import { ContainerLimitUnit } from "@/lib/models/containers/container-application-specifications";
-import { StugaError } from "@/lib/services/error";
+import { StugaError } from "@/lib/services/error/error";
 
 interface Step {
     name: string;
@@ -513,19 +513,19 @@ export default function NewContainerForm({
         <>
             <div className="w-5/5 z-10 flex flex-col items-center justify-center px-5">
                 {/* Change interline with more space */}
-                <h1 className="mb-2 text-center text-3xl font-extrabold leading-loose leading-relaxed tracking-tight text-gray-900 dark:text-white md:text-4xl lg:text-5xl">
+                <h1 className="mb-2 text-center text-3xl font-extrabold leading-loose leading-relaxed tracking-tight text-gray-900 md:text-4xl lg:text-5xl">
                     Deploy your{" "}
-                    <mark className="rounded bg-green-400 px-2 leading-relaxed text-white dark:bg-green-300">
+                    <mark className="rounded bg-green-400 px-2 leading-relaxed text-white">
                         application
                     </mark>{" "}
                     in{" "}
-                    <mark className="rounded bg-green-400 px-2 leading-relaxed text-white dark:bg-green-300">
+                    <mark className="rounded bg-green-400 px-2 leading-relaxed text-white">
                         containers
                     </mark>
                 </h1>
 
                 <p
-                    className="text-l lg:text-l pb-5 font-normal text-gray-500 dark:text-gray-400"
+                    className="text-l lg:text-l pb-5 font-normal text-gray-500"
                     id="step-name"
                 >
                     Deploy your applications, databases, and services in our
@@ -546,13 +546,13 @@ export default function NewContainerForm({
                             {/* Stepper information */}
                             <div className="w-3/10 flex flex-col pt-5">
                                 <div>
-                                    <ol className="relative border-l border-gray-200 text-gray-500 dark:border-gray-700 dark:text-gray-400">
+                                    <ol className="relative border-l border-gray-200 text-gray-500 ">
                                         {steps.length <= 0 && (
                                             <div className="flex flex-col items-center justify-center">
-                                                <p className="text-gray-500 dark:text-gray-400">
+                                                <p className="text-gray-500">
                                                     No steps found
                                                 </p>
-                                                <p className="text-gray-500 dark:text-gray-400">
+                                                <p className="text-gray-500">
                                                     Please add steps in the
                                                     configuration file
                                                 </p>
@@ -572,16 +572,16 @@ export default function NewContainerForm({
                                                         key={index}
                                                         className={`mb-10 ml-6 ${
                                                             step === index + 1
-                                                                ? "text-green-500 dark:text-green-400"
-                                                                : "text-gray-500 dark:text-gray-400"
+                                                                ? "text-green-500"
+                                                                : "text-gray-500"
                                                         }`}
                                                     >
                                                         <span
-                                                            className={`absolute -left-4 flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 ring-4 ring-white dark:bg-gray-700 dark:ring-gray-900 ${
+                                                            className={`absolute -left-4 flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 ring-4 ring-white ${
                                                                 step ===
                                                                 index + 1
-                                                                    ? "bg-green-200 dark:bg-green-900"
-                                                                    : "bg-white dark:bg-white"
+                                                                    ? "bg-green-200"
+                                                                    : "bg-white"
                                                             }`}
                                                         >
                                                             {/* TODO Maybe display check if fields are validate in steps  ? */}

@@ -1,5 +1,5 @@
 import axios, { AxiosError } from "axios";
-import { InternalServerError, StugaError } from "../error/error";
+import { InternalServerError, StugaError } from "../../error/error";
 
 export interface ImageInformationsHarborResponse {
     artifact_count: number;

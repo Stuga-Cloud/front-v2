@@ -1,7 +1,7 @@
 import { ContainerApplication } from "@/lib/models/containers/container-application";
 import axios from "axios";
-import { ContainerApplicationAlreadyExistError } from "@/lib/services/errors/container-application-already-exist.error";
-import { CreateContainerApplicationError } from "@/lib/services/errors/create-container-application.error";
+import { ContainerApplicationAlreadyExistError } from "@/lib/services/containers/errors/container-application-already-exist.error";
+import { CreateContainerApplicationError } from "@/lib/services/containers/errors/create-container-application.error";
 import { CreateContainerApplicationBody } from "@/lib/services/containers/create-container-application.body";
 
 export const CreateContainerApplication = async (
