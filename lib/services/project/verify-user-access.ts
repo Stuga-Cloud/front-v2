@@ -1,5 +1,5 @@
 import { Project } from "@prisma/client";
-import { StugaError } from "../error";
+import { StugaError } from "../error/error";
 import prisma from "@/lib/prisma";
 
 export const VerifyIfUserCanAccessProject = async (

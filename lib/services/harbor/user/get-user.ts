@@ -1,5 +1,5 @@
 import axios, { AxiosError } from "axios";
-import { InternalServerError, StugaError } from "../error";
+import { InternalServerError, StugaError } from "../../error/error";
 export interface HarborUser {
     user_id: number;
     username: string;

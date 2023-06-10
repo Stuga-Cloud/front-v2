@@ -1,11 +1,24 @@
+import { Namespace } from "@/lib/models/registry/namespace";
+import { DropdownAction } from "../dropdown-action";
+import { deleteNamespaceImage } from "../services/delete-namespace-image";
 import { Image } from "./namespace-detail";
+import { Dispatch, SetStateAction } from "react";
+import { toastEventEmitter } from "@/lib/event-emitter/toast-event-emitter";
 
 export default function DetailDashboard({
+    projectId,
+    namespace,
     images,
     onClick,
+    setLoading,
+    afterDelete,
 }: {
+    projectId: string;
+    namespace: Namespace;
     images: Image[];
     onClick: (namespaceId: string) => void;
+    setLoading: Dispatch<SetStateAction<boolean>>;
+    afterDelete: () => Promise<void>;
 }) {
     return (
         <div className="flex w-4/5 justify-center">
@@ -66,7 +79,7 @@ export default function DetailDashboard({
                                     className="px-6 py-4"
                                     onClick={() => onClick(image.digest)}
                                 >
-                                    { Math.round(image.size / 1000000)} MB
+                                    {Math.round(image.size / 1000000)} MB
                                 </td>
                                 <td
                                     className="px-6 py-4"
@@ -86,12 +99,35 @@ export default function DetailDashboard({
                                         className="font-medium text-blue-600 hover:underline dark:text-blue-500"
                                         onClick={(e) => {
                                             e.preventDefault();
-                                            console.log(
-                                                "je déclenche l'action",
-                                            );
                                         }}
                                     >
-                                        Actions
+                                        <DropdownAction
+                                            messagePopup="Are you sure you want to delete this image ?"
+                                            deleteAction={async () => {
+                                                setLoading(true);
+                                                try {
+                                                    await deleteNamespaceImage({
+                                                        projectId: projectId,
+                                                        namespaceId:
+                                                            namespace.id,
+                                                        imageName: image.name,
+                                                    });
+                                                    await afterDelete();
+                                                } catch (e) {
+                                                    toastEventEmitter.emit(
+                                                        "pop",
+                                                        {
+                                                            type: "danger",
+                                                            message:
+                                                                "Error while deleting image",
+                                                            duration: 5000,
+                                                        },
+                                                    );
+                                                } finally {
+                                                    setLoading(false);
+                                                }
+                                            }}
+                                        />
                                     </a>
                                 </td>
                             </tr>

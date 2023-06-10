@@ -51,7 +51,6 @@ export default function Namespaces({
     );
     const [namespaces, setNamespaces] = useState<Namespace[]>([]);
     const [loading, setLoading] = useState(true);
-    const [user, setUser] = useState();
     const router = useRouter();
 
     useEffect(() => {
@@ -120,16 +119,30 @@ export default function Namespaces({
             )}
             {!loading && activeTab === "dashboard" ? (
                 <Dashboard
+                    projectId={projectId}
                     namespaces={namespaces}
                     onClick={(namespaceId: string) => {
                         router.push(
                             `/projects/${projectId}/services/registry/namespace/${namespaceId}`,
                         );
                     }}
+                    afterDelete={async () => {
+                        try {
+
+                            const namespaces = await getNamespaces(projectId);
+                            setNamespaces(namespaces);
+                        } catch (error) {
+                            toastEventEmitter.emit("pop", {
+                                type: "danger",
+                                message: "error when try to get namespaces",
+                                duration: 5000,
+                            });
+                        }
+                    }}
                 />
             ) : !loading && activeTab === "profile" ? (
                 <Profile session={session} projectId={projectId} />
-            ): null}
+            ) : null}
         </div>
     );
 }

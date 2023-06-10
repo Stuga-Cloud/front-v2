@@ -1,16 +1,34 @@
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import NewContainerForm from "@/components/services/containers/create/new-container-form";
+import { Breadcrumb, BreadcrumbItem } from "@/components/shared/breadcrumb";
 
 export default async function ContainerNewPage({
     params,
-    searchParams,
 }: {
     params: { project: string };
-    searchParams?: { [key: string]: string | string[] | undefined };
 }) {
     const session = await getServerSession(authOptions);
     const projectId = params.project;
 
-    return <NewContainerForm session={session} projectId={projectId} />;
+    const breadcrumbItem: BreadcrumbItem[] = [
+        { text: "project", slug: `/projects/${projectId}` },
+        {
+            text: "containers",
+            slug: `/projects/${projectId}/services/containers/`,
+        },
+        {
+            text: "new",
+            slug: `/projects/${projectId}/services/containers/new`,
+        },
+    ];
+
+    return (
+        <>
+            <div className="z-10 mt-5 flex flex w-full flex-col">
+                <Breadcrumb items={breadcrumbItem} />
+                <NewContainerForm session={session} projectId={projectId} />
+            </div>
+        </>
+    );
 }

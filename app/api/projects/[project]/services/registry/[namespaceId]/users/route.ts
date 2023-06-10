@@ -4,10 +4,10 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { Project } from "@prisma/client";
 import axios, { AxiosError } from "axios";
-import { StugaError } from "../../../../../../../../lib/services/error";
+import { StugaError } from "../../../../../../../../lib/services/error/error";
 import { VerifyIfUserCanAccessProject } from "@/lib/services/project/verify-user-access";
 import { AddUserInNamespace } from "../../../../../../../../lib/services/harbor/add-user-in-namespace";
-import { GetUser } from "@/lib/services/harbor/get-user";
+import { GetUser } from "@/lib/services/harbor/user/get-user";
 import { GetNamespaceById } from "@/lib/services/namespace/get-namespace-by-id";
 
 export interface RequestBody {

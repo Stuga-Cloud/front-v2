@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["jsonProtocol"]
@@ -8,9 +5,9 @@ generator client {
 
 datasource db {
   provider          = "postgresql"
-  url               = env("POSTGRES_PRISMA_URL") // uses connection pooling
-  directUrl         = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
-  shadowDatabaseUrl = env("POSTGRES_URL_NON_POOLING") // used for migrations
+  url               = env("POSTGRES_PRISMA_URL")
+  directUrl         = env("POSTGRES_URL_NON_POOLING")
+  shadowDatabaseUrl = env("POSTGRES_URL_NON_POOLING")
 }
 
 model Account {
@@ -19,15 +16,14 @@ model Account {
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
+  refresh_token     String?
+  access_token      String?
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? @db.Text
+  id_token          String?
   session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
   @@index([userId])
@@ -50,6 +46,7 @@ model VerificationToken {
 
   @@unique([identifier, token])
 }
+
 model User {
   id                 String              @id @default(cuid())
   name               String?
@@ -57,20 +54,20 @@ model User {
   emailVerified      DateTime?
   image              String?
   accounts           Account[]
-  sessions           Session[]
-  projectsMembership ProjectMembership[]
   createdProjects    Project[]
+  projectsMembership ProjectMembership[]
+  sessions           Session[]
 }
 
 model Project {
-  id        String              @id @default(cuid())
-  name      String
-  createdBy String
-  members     ProjectMembership[]
-  registry  Registry?
-
-  user                User        @relation(fields: [createdBy], references: [id], onDelete: Cascade)
-  databases           Database[]  @relation("ProjectDatabases")
+  id         String              @id @default(cuid())
+  name       String
+  createdBy  String
+  containers Container[]         @relation("ProjectContainers")
+  databases  Database[]          @relation("ProjectDatabases")
+  user       User                @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  members    ProjectMembership[]
+  registry   Registry?
 
   @@index([createdBy])
 }
@@ -79,39 +76,45 @@ model ProjectMembership {
   projectId   String
   userId      String
   hasAccepted Boolean @default(false)
-
-  user    User    @relation(fields: [userId], references: [id])
-  project Project @relation(fields: [projectId], references: [id])
+  project     Project @relation(fields: [projectId], references: [id])
+  user        User    @relation(fields: [userId], references: [id])
 
   @@id([userId, projectId])
 }
 
 model Registry {
-  id         String @id @default(cuid())
-  projectId  String @unique
+  id         String              @id @default(cuid())
+  projectId  String              @unique
+  project    Project             @relation(fields: [projectId], references: [id])
   namespaces RegistryNamespace[]
-
-  project Project @relation(fields: [projectId], references: [id])
 }
 
 model RegistryNamespace {
-  id          String   @id @default(cuid())
-  name        String
-  state       String
-  modifiedAt  DateTime @default(now())
-  createdAt   DateTime @default(now())
-  registryId  String
-
-  registry Registry @relation(fields: [registryId], references: [id])
+  id         String   @id @default(cuid())
+  name       String
+  state      String
+  modifiedAt DateTime @default(now())
+  createdAt  DateTime @default(now())
+  registryId String
+  registry   Registry @relation(fields: [registryId], references: [id])
 }
 
-
 model Database {
-  id          String    @id @default(cuid())
-  name        String    @unique
-  projectId   String
-  createdAt   DateTime @default(now())
-  project     Project   @relation("ProjectDatabases", fields: [projectId], references: [id])
+  id        String  @id @default(cuid())
+  name      String  @unique
+  projectId String
+  project   Project @relation("ProjectDatabases", fields: [projectId], references: [id])
+
+  @@index([projectId])
+}
+
+model Container {
+  id         String   @id @default(cuid())
+  name       String   @unique
+  modifiedAt DateTime @default(now())
+  createdAt  DateTime @default(now())
+  projectId  String
+  project    Project  @relation("ProjectContainers", fields: [projectId], references: [id])
 
   @@index([projectId])
 }

@@ -1,6 +1,6 @@
 import axios, { AxiosError } from "axios";
 import { HarborUser, GetUser } from "./get-user";
-import { InternalServerError } from "../error";
+import { InternalServerError } from "../../error/error";
 import { NextResponse } from "next/server";
 
 export const CreateUser = async (

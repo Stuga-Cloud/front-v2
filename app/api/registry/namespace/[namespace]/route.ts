@@ -116,7 +116,13 @@ export async function GET(request: Request, { params }: NextRequest) {
         );
 
         return NextResponse.json(
-            { namespace, images: imageDetailsComplete },
+            {
+                namespace,
+                images: imageDetailsComplete.map((image) => ({
+                    ...image,
+                    name: image.name.split("/")[1],
+                })),
+            },
             { status: 200 },
         );
     } catch (error) {
