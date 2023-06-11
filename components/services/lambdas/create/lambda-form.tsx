@@ -4,32 +4,23 @@ import { Session } from "next-auth";
 import { useEffect, useState } from "react";
 import LambdaStepper from "./lambda-stepper";
 import LambdaNameForm from "./lambda-name-form";
-import {
-    isLambdaNameValid,
-    throwIfLambdaCreationCandidateIsNotValid,
-} from "./form-validation/lambda-create-validation";
 import LambdaImageForm from "./lambda-image-form";
 import { AvailableRegistriesInformation } from "./lambda-image-form";
 import LambdaEnvVarForm, { LambdaEnvironmentVariable } from "./lambda-env-var";
 import LambdaConfidentialityForm from "./lambda-confidentiality-form";
 import { ContainerEnvironmentVariable } from "@/lib/models/containers/container-application-environment-variables";
 import LambdaSettingsForm from "./lambda-settings-form";
-import {
-    Step,
-    LambdaVisibility,
-    LambdaCreateCandidate,
-    LambdaCPULimit,
-    LambdanMemoryLimit as LambdaMemoryLimit,
-} from "./types/lambda-create";
 import LambdaScalabilityForm from "./lambda-scalability-form";
 import {
     cpuLimitsChoices,
     memoryLimitsChoices,
     stepsBase,
-} from "./config/lambda-create-config";
+} from "../../../../lib/models/lambdas/config/lambda-create-config";
 import { CreateLambda } from "@/lib/services/lambdas/create-lambda";
 import { toastEventEmitter } from "@/lib/event-emitter/toast-event-emitter";
 import { StugaError } from "@/lib/services/error/error";
+import { LambdaCPULimit, LambdaCreateCandidate, LambdaMemoryLimit, LambdaVisibility } from "@/lib/models/lambdas/lambda-create";
+import { isLambdaNameValid, throwIfLambdaCreationCandidateIsNotValid } from "@/lib/models/lambdas/validation/lambda-create-candidate";
 
 export default function NewLambdaForm({
     session,

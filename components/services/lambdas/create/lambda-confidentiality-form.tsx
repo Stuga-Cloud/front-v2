@@ -1,7 +1,7 @@
 import { useState } from "react";
 import RadioButtons from "./radio-buttons";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
-import { LambdaVisibility } from "./types/lambda-create";
+import { LambdaVisibility } from "@/lib/models/lambdas/lambda-create";
 
 function arrayBufferToBase64(buffer: ArrayBuffer): string {
     return btoa(

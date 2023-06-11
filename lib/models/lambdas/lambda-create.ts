@@ -9,7 +9,7 @@ export interface LambdaCPULimit {
     unit: "mCPU" | "CPU";
 }
 
-export interface LambdanMemoryLimit {
+export interface LambdaMemoryLimit {
     value: number;
     unit: "MB" | "GB";
 }
@@ -32,7 +32,7 @@ export interface LambdaCreateCandidate {
     name: string;
     imageName: string;
     cpuLimit: LambdaCPULimit;
-    memoryLimit: LambdanMemoryLimit;
+    memoryLimit: LambdaMemoryLimit;
     environmentVariables: {key: string, value: string}[];
     confidentiality: LambdaVisibility;
     minInstanceNumber: number;

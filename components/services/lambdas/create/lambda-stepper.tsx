@@ -1,5 +1,5 @@
+import { Step } from "@/lib/models/lambdas/lambda-create";
 import { useState } from "react";
-import { Step } from "./types/lambda-create";
 
 export default function LambdaStepper({
     steps,

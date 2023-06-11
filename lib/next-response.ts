@@ -14,6 +14,21 @@ class ResponseService {
         return NextResponse.json(json, { ...init, status: 201 });
     }
 
+    static badRequest(
+        message = "Bad Request",
+        errorContext?: any,
+        init?: ResponseInit,
+    ) {
+        let errorBody: ErrorBody = { error: message };
+        if (this.hasToDisplayErrorContext(errorContext)) {
+            errorBody = {
+                context: errorContext.stack,
+                ...errorBody,
+            };
+        }
+        return NextResponse.json(errorBody, { ...init, status: 400 });
+    }
+
     static unauthorized(
         message = "Unauthorized",
         errorContext?: any,
@@ -82,10 +97,10 @@ class ResponseService {
     ) {
         let errorBody: ErrorBody = { error: message };
         if (this.hasToDisplayErrorContext(errorContext)) {
-                errorBody = {
-                    context: errorContext.stack,
-                    ...errorBody,
-                };
+            errorBody = {
+                context: errorContext.stack,
+                ...errorBody,
+            };
         }
         return NextResponse.json(errorBody, { ...init, status: 500 });
     }

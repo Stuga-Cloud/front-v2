@@ -1,8 +1,5 @@
-import {
-    LambdaCPULimit,
-    LambdanMemoryLimit as LambdaMemoryLimit,
-    Step,
-} from "../types/lambda-create";
+import { LambdaCPULimit, LambdaMemoryLimit, Step } from "@/lib/models/lambdas/lambda-create";
+
 export const cpuLimitsChoices: LambdaCPULimit[] = [
     { value: 70, unit: "mCPU" },
     { value: 140, unit: "mCPU" },

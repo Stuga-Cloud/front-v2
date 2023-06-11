@@ -1,6 +1,6 @@
 import { time } from "console";
-import { LambdaCPULimit, LambdanMemoryLimit } from "./types/lambda-create";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
+import { LambdaCPULimit, LambdaMemoryLimit } from "@/lib/models/lambdas/lambda-create";
 
 export default function LambdaSettingsForm({
     cpuChoices,
@@ -11,13 +11,13 @@ export default function LambdaSettingsForm({
     onChange,
 }: {
     cpuChoices: LambdaCPULimit[];
-    memoryChoices: LambdanMemoryLimit[];
+    memoryChoices: LambdaMemoryLimit[];
     cpuConfig: LambdaCPULimit;
-    memoryConfig: LambdanMemoryLimit;
+    memoryConfig: LambdaMemoryLimit;
     timeout: number;
     onChange: (
         cpuConfig: LambdaCPULimit,
-        memoryConfig: LambdanMemoryLimit,
+        memoryConfig: LambdaMemoryLimit,
         timeout: number,
     ) => void;
 }) {
@@ -62,7 +62,7 @@ export default function LambdaSettingsForm({
                 onChange={(e) => {
                     const valueSplit = e.target.value.split(" ");
                     const memoryLimit = {value: parseInt(valueSplit[0]), unit: valueSplit[1] }
-                    onChange(cpuConfig, memoryLimit as LambdanMemoryLimit, timeout);
+                    onChange(cpuConfig, memoryLimit as LambdaMemoryLimit, timeout);
                 }}
             >
                 {memoryChoices.map((choice) => (

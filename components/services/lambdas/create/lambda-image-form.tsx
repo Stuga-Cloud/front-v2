@@ -2,7 +2,7 @@ import { toastEventEmitter } from "@/lib/event-emitter/toast-event-emitter";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
 import { useState } from "react";
 import Link from "next/link";
-import { isLambdaImageNameValid } from "./form-validation/lambda-create-validation";
+import { isLambdaImageNameValid } from "@/lib/models/lambdas/validation/lambda-create-candidate";
 
 export type AvailableRegistriesName = "Docker hub" | "Our private registry";
 

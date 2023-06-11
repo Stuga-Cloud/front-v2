@@ -1,4 +1,8 @@
-import { LambdaCreateCandidate } from "../types/lambda-create";
+import {
+    cpuLimitsChoices,
+    memoryLimitsChoices,
+} from "../config/lambda-create-config";
+import { LambdaCreateCandidate } from "../lambda-create";
 
 export const isLambdaNameValid = (lambdaName: string): boolean => {
     var regex = /^[a-zA-Z0-9-]*$/;
@@ -24,19 +28,40 @@ export const throwIfLambdaCreationCandidateIsNotValid = (
         errorMessages.push("Lambda image name is not valid");
     }
 
-    if (lambdaCreateCandidate.cpuLimit.value < 0) {
+    if (lambdaCreateCandidate.imageName.split(":").length !== 2) {
+        errorMessages.push("Lambda image name has to have a tag, example: nginx:latest");
+    }
+
+    if (
+        cpuLimitsChoices.find(
+            (config) => config.value === lambdaCreateCandidate.cpuLimit.value,
+        ) === undefined
+    ) {
         errorMessages.push("CPU limit is not valid");
     }
 
-    if (lambdaCreateCandidate.memoryLimit.value < 0) {
+    if (
+        memoryLimitsChoices.find(
+            (config) =>
+                config.value === lambdaCreateCandidate.memoryLimit.value,
+        ) === undefined
+    ) {
         errorMessages.push("memory limit is not valid");
     }
 
-    if (lambdaCreateCandidate.minInstanceNumber < 0) {
+    if (
+        lambdaCreateCandidate.minInstanceNumber < 0 ||
+        lambdaCreateCandidate.minInstanceNumber >
+            lambdaCreateCandidate.maxInstanceNumber
+    ) {
         errorMessages.push("min instance number is not valid");
     }
 
-    if (lambdaCreateCandidate.maxInstanceNumber < 0) {
+    if (
+        lambdaCreateCandidate.maxInstanceNumber > 10 ||
+        lambdaCreateCandidate.maxInstanceNumber <
+            lambdaCreateCandidate.minInstanceNumber
+    ) {
         errorMessages.push("max instance number is not valid");
     }
 
@@ -49,14 +74,19 @@ export const throwIfLambdaCreationCandidateIsNotValid = (
 
     if (lambdaCreateCandidate.confidentiality.visibility === "private") {
         if (lambdaCreateCandidate.confidentiality.access === undefined) {
-            errorMessages.push("you need to have a valid private key in order to create a private lambda");
-        }
-        else if (lambdaCreateCandidate.confidentiality.access.mode === "apiKey") {
+            errorMessages.push(
+                "you need to have a valid private key in order to create a private lambda",
+            );
+        } else if (
+            lambdaCreateCandidate.confidentiality.access.mode === "apiKey"
+        ) {
             if (
                 lambdaCreateCandidate.confidentiality.access.apiKey ===
                 undefined
             ) {
-                errorMessages.push("you need to have a valid private key in order to create a private lambda");
+                errorMessages.push(
+                    "you need to have a valid private key in order to create a private lambda",
+                );
             }
         }
     }
