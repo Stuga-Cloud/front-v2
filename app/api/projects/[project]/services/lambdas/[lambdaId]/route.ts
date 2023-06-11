@@ -37,4 +37,8 @@ export async function DELETE(request: Request, { params }: NextRequest) {
             id: lambdaId,
         },
     });
+
+    return ResponseService.success({
+        message: "lambda-deleted",
+    });
 }
