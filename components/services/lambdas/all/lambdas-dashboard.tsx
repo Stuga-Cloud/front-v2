@@ -23,14 +23,14 @@ export default function LambdasDashboard({
             await DeleteLambda({lambdaId, projectId});
             toastEventEmitter.emit("pop", {
                 type: "success",
-                mesage: "Namespace deleted successfully",
+                mesage: "lambda deleted successfully",
                 duration: 2000,
             });
             await afterDelete();
         } catch (error) {
             toastEventEmitter.emit("pop", {
                 type: "danger",
-                message: "Failed to delete namespace",
+                message: "Failed to delete lambda",
                 duration: 2000,
             });
         } finally {

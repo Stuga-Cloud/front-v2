@@ -100,12 +100,12 @@ export default function LambdaAccueil({
                     }}
                     afterDelete={async () => {
                         try {
-                            const namespaces = await GetLambdas(projectId);
-                            setLambdas(namespaces);
+                            const lambdas = await GetLambdas(projectId);
+                            setLambdas(lambdas);
                         } catch (error) {
                             toastEventEmitter.emit("pop", {
                                 type: "danger",
-                                message: "error when try to get namespaces",
+                                message: "error when try to get lambdas",
                                 duration: 5000,
                             });
                         }

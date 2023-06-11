@@ -41,7 +41,7 @@ export async function POST(request: Request, { params }: NextRequest) {
     );
 
     if (projectGetOrNextResponse instanceof StugaError) {
-        return projectGetOrNextResponse;
+        return StugaErrorToNextResponse(projectGetOrNextResponse);
     }
 
     try {
