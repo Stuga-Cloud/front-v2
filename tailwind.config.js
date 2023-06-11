@@ -14,6 +14,9 @@ module.exports = {
     },
     theme: {
         extend: {
+            minHeight: {
+                '96': "24rem",
+            },
             fontFamily: {
                 display: ["var(--font-sf)", "system-ui", "sans-serif"],
                 default: ["var(--font-inter)", "system-ui", "sans-serif"],
@@ -71,7 +74,7 @@ module.exports = {
     plugins: [
         require("@tailwindcss/forms"),
         require("@tailwindcss/typography"),
-        require('flowbite/plugin'),
+        require("flowbite/plugin"),
         plugin(({ addVariant }) => {
             addVariant("radix-side-top", '&[data-side="top"]');
             addVariant("radix-side-bottom", '&[data-side="bottom"]');

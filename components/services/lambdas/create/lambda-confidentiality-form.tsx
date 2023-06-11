@@ -26,7 +26,7 @@ export default function LambdaConfidentialityForm({
 }) {
     const [apiKey, setApiKey] = useState<string | null>(null);
     return (
-        <>
+        <div className="mb-10 ms-5 flex min-h-96 w-full flex-col">
             <RadioButtons
                 onChangeValue={(value: string) => {
                     console.log("value");
@@ -38,7 +38,7 @@ export default function LambdaConfidentialityForm({
                 <>
                     <div className="mt-4 flex flex-row items-center">
                         <InfoCircledIcon />
-                        <p className="text-sm text-gray-500 ms-2">
+                        <p className="ms-2 text-sm text-gray-500">
                             Private lambdas are only visible to you and your
                             team.
                         </p>
@@ -46,9 +46,9 @@ export default function LambdaConfidentialityForm({
                     <h4 className="mt-20 text-xl font-bold">
                         Generate an API key
                     </h4>
-                    <div className="mt-4 mb-10 flex flex-row items-center">
+                    <div className="mb-10 mt-4 flex flex-row items-center">
                         <InfoCircledIcon />
-                        <p className="text-sm text-gray-500">
+                        <p className="ms-2 text-sm text-gray-500">
                             You can access you lambda with the following API key
                         </p>
                     </div>
@@ -63,12 +63,14 @@ export default function LambdaConfidentialityForm({
                         Generate API key
                     </button>
                     {apiKey && (
-                        <div className="mt-4 border-2 border-green-500 rounded-lg p-5 bg-white">
-                            <p className="text-m text-gray-500 font-bold">{apiKey}</p>
+                        <div className="mt-4 rounded-lg border-2 border-green-500 bg-white p-5">
+                            <p className="text-m font-bold text-gray-500">
+                                {apiKey}
+                            </p>
                         </div>
                     )}
                 </>
             )}
-        </>
+        </div>
     );
 }

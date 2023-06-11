@@ -14,7 +14,7 @@ export default function LambdaScalabilityForm({
     setMaxInstanceNumber: (maxInstanceNumber: number) => void;
 }) {
     return (
-        <>
+        <div className="mb-10 ms-5 flex min-h-96 w-full flex-col">
             <div className="mb-6 ms-5 flex flex-col">
                 {/* Display a message that explains the autoscaling feature */}
                 <p className="mt-2 text-sm text-gray-500 ">
@@ -91,6 +91,6 @@ export default function LambdaScalabilityForm({
                     ) : null}
                 </div>
             </div>
-        </>
+        </div>
     );
 }

@@ -1191,7 +1191,7 @@ export default function NewContainerForm({
                                         </>
                                     )}
                                 {step === 7 && (
-                                    <div className="mb-10 ms-5 flex h-96 w-full flex-col">
+                                    <div className="mb-10 ms-5 flex min-h-96 w-full flex-col">
                                         <label
                                             htmlFor="environment-variables"
                                             className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"

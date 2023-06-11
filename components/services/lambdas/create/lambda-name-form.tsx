@@ -10,7 +10,7 @@ export default function LambdaNameForm({
     handleChangeName: (name: string) => void;
 }) {
     return (
-        <div className="mb-10 ms-5 flex h-96 w-full flex-col">
+        <div className="mb-10 ms-5 flex min-h-96 w-full flex-col">
             <div className="mb-2 ms-5 flex flex-col">
                 <div className="mb-1 flex flex-col">
                     <label

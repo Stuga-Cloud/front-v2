@@ -1,20 +1,31 @@
+import { time } from "console";
 import { LambdaCPULimit, LambdanMemoryLimit } from "./types/lambda-create";
+import { InfoCircledIcon } from "@radix-ui/react-icons";
 
 export default function LambdaSettingsForm({
     cpuChoices,
     memoryChoices,
     cpuConfig,
     memoryConfig,
+    timeout,
     onChange,
 }: {
     cpuChoices: LambdaCPULimit[];
     memoryChoices: LambdanMemoryLimit[];
     cpuConfig: string;
     memoryConfig: string;
-    onChange: (cpuConfig: string, memoryConfig: string) => void;
+    timeout: number;
+    onChange: (
+        cpuConfig: string,
+        memoryConfig: string,
+        timeout: number,
+    ) => void;
 }) {
+    const isTimeoutValid = (timeout: number) => {
+        return timeout >= 1 && timeout <= 600;
+    };
     return (
-        <div className="mb-10 ms-5 flex h-96 w-full flex-col">
+        <div className="mb-10 ms-5 flex min-h-96 w-full flex-col">
             <label
                 htmlFor="cpu-limit"
                 className="mb-2 block text-sm font-medium text-gray-900 "
@@ -25,7 +36,7 @@ export default function LambdaSettingsForm({
                 className="bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500"
                 value={cpuConfig}
                 onChange={(e) => {
-                    onChange(e.target.value, memoryConfig);
+                    onChange(e.target.value, memoryConfig, timeout);
                 }}
             >
                 {cpuChoices.map((choice) => (
@@ -39,7 +50,7 @@ export default function LambdaSettingsForm({
             </select>
             <label
                 htmlFor="memory-limit"
-                className="mb-2 mt-3 block text-sm font-medium text-gray-900 "
+                className="mb-2 mt-5 block text-sm font-medium text-gray-900 "
             >
                 Memory Limit (MB)
             </label>
@@ -47,7 +58,7 @@ export default function LambdaSettingsForm({
                 className="bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 "
                 value={memoryConfig}
                 onChange={(e) => {
-                    onChange(cpuConfig, e.target.value);
+                    onChange(cpuConfig, e.target.value, timeout);
                 }}
             >
                 {memoryChoices.map((choice) => (
@@ -59,6 +70,50 @@ export default function LambdaSettingsForm({
                     </option>
                 ))}
             </select>
+            <div className="mt-5 flex flex-col">
+                <label
+                    htmlFor="cpuUsage"
+                    className={
+                        "mb-2 block text-sm font-medium text-gray-900" +
+                        (isTimeoutValid(timeout) ? "gray-900 " : "red-700 ")
+                    }
+                >
+                    Timeout (seconds)
+                </label>
+                <input
+                    id="cpuUsage"
+                    type="number"
+                    className={`bg-gray-40 mb-1 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 ${
+                        !isTimeoutValid(timeout)
+                            ? "border-red-500 bg-red-50 p-2.5 text-sm text-red-900 placeholder-red-700 focus:border-red-500 focus:ring-red-500 "
+                            : ""
+                    }`}
+                    value={timeout}
+                    onChange={(e) =>
+                        onChange(
+                            cpuConfig,
+                            memoryConfig,
+                            Number(e.target.value),
+                        )
+                    }
+                    placeholder="Enter CPU Usage Threshold"
+                    min="0"
+                    max="100"
+                    required
+                />
+                <div className="mb-10  flex flex-row items-center">
+                    <InfoCircledIcon />
+                    <p className="ms-2 text-sm text-gray-500">
+                        After this time the lambda will be terminated. It will
+                        help you to avoid unexpected costs.
+                    </p>
+                </div>
+                {!isTimeoutValid(timeout) ? (
+                    <p className="mt-2 text-sm text-red-600 ">
+                        Please enter a valid number between 1 and 600.
+                    </p>
+                ) : null}
+            </div>
         </div>
     );
 }

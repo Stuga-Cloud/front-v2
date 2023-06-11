@@ -11,9 +11,12 @@ import LambdaEnvVarForm, { LambdaEnvironmentVariable } from "./lambda-env-var";
 import LambdaConfidentialityForm from "./lambda-confidentiality-form";
 import { ContainerEnvironmentVariable } from "@/lib/models/containers/container-application-environment-variables";
 import LambdaSettingsForm from "./lambda-settings-form";
-import { cpuLimitsChoices, memoryLimitsChoices } from "./types/lambda-create";
+import {
+    Step,
+    cpuLimitsChoices,
+    memoryLimitsChoices,
+} from "./types/lambda-create";
 import LambdaScalabilityForm from "./lambda-scalability-form";
-import { m } from "framer-motion";
 
 export default function NewLambdaForm({
     session,
@@ -22,13 +25,14 @@ export default function NewLambdaForm({
     session: Session | null;
     projectId: string;
 }) {
+    const [timeout, setTimeout] = useState(4);
     const [minInstanceNumber, setMinInstanceNumber] = useState(0);
     const [maxInstanceNumber, setMaxInstanceNumber] = useState(2);
     const [confidentiality, setConfidentiality] = useState<
         "public" | "private"
     >("public");
     const [activeStep, setActiveStep] = useState(1);
-    const [lambdaName, setLambdaName] = useState("");
+    const [lambdaName, setLambdaName] = useState("my-first-lambda");
     const [imageName, setImageName] = useState("");
     const [
         applicationEnvironmentVariables,
@@ -45,9 +49,9 @@ export default function NewLambdaForm({
             description: "Enter your lambda name",
             svgPath: (
                 <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5zm6-10.125a1.875 1.875 0 11-3.75 0 1.875 1.875 0 013.75 0zm1.294 6.336a6.721 6.721 0 01-3.17.789 6.721 6.721 0 01-3.168-.789 3.376 3.376 0 016.338 0z"
                 ></path>
             ),
         },
@@ -69,7 +73,7 @@ export default function NewLambdaForm({
                 <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    d="M4.745 3A23.933 23.933 0 003 12c0 3.183.62 6.22 1.745 9M19.5 3c.967 2.78 1.5 5.817 1.5 9s-.533 6.22-1.5 9M8.25 8.885l1.444-.89a.75.75 0 011.105.402l2.402 7.206a.75.75 0 001.104.401l1.445-.889m-8.25.75l.213.09a1.687 1.687 0 002.062-.617l4.45-6.676a1.688 1.688 0 012.062-.618l.213.09"
+                    d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z"
                 ></path>
             ),
         },
@@ -78,9 +82,9 @@ export default function NewLambdaForm({
             description: "Set lambda confidentiality",
             svgPath: (
                 <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"
                 ></path>
             ),
         },
@@ -253,6 +257,7 @@ export default function NewLambdaForm({
                             )}
                             {activeStep === 5 && (
                                 <LambdaSettingsForm
+                                    timeout={timeout}
                                     cpuChoices={cpuLimitsChoices}
                                     memoryChoices={memoryLimitsChoices}
                                     cpuConfig={cpuConfig}
@@ -260,9 +265,11 @@ export default function NewLambdaForm({
                                     onChange={(
                                         cpuConfig: string,
                                         memoryConfig: string,
+                                        timeout: number,
                                     ) => {
                                         setCpuConfig(cpuConfig);
                                         setMemoryConfig(memoryConfig);
+                                        setTimeout(timeout);
                                     }}
                                 />
                             )}
@@ -294,6 +301,45 @@ export default function NewLambdaForm({
                                     }}
                                 />
                             )}
+                            <div className="flex justify-between">
+                                {activeStep === 1 && (
+                                    <button
+                                        type="button"
+                                        // onClick={}
+                                        className="invisible"
+                                    />
+                                )}
+                                {activeStep > 1 && (
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            setActiveStep(activeStep - 1)
+                                        }
+                                        className="Button stuga-orange-color"
+                                    >
+                                        Previous
+                                    </button>
+                                )}
+                                {activeStep < stepsBase.length && (
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            setActiveStep(activeStep + 1)
+                                        }
+                                        className="Button stuga-primary-color"
+                                    >
+                                        Next
+                                    </button>
+                                )}
+                                {activeStep === stepsBase.length && (
+                                    <button
+                                        type="submit"
+                                        className="Button stuga-primary-color"
+                                    >
+                                        Deploy lambda
+                                    </button>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </form>

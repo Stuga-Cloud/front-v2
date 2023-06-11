@@ -50,7 +50,7 @@ export default function LambdaImageForm({
         availableRegistries[0],
     );
     return (
-        <div className="mb-10 ms-5 flex h-96 w-full flex-col">
+        <div className="mb-10 ms-5 flex min-h-96 w-full flex-col">
             {/*    Remember that step 2 is concerning the docker image (or other registry) */}
             <div className="mb-2 ms-5 flex flex-col items-start">
                 {/* Choice between docker and our private registry */}

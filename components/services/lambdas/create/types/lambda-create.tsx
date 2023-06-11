@@ -1,4 +1,4 @@
-interface Step {
+export interface Step {
     name: string;
     description: string;
     svgPath: any;
@@ -30,5 +30,4 @@ export const memoryLimitsChoices: LambdanMemoryLimit[] = [
     { value: 1024, unit: "MB" },
     { value: 2048, unit: "MB" },
     { value: 4096, unit: "MB" },
-    { value: 8192, unit: "MB" },
 ];
