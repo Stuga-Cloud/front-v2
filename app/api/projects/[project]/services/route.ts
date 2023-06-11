@@ -60,12 +60,11 @@ export async function GET(request: Request, { params }: NextRequest) {
         },
     });
 
-    const containers = await prisma.container.findMany({
+    const containers = await prisma.container.findFirst({
         where: {
             projectId: project.id,
         },
     });
-
 
     const lambda = await prisma.lambda.findFirst({
         where: {

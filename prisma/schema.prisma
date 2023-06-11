@@ -54,10 +54,10 @@ model User {
   emailVerified      DateTime?
   image              String?
   accounts           Account[]
+  lambdas            Lambda[]
   createdProjects    Project[]
   projectsMembership ProjectMembership[]
   sessions           Session[]
-  lambdas            Lambda[]
 }
 
 model Project {
@@ -66,10 +66,10 @@ model Project {
   createdBy  String
   containers Container[]         @relation("ProjectContainers")
   databases  Database[]          @relation("ProjectDatabases")
+  lambdas    Lambda[]
   user       User                @relation(fields: [createdBy], references: [id], onDelete: Cascade)
   members    ProjectMembership[]
   registry   Registry?
-  lambdas   Lambda[]
 
   @@index([createdBy])
 }
@@ -122,23 +122,24 @@ model Container {
 }
 
 model Lambda {
-  id        String   @id @default(cuid())
-  name       String
-  imageName  String
-  cpuLimitmCPU Int
-  memoryLimitMB Int
-  minInstances Int
-  maxInstances Int
-  envVars    Json[]
+  id             String   @id @default(cuid())
+  name           String
+  imageName      String
+  cpuLimitmCPU   Int
+  memoryLimitMB  Int
+  minInstances   Int
+  maxInstances   Int
+  envVars        Json[]
   timeoutSeconds Int
-  visibility String
-  privateConfig Json?
-  modifiedAt DateTime @default(now())
-  createdAt  DateTime @default(now())
-  projectId  String
-  createdBy  String
-  user       User                @relation(fields: [createdBy], references: [id], onDelete: Cascade)
-  project    Project  @relation(fields: [projectId], references: [id])
+  visibility     String
+  privateConfig  Json?
+  modifiedAt     DateTime @default(now())
+  createdAt      DateTime @default(now())
+  projectId      String
+  createdBy      String
+  user           User     @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  project        Project  @relation(fields: [projectId], references: [id])
+
   @@index([projectId])
   @@index([createdBy])
 }

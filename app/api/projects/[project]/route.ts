@@ -38,6 +38,15 @@ export async function GET(request: Request, { params }: NextRequest) {
         },
     });
 
+    if (!project) {
+        return NextResponse.json(
+            {
+                error: "Projet introuvable",
+            },
+            { status: 404 },
+        );
+    }
+
     const members: Member[] = usersInProject.map((user) => ({
         id: user.id,
         name: user.name,

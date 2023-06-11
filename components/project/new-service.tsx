@@ -18,11 +18,15 @@ import ServicePopUpCard from "./service-popup-card";
 export default function NewService({
     session,
     afterCreate,
+    alreadyHave,
+    ariaHidden,
 }: {
     session: Session | null;
     afterCreate: (
         service: "registry" | "lambda" | "container" | "database",
     ) => void;
+    alreadyHave: ("registry" | "lambda" | "container" | "database" | null)[];
+    ariaHidden: (opened: boolean) => void;
 }) {
     const [name, setName] = useState("");
     const [loading, setLoading] = useState(false);
@@ -41,7 +45,13 @@ export default function NewService({
         }
     };
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog
+            open={open}
+            onOpenChange={() => {
+                setOpen(!open);
+                ariaHidden(!open);
+            }}
+        >
             <DialogTrigger asChild>
                 <button className="Button stuga-primary-color">
                     <svg
@@ -70,22 +80,30 @@ export default function NewService({
                         secure database.
                     </Description>
                     <div className="grid grid-cols-2 items-center gap-4">
-                        <ServicePopUpCard
-                            title="Container Registry"
-                            onClick={() => afterCreate("registry")}
-                        />
-                        <ServicePopUpCard
-                            title="Lambdas"
-                            onClick={() => afterCreate("lambda")}
-                        />
-                        <ServicePopUpCard
-                            title="Containers"
-                            onClick={() => afterCreate("container")}
-                        />
-                        <ServicePopUpCard
-                            title="Database"
-                            onClick={() => afterCreate("database")}
-                        />
+                        {!alreadyHave.includes("registry") && (
+                            <ServicePopUpCard
+                                title="Container Registry"
+                                onClick={() => afterCreate("registry")}
+                            />
+                        )}
+                        {!alreadyHave.includes("lambda") && (
+                            <ServicePopUpCard
+                                title="Lambdas"
+                                onClick={() => afterCreate("lambda")}
+                            />
+                        )}
+                        {!alreadyHave.includes("container") && (
+                            <ServicePopUpCard
+                                title="Containers"
+                                onClick={() => afterCreate("container")}
+                            />
+                        )}
+                        {!alreadyHave.includes("database") && (
+                            <ServicePopUpCard
+                                title="Database"
+                                onClick={() => afterCreate("database")}
+                            />
+                        )}
                     </div>
                     <Close asChild>
                         <button

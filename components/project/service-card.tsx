@@ -4,18 +4,17 @@ export default function ServiceCard({
     title,
     description,
     imageName,
+    dialogOpened,
     onClick,
 }: {
     title: string;
     description: string;
     imageName: string;
+    dialogOpened: boolean;
     onClick: () => void;
 }) {
     return (
-        <div
-            className="min-w-sm dark:bg-grey-200 mt-8 w-full rounded-lg bg-white p-6 shadow dark:border-green-700"
-            onClick={onClick}
-        >
+        <div className="StugaCard" onClick={onClick} aria-hidden={dialogOpened}>
             <Image
                 src={`/${imageName}`}
                 alt="docker picture"

@@ -33,13 +33,13 @@ export default function Project({
         {} as GetServiceResponse,
     );
     const [project, setProject] = useState({} as Project);
+    const [dialogOpened, setDialogOpened] = useState(false);
     const router = useRouter();
 
     const getProject = async (projectId: string) => {
         try {
             const res = await fetch(`/api/projects/${projectId}`);
-            const project = await res.json();
-            return project;
+            return await res.json();
         } catch (error) {
             console.log(error);
         }
@@ -121,7 +121,17 @@ export default function Project({
                         projectId={projectId}
                     />
                     <NewService
+                        ariaHidden={(opened) => {
+                            setDialogOpened(opened);
+                            console.log("ariaHidden", opened);
+                        }}
                         session={session}
+                        alreadyHave={[
+                            servicesSupported.registry ? "registry" : null,
+                            servicesSupported.lambda ? "lambda" : null,
+                            servicesSupported.containers ? "container" : null,
+                            servicesSupported.database ? "database" : null,
+                        ]}
                         afterCreate={(
                             service:
                                 | "registry"
@@ -186,7 +196,7 @@ export default function Project({
                 <div className="grid w-full grid-cols-2 gap-4">
                     {servicesSupported && servicesSupported.registry && (
                         <div
-                            key={servicesSupported.containers.id}
+                            key={servicesSupported.registry.id}
                             className="w-full"
                         >
                             <ServiceCard
@@ -194,6 +204,7 @@ export default function Project({
                                 title="Container registry"
                                 description="Your image storage"
                                 imageName="docker.png"
+                                dialogOpened={dialogOpened}
                                 onClick={() => {
                                     router.push(
                                         `/projects/${project.id}/services/registry`,
@@ -209,6 +220,7 @@ export default function Project({
                                 title="Containers"
                                 description="Your containerized applications"
                                 imageName="containers.png"
+                                dialogOpened={dialogOpened}
                                 onClick={() => {
                                     router.push(
                                         `/projects/${project.id}/services/containers`,
@@ -224,6 +236,7 @@ export default function Project({
                                 title="Lambdas"
                                 description="your serverless functions"
                                 imageName="lambda.png"
+                                dialogOpened={dialogOpened}
                                 onClick={() => {
                                     router.push(
                                         `/projects/${project.id}/services/lambdas`,
@@ -239,6 +252,7 @@ export default function Project({
                                 title="Lambdas"
                                 description="your managed secure database"
                                 imageName="docker.png"
+                                dialogOpened={dialogOpened}
                                 onClick={() => {
                                     router.push(
                                         `/projects/${project.id}/services/database`,
