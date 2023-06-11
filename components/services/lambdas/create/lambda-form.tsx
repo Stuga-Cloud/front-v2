@@ -142,7 +142,7 @@ export default function NewLambdaForm({
                 )}
                 {loading ? (
                     <div className="flex h-[10vh] items-center justify-center">
-                        <LoadingSpinner />
+                        <LoadingSpinner size="large" />
                     </div>
                 ) : null}
                 {!loading && (
