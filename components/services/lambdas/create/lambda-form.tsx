@@ -27,6 +27,7 @@ import {
     memoryLimitsChoices,
     stepsBase,
 } from "./config/lambda-create-config";
+import { CreateLambda } from "@/lib/services/lambdas/create-lambda";
 
 export default function NewLambdaForm({
     session,
@@ -77,11 +78,19 @@ export default function NewLambdaForm({
         };
         try {
             throwIfLambdaCreationCandidateIsNotValid(form);
-            
         } catch (error) {
             if (error instanceof Error) {
                 setErrorFormMessage(error.message);
             }
+        }
+
+        try {
+            setLoading(true);
+            await CreateLambda(projectId, form);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -108,7 +117,7 @@ export default function NewLambdaForm({
                 </p>
                 {errorFromMessage && (
                     <div
-                        className="mb-4 flex flex-col w-2/6 items-center justify-center rounded-lg bg-red-50 p-4 text-sm text-red-800"
+                        className="mb-4 flex w-2/6 flex-col items-center justify-center rounded-lg bg-red-50 p-4 text-sm text-red-800"
                         role="alert"
                     >
                         <span className="font-medium">Form not valid</span>
@@ -305,6 +314,7 @@ export default function NewLambdaForm({
                                     <button
                                         type="submit"
                                         className="Button stuga-primary-color"
+                                        onSubmit={handleSubmit}
                                     >
                                         Deploy lambda
                                     </button>

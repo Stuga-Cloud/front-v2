@@ -2,12 +2,12 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import ResponseService from "@/lib/next-response";
 import { StugaError } from "@/lib/services/error/error";
 import { StugaErrorToNextResponse } from "@/lib/services/error/stuga-error-to-next-response";
-import { GetNamespaceById } from "@/lib/services/namespace/get-namespace-by-id";
-import { VerifyIfNamespaceIsInProject } from "@/lib/services/namespace/verify-if-namespace-is-in-project";
 import { VerifyIfUserCanAccessProject } from "@/lib/services/project/verify-user-access";
 import { getServerSession } from "next-auth";
 import { DeleteImageInNamespace } from "@/lib/services/registry/harbor/delete-image-in-namespace";
 import { NextRequest } from "next/server";
+import { GetNamespaceById } from "@/lib/services/registry/namespace/get-namespace-by-id";
+import { VerifyIfNamespaceIsInProject } from "@/lib/services/registry/namespace/verify-if-namespace-is-in-project";
 
 export async function DELETE(request: Request, { params }: NextRequest) {
     try {
