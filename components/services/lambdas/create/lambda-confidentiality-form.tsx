@@ -77,6 +77,15 @@ export default function LambdaConfidentialityForm({
                         onClick={async () => {
                             const key = await generateApiKey();
                             setApiKey(key);
+                            if (key) {
+                                handleVisibilityChange({
+                                    visibility: "private",
+                                    access: {
+                                        mode: "apiKey",
+                                        apiKey: key,
+                                    },
+                                });
+                            }
                         }}
                     >
                         Generate API key

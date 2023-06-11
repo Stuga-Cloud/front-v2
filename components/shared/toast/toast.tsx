@@ -26,8 +26,8 @@ export default function Toast({
 
     const types = {
         success: {
-            bg: "bg-green-100 dark:bg-green-800",
-            text: "text-green-500 dark:text-green-200",
+            bg: "bg-green-100",
+            text: "text-green-500 ",
             icon: (
                 <path
                     fillRule="evenodd"
@@ -37,8 +37,8 @@ export default function Toast({
             ),
         },
         danger: {
-            bg: "bg-red-100 dark:bg-red-800",
-            text: "text-red-500 dark:text-red-200",
+            bg: "bg-red-100 ",
+            text: "text-red-500 ",
             icon: (
                 <path
                     fillRule="evenodd"
@@ -48,8 +48,8 @@ export default function Toast({
             ),
         },
         warning: {
-            bg: "bg-orange-100 dark:bg-orange-700",
-            text: "text-orange-500 dark:text-orange-200",
+            bg: "bg-orange-100 ",
+            text: "text-orange-500",
             icon: (
                 <path
                     fillRule="evenodd"
@@ -61,7 +61,7 @@ export default function Toast({
     };
 
     return (
-        <div className="fixed left-1/2 top-10 mb-4 mt-4 flex w-full max-w-xs -translate-x-1/2 transform items-center rounded-lg bg-white p-4 text-gray-500 shadow dark:bg-gray-800 dark:text-gray-400">
+        <div className=" z-20 fixed left-1/2 top-10 mb-4 mt-10 flex w-full max-w-xs -translate-x-1/2 transform items-center rounded-lg bg-white p-4 text-gray-500 shadow">
             <div
                 className={`inline-flex h-8 w-8 flex-shrink-0 items-center justify-center ${types[type].text} ${types[type].bg}`}
             >
@@ -78,7 +78,7 @@ export default function Toast({
             <div className="ml-3 text-sm font-normal">{message}</div>
             <button
                 type="button"
-                className="-mx-1.5 -my-1.5 ml-auto flex inline-flex h-8 w-8 items-center justify-center rounded-lg bg-white p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-900 focus:ring-2 focus:ring-gray-300 dark:bg-gray-800 dark:text-gray-500 dark:hover:bg-gray-700 dark:hover:text-white"
+                className="-mx-1.5 -my-1.5 ml-auto flex inline-flex h-8 w-8 items-center justify-center rounded-lg bg-white p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-900 focus:ring-2 focus:ring-gray-300 "
                 onClick={() => setIsVisible(false)}
                 aria-label="Close"
             >

@@ -36,18 +36,21 @@ export async function POST(request: Request, { params }: NextRequest) {
         return projectGetOrNextResponse;
     }
 
-    setTimeout(() => {
-        console.log("project created");
-    }, 2000);
-
-    return ResponseService.created({
-        name: req.name,
-        imageName: req.imageName,
-        cpuLimit: req.cpuLimit,
-        memoryLimit: req.memoryLimit,
-        confidentiality: req.confidentiality,
-        minInstanceNumber: req.minInstanceNumber,
-        maxInstanceNumber: req.maxInstanceNumber,
-        timeout: req.timeout,
-    } as LambdaCreateResponse);
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            console.log("project created");
+            resolve(
+                ResponseService.created({
+                    name: req.name,
+                    imageName: req.imageName,
+                    cpuLimit: req.cpuLimit,
+                    memoryLimit: req.memoryLimit,
+                    confidentiality: req.confidentiality,
+                    minInstanceNumber: req.minInstanceNumber,
+                    maxInstanceNumber: req.maxInstanceNumber,
+                    timeout: req.timeout,
+                } as LambdaCreateResponse),
+            );
+        }, 5000);
+    });
 }

@@ -9,7 +9,7 @@ export const CreateLambda = async (
 ): Promise<string> => {
     try {
         const result = await axios.post<LambdaCreateResponse>(
-            `api/projects/${projectId}/services/lambdas`,
+            `/api/projects/${projectId}/services/lambdas`,
             lambdaCreateCandidate,
         );
         return result.data.name;

@@ -28,6 +28,7 @@ import {
     stepsBase,
 } from "./config/lambda-create-config";
 import { CreateLambda } from "@/lib/services/lambdas/create-lambda";
+import { toastEventEmitter } from "@/lib/event-emitter/toast-event-emitter";
 
 export default function NewLambdaForm({
     session,
@@ -59,7 +60,9 @@ export default function NewLambdaForm({
 
     const handleSubmit = async (event: { preventDefault: () => void }) => {
         event.preventDefault();
-
+        console.log("submit");
+        console.log(confidentiality);
+        setErrorFormMessage("");
         const form: LambdaCreateCandidate = {
             minInstanceNumber,
             maxInstanceNumber,
@@ -76,21 +79,34 @@ export default function NewLambdaForm({
                 }),
             ),
         };
+        console.log("form");
+        console.log(form);
         try {
             throwIfLambdaCreationCandidateIsNotValid(form);
         } catch (error) {
             if (error instanceof Error) {
                 setErrorFormMessage(error.message);
+                return;
             }
         }
 
         try {
             setLoading(true);
             await CreateLambda(projectId, form);
+            toastEventEmitter.emit("pop", {
+                type: "success",
+                message: "lambda well created",
+                duration: 4000,
+            });
         } catch (error) {
             console.error(error);
         } finally {
             setLoading(false);
+        }
+    };
+    const handleKeyDown = (event: any) => {
+        if (event.key === "Enter") {
+            event.preventDefault();
         }
     };
 
@@ -129,200 +145,213 @@ export default function NewLambdaForm({
                         <LoadingSpinner />
                     </div>
                 ) : null}
-                <form className="flex w-11/12 flex-col py-10">
-                    {/* Place stepper information on left side and form on right side */}
-                    <div className="flex w-full flex-row items-start align-middle">
-                        <div className="w-3/10 flex flex-col pt-5">
-                            {/* Stepper information */}
-                            <LambdaStepper
-                                steps={stepsBase}
-                                activeStep={activeStep}
-                                handleChangeActiveStep={(step: number) =>
-                                    setActiveStep(step)
-                                }
-                            />
-                        </div>
-                        <div className="flex w-full flex-col px-5">
-                            <h4 className="py-4 text-2xl font-bold">
-                                <label
-                                    htmlFor="name"
-                                    className="mb-7 text-lg text-gray-700 md:text-3xl"
-                                >
-                                    {stepsBase[activeStep - 1].name}
-                                </label>
-                            </h4>
+                {!loading && (
+                    <form
+                        onSubmit={handleSubmit}
+                        onKeyDown={handleKeyDown}
+                        className="flex w-11/12 flex-col py-10"
+                    >
+                        {/* Place stepper information on left side and form on right side */}
+                        <div className="flex w-full flex-row items-start align-middle">
+                            <div className="w-3/10 flex flex-col pt-5">
+                                {/* Stepper information */}
+                                <LambdaStepper
+                                    steps={stepsBase}
+                                    activeStep={activeStep}
+                                    handleChangeActiveStep={(step: number) =>
+                                        setActiveStep(step)
+                                    }
+                                />
+                            </div>
+                            <div className="flex w-full flex-col px-5">
+                                <h4 className="py-4 text-2xl font-bold">
+                                    <label
+                                        htmlFor="name"
+                                        className="mb-7 text-lg text-gray-700 md:text-3xl"
+                                    >
+                                        {stepsBase[activeStep - 1].name}
+                                    </label>
+                                </h4>
 
-                            {activeStep === 1 && (
-                                <LambdaNameForm
-                                    name={lambdaName}
-                                    isLambdaNameValid={(name) =>
-                                        isLambdaNameValid(name)
-                                    }
-                                    handleChangeName={(name: string) =>
-                                        setLambdaName(name)
-                                    }
-                                />
-                            )}
-                            {activeStep === 2 && (
-                                <LambdaImageForm
-                                    handleImageNameChange={(image: string) => {
-                                        setImageName(image);
-                                    }}
-                                    handleRegistryChange={(
-                                        registry: AvailableRegistriesInformation,
-                                    ) => {
-                                        setRegistry(registry);
-                                    }}
-                                />
-                            )}
-                            {activeStep === 3 && (
-                                <LambdaEnvVarForm
-                                    variables={applicationEnvironmentVariables}
-                                    handleAddEnvironmentVariable={() => {
-                                        const newEnvironmentVariables = [
-                                            ...applicationEnvironmentVariables,
-                                        ];
-                                        newEnvironmentVariables.push({
-                                            name: "",
-                                            value: "",
-                                        });
-                                        setApplicationEnvironmentVariables(
-                                            newEnvironmentVariables,
-                                        );
-                                        console.log(
-                                            applicationEnvironmentVariables,
-                                        );
-                                    }}
-                                    handleRemoveEnvironmentVariable={(
-                                        index: number,
-                                    ) => {
-                                        const newEnvironmentVariables = [
-                                            ...applicationEnvironmentVariables,
-                                        ];
-                                        newEnvironmentVariables.splice(
-                                            index,
-                                            1,
-                                        );
-                                        setApplicationEnvironmentVariables(
-                                            newEnvironmentVariables,
-                                        );
-                                    }}
-                                    handleEnvironmentVariableChange={(
-                                        index: number,
-                                        whereToChange: "name" | "value",
-                                        value: string,
-                                    ) => {
-                                        const newEnvironmentVariables = [
-                                            ...applicationEnvironmentVariables,
-                                        ];
-                                        newEnvironmentVariables[index][
-                                            whereToChange
-                                        ] = value;
-                                        setApplicationEnvironmentVariables(
-                                            newEnvironmentVariables,
-                                        );
-                                    }}
-                                />
-                            )}
-                            {activeStep === 4 && (
-                                <LambdaConfidentialityForm
-                                    value={confidentiality}
-                                    handleVisibilityChange={(
-                                        value: LambdaVisibility,
-                                    ) => {
-                                        setConfidentiality(value);
-                                    }}
-                                />
-                            )}
-                            {activeStep === 5 && (
-                                <LambdaSettingsForm
-                                    timeout={timeout}
-                                    cpuChoices={cpuLimitsChoices}
-                                    memoryChoices={memoryLimitsChoices}
-                                    cpuConfig={cpuConfig}
-                                    memoryConfig={memoryConfig}
-                                    onChange={(
-                                        cpuConfig: LambdaCPULimit,
-                                        memoryConfig: LambdaMemoryLimit,
-                                        timeout: number,
-                                    ) => {
-                                        setCpuConfig(cpuConfig);
-                                        setMemoryConfig(memoryConfig);
-                                        setTimeout(timeout);
-                                    }}
-                                />
-                            )}
-                            {activeStep === 6 && (
-                                <LambdaScalabilityForm
-                                    maxInstanceNumber={maxInstanceNumber}
-                                    minInstanceNumber={minInstanceNumber}
-                                    setMinInstanceNumber={(value: number) => {
-                                        setMinInstanceNumber(value);
-                                    }}
-                                    setMaxInstanceNumber={(value: number) => {
-                                        setMaxInstanceNumber(value);
-                                    }}
-                                    isMaxInstanceNumberValid={(
-                                        value: number,
-                                    ) => {
-                                        return (
-                                            value <= 10 &&
-                                            value >= minInstanceNumber
-                                        );
-                                    }}
-                                    isMinInstanceNumberValid={(
-                                        value: number,
-                                    ) => {
-                                        return (
-                                            value >= 0 &&
-                                            value <= maxInstanceNumber
-                                        );
-                                    }}
-                                />
-                            )}
-                            <div className="flex justify-between">
                                 {activeStep === 1 && (
-                                    <button
-                                        type="button"
-                                        // onClick={}
-                                        className="invisible"
+                                    <LambdaNameForm
+                                        name={lambdaName}
+                                        isLambdaNameValid={(name) =>
+                                            isLambdaNameValid(name)
+                                        }
+                                        handleChangeName={(name: string) =>
+                                            setLambdaName(name)
+                                        }
                                     />
                                 )}
-                                {activeStep > 1 && (
-                                    <button
-                                        type="button"
-                                        onClick={() =>
-                                            setActiveStep(activeStep - 1)
+                                {activeStep === 2 && (
+                                    <LambdaImageForm
+                                        handleImageNameChange={(
+                                            image: string,
+                                        ) => {
+                                            setImageName(image);
+                                        }}
+                                        handleRegistryChange={(
+                                            registry: AvailableRegistriesInformation,
+                                        ) => {
+                                            setRegistry(registry);
+                                        }}
+                                    />
+                                )}
+                                {activeStep === 3 && (
+                                    <LambdaEnvVarForm
+                                        variables={
+                                            applicationEnvironmentVariables
                                         }
-                                        className="Button stuga-orange-color"
-                                    >
-                                        Previous
-                                    </button>
+                                        handleAddEnvironmentVariable={() => {
+                                            const newEnvironmentVariables = [
+                                                ...applicationEnvironmentVariables,
+                                            ];
+                                            newEnvironmentVariables.push({
+                                                name: "",
+                                                value: "",
+                                            });
+                                            setApplicationEnvironmentVariables(
+                                                newEnvironmentVariables,
+                                            );
+                                            console.log(
+                                                applicationEnvironmentVariables,
+                                            );
+                                        }}
+                                        handleRemoveEnvironmentVariable={(
+                                            index: number,
+                                        ) => {
+                                            const newEnvironmentVariables = [
+                                                ...applicationEnvironmentVariables,
+                                            ];
+                                            newEnvironmentVariables.splice(
+                                                index,
+                                                1,
+                                            );
+                                            setApplicationEnvironmentVariables(
+                                                newEnvironmentVariables,
+                                            );
+                                        }}
+                                        handleEnvironmentVariableChange={(
+                                            index: number,
+                                            whereToChange: "name" | "value",
+                                            value: string,
+                                        ) => {
+                                            const newEnvironmentVariables = [
+                                                ...applicationEnvironmentVariables,
+                                            ];
+                                            newEnvironmentVariables[index][
+                                                whereToChange
+                                            ] = value;
+                                            setApplicationEnvironmentVariables(
+                                                newEnvironmentVariables,
+                                            );
+                                        }}
+                                    />
                                 )}
-                                {activeStep < stepsBase.length && (
-                                    <button
-                                        type="button"
-                                        onClick={() =>
-                                            setActiveStep(activeStep + 1)
-                                        }
-                                        className="Button stuga-primary-color"
-                                    >
-                                        Next
-                                    </button>
+                                {activeStep === 4 && (
+                                    <LambdaConfidentialityForm
+                                        value={confidentiality}
+                                        handleVisibilityChange={(
+                                            value: LambdaVisibility,
+                                        ) => {
+                                            setConfidentiality(value);
+                                        }}
+                                    />
                                 )}
-                                {activeStep === stepsBase.length && (
-                                    <button
-                                        type="submit"
-                                        className="Button stuga-primary-color"
-                                        onSubmit={handleSubmit}
-                                    >
-                                        Deploy lambda
-                                    </button>
+                                {activeStep === 5 && (
+                                    <LambdaSettingsForm
+                                        timeout={timeout}
+                                        cpuChoices={cpuLimitsChoices}
+                                        memoryChoices={memoryLimitsChoices}
+                                        cpuConfig={cpuConfig}
+                                        memoryConfig={memoryConfig}
+                                        onChange={(
+                                            cpuConfig: LambdaCPULimit,
+                                            memoryConfig: LambdaMemoryLimit,
+                                            timeout: number,
+                                        ) => {
+                                            setCpuConfig(cpuConfig);
+                                            setMemoryConfig(memoryConfig);
+                                            setTimeout(timeout);
+                                        }}
+                                    />
                                 )}
+                                {activeStep === 6 && (
+                                    <LambdaScalabilityForm
+                                        maxInstanceNumber={maxInstanceNumber}
+                                        minInstanceNumber={minInstanceNumber}
+                                        setMinInstanceNumber={(
+                                            value: number,
+                                        ) => {
+                                            setMinInstanceNumber(value);
+                                        }}
+                                        setMaxInstanceNumber={(
+                                            value: number,
+                                        ) => {
+                                            setMaxInstanceNumber(value);
+                                        }}
+                                        isMaxInstanceNumberValid={(
+                                            value: number,
+                                        ) => {
+                                            return (
+                                                value <= 10 &&
+                                                value >= minInstanceNumber
+                                            );
+                                        }}
+                                        isMinInstanceNumberValid={(
+                                            value: number,
+                                        ) => {
+                                            return (
+                                                value >= 0 &&
+                                                value <= maxInstanceNumber
+                                            );
+                                        }}
+                                    />
+                                )}
+                                <div className="flex justify-between">
+                                    {activeStep === 1 && (
+                                        <button
+                                            type="button"
+                                            // onClick={}
+                                            className="invisible"
+                                        />
+                                    )}
+                                    {activeStep > 1 && (
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                setActiveStep(activeStep - 1)
+                                            }
+                                            className="Button stuga-orange-color"
+                                        >
+                                            Previous
+                                        </button>
+                                    )}
+                                    {activeStep < stepsBase.length && (
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                setActiveStep(activeStep + 1)
+                                            }
+                                            className="Button stuga-primary-color"
+                                        >
+                                            Next
+                                        </button>
+                                    )}
+                                    {activeStep === stepsBase.length && (
+                                        <button
+                                            type="submit"
+                                            className="Button stuga-primary-color"
+                                        >
+                                            Deploy lambda
+                                        </button>
+                                    )}
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </form>
+                    </form>
+                )}
             </div>
         </>
     );
