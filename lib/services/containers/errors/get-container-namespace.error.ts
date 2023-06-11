@@ -1,6 +1,6 @@
-import { StugaError } from '@/lib/services/error/error';
+import { StugaError } from "@/lib/services/error/error";
 
-export class UpsertContainerNamespaceError extends StugaError {
+export class FindContainerNamespaceError extends StugaError {
     constructor(message: string) {
         super({
             message,

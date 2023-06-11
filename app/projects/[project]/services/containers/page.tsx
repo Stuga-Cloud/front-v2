@@ -1,32 +1,26 @@
+import { BreadcrumbItem } from "@/components/shared/breadcrumb";
+import ContainerList from "@/components/services/containers/container-list";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { BreadcrumbItem } from "@/components/shared/breadcrumb";
-import ContainerDetails from "@/components/services/containers/container-details";
+import UnAuthentified from "@/components/home/un-authentified";
 import { Suspense } from "react";
 import Nav from "@/components/layout/nav";
-import UnAuthentified from "@/components/home/un-authentified";
 
-export default async function ContainerDetailsPage({
+export default async function ContainerListPage({
     params,
 }: {
-    params: { project: string; applicationId: string };
+    params: { project: string };
 }) {
     const session = await getServerSession(authOptions);
     const projectId = params.project;
-    const applicationId = params.applicationId;
-
+    const { project } = params;
     const breadcrumbItems: BreadcrumbItem[] = [
-        { text: "project", slug: `/projects/${projectId}` },
+        { text: "project", slug: `/projects/${project}` },
         {
             text: "containers",
-            slug: `/projects/${projectId}/services/containers/`,
-        },
-        {
-            text: "details",
-            slug: `/projects/${projectId}/services/containers/${applicationId}`,
+            slug: `/projects/${project}/services/containers/`,
         },
     ];
-
     return (
         <>
             <Suspense fallback="...">
@@ -34,11 +28,10 @@ export default async function ContainerDetailsPage({
             </Suspense>
             {session ? (
                 <>
-                    <div className="z-10 flex flex w-full flex-col">
-                        <ContainerDetails
+                    <div className="z-10 mt-5 flex flex w-full flex-col">
+                        <ContainerList
                             session={session}
                             projectId={projectId}
-                            containerId={applicationId}
                         />
                     </div>
                 </>

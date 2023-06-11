@@ -21,6 +21,7 @@ export interface ContainerApplication {
     containerSpecifications: ContainerApplicationContainerSpecifications;
     scalabilitySpecifications: ContainerApplicationScalabilitySpecifications | null;
     administratorEmail: string;
+    status: string;
     updatedAt: Date;
     createdAt: Date;
 }

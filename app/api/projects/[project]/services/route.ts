@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth/next";
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
+// @ts-ignore
 export async function GET(request: Request, { params }: NextRequest) {
     const session = await getServerSession(authOptions);
     const projectId = params!.project;
@@ -59,8 +60,14 @@ export async function GET(request: Request, { params }: NextRequest) {
         },
     });
 
+    const containers = await prisma.container.findMany({
+        where: {
+            projectId: project.id,
+        },
+    });
+
     return NextResponse.json(
-        { registry, lambda: null, database: null, containers: null },
+        { registry, lambda: null, database: null, containers: containers },
         { status: 200 },
     );
 }

@@ -183,9 +183,12 @@ export default function Project({
                 </div>
             ) : null}
             <div className="ms-20 flex w-4/5 flex-row items-start justify-start">
-                <div className="grid w-full grid-cols-1 gap-4">
+                <div className="grid w-full grid-cols-2 gap-4">
                     {servicesSupported && servicesSupported.registry && (
-                        <>
+                        <div
+                            key={servicesSupported.containers.id}
+                            className="w-full"
+                        >
                             <ServiceCard
                                 key={servicesSupported.registry.id}
                                 title="Container registry"
@@ -197,18 +200,18 @@ export default function Project({
                                     );
                                 }}
                             />
-                        </>
+                        </div>
                     )}
                     {servicesSupported && servicesSupported.containers && (
                         <div key={servicesSupported.containers.id}>
                             <ServiceCard
                                 key={servicesSupported.containers.id}
                                 title="Containers"
-                                description="your containers"
-                                imageName="docker.png"
+                                description="Your containerized applications"
+                                imageName="containers.png"
                                 onClick={() => {
                                     router.push(
-                                        `/projects/${project.id}/services/registry`,
+                                        `/projects/${project.id}/services/containers`,
                                     );
                                 }}
                             />
@@ -223,7 +226,7 @@ export default function Project({
                                 imageName="docker.png"
                                 onClick={() => {
                                     router.push(
-                                        `/projects/${project.id}/services/registry`,
+                                        `/projects/${project.id}/services/lambda`,
                                     );
                                 }}
                             />
@@ -238,7 +241,7 @@ export default function Project({
                                 imageName="docker.png"
                                 onClick={() => {
                                     router.push(
-                                        `/projects/${project.id}/services/registry`,
+                                        `/projects/${project.id}/services/database`,
                                     );
                                 }}
                             />

@@ -25,14 +25,14 @@ export const Breadcrumb = ({ items }: { items: BreadcrumbItem[] }) => {
                         href={localUrl}
                         className="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600"
                     >
-                      <Image
-                          src="/stuga-logo.png"
-                          alt="stuga logo"
-                          width="30"
-                          height="30"
-                          className="mr-2 rounded-sm"
-                      />
-                      Home
+                        <Image
+                            src="/stuga-logo.png"
+                            alt="stuga logo"
+                            width="30"
+                            height="30"
+                            className="mr-2 rounded-sm"
+                        />
+                        Home
                     </Link>
                 </li>
 
@@ -56,7 +56,7 @@ export const Breadcrumb = ({ items }: { items: BreadcrumbItem[] }) => {
                                         clipRule="evenodd"
                                     ></path>
                                 </svg>
-                                <span className="ml-1 text-sm font-medium text-gray-500 md:ml-2">
+                                <span className="ml-1 text-sm font-medium text-gray-500 hover:text-blue-600 md:ml-2">
                                     {item.text}
                                 </span>
                             </a>

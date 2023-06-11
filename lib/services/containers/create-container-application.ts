@@ -3,18 +3,21 @@ import axios from "axios";
 import { ContainerApplicationAlreadyExistError } from "@/lib/services/containers/errors/container-application-already-exist.error";
 import { CreateContainerApplicationError } from "@/lib/services/containers/errors/create-container-application.error";
 import { CreateContainerApplicationBody } from "@/lib/services/containers/create-container-application.body";
+import { GetContainersAPIInfo } from "@/lib/services/containers/get-containers-api-info";
 
 export const CreateContainerApplication = async (
     createContainerApplicationBody: CreateContainerApplicationBody,
 ): Promise<ContainerApplication | null> => {
+    const containerAPIInfo = GetContainersAPIInfo();
+
     try {
         const application = await axios.post<ContainerApplication>(
-            `${process.env.CONTAINER_API}/applications`,
+            `${containerAPIInfo.url}/applications`,
             createContainerApplicationBody,
             {
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: `Bearer ${process.env.CONTAINER_AUTH_TOKEN}`,
+                    Authorization: `Bearer ${containerAPIInfo.authToken}`,
                 },
             },
         );

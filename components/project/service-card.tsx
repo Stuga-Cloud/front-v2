@@ -13,7 +13,7 @@ export default function ServiceCard({
 }) {
     return (
         <div
-            className="min-w-sm dark:bg-grey-200 mt-8 w-2/5 rounded-lg bg-white p-6 shadow dark:border-green-700"
+            className="min-w-sm dark:bg-grey-200 mt-8 w-full rounded-lg bg-white p-6 shadow dark:border-green-700"
             onClick={onClick}
         >
             <Image
@@ -24,7 +24,7 @@ export default function ServiceCard({
                 className="ms-5"
             ></Image>
             <a href="#">
-                <h5 className="mb-2 ms-5 text-2xl font-semibold tracking-tight text-gray-400 dark:text-gray-400">
+                <h5 className="mb-2 ms-5 text-2xl font-semibold tracking-tight text-gray-600 dark:text-gray-400">
                     {title}
                 </h5>
             </a>

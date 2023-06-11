@@ -33,13 +33,14 @@ interface AvailableRegistriesInformation {
 const availableRegistries: AvailableRegistriesInformation[] = [
     {
         name: "Docker hub",
-        url: process.env.NEXT_PUBLIC_DOCKER_HUB_URL || "what are you doing?",
+        url:
+            process.env.NEXT_PUBLIC_DOCKER_HUB_URL || "missing docker hub url!",
     },
     {
         name: "Our private registry",
         url:
             process.env.NEXT_PUBLIC_PRIVATE_REGISTRY_URL ||
-            "what are you doing?",
+            "missing private registry url!",
     },
 ];
 
@@ -76,6 +77,7 @@ export default function NewContainerForm({
 }) {
     const user = session?.user;
     const [step, setStep] = useState(1);
+    const [loading, setLoading] = useState(false);
     const [project, setProject] = useState({} as Project);
     // const [applicationNamespace, setApplicationNamespace] = useState<
     //     string | undefined
@@ -139,7 +141,6 @@ export default function NewContainerForm({
         string | undefined
     >(undefined);
 
-    const [loading, setLoading] = useState(false);
     const router = useRouter();
 
     const handleNext = () => {
@@ -486,10 +487,12 @@ export default function NewContainerForm({
                 message: "Application created",
                 duration: 4000,
             });
+            setLoading(false);
             router.push(
                 `/projects/${projectId}/services/containers/${createdContainer.data.id}`,
             );
         } catch (error) {
+            setLoading(false);
             console.log("Error while creating application", error);
             if (error instanceof StugaError) {
                 toastEventEmitter.emit("pop", {
@@ -504,14 +507,12 @@ export default function NewContainerForm({
                     "Couldn't create application and namespace, try again or contact support",
                 duration: 4000,
             });
-        } finally {
-            setLoading(false);
         }
     };
 
     return (
         <>
-            <div className="w-5/5 z-10 flex flex-col items-center justify-center px-5">
+            <div className="z-10 flex w-full flex-col items-center justify-center px-5">
                 {/* Change interline with more space */}
                 <h1 className="mb-2 text-center text-3xl font-extrabold leading-loose leading-relaxed tracking-tight text-gray-900 md:text-4xl lg:text-5xl">
                     Deploy your{" "}
@@ -831,22 +832,41 @@ export default function NewContainerForm({
                                                 }}
                                                 placeholder="organization/my-first-application:latest"
                                             />
-                                            <h4 className="pt-8 text-2xl font-bold dark:text-white">
-                                                The used image is at:
-                                            </h4>
-                                            <p className="text-1xl font-semibold leading-normal text-blue-800 dark:text-white">
-                                                <Link
-                                                    href={
-                                                        registry.url +
-                                                        "/r/" +
-                                                        applicationImage
-                                                    }
-                                                    target="_blank"
-                                                >
-                                                    {registry.url}/r/
-                                                    {applicationImage}
-                                                </Link>
-                                            </p>
+                                            <div className="flex flex-row items-center gap-2">
+                                                <InfoCircledIcon />
+                                                <p className="text-sm font-semibold text-gray-500">
+                                                    The image name must be in
+                                                    the format{" "}
+                                                    <code>
+                                                        organization/my-first-application:latest
+                                                    </code>
+                                                </p>
+                                            </div>
+                                            {applicationImage &&
+                                                applicationImage.length > 0 && (
+                                                    <>
+                                                        <h4 className="pt-8 text-2xl font-bold dark:text-white">
+                                                            The used image is
+                                                            at:
+                                                        </h4>
+                                                        <p className="text-1xl font-semibold leading-normal text-blue-800 dark:text-white">
+                                                            <Link
+                                                                href={
+                                                                    registry.url +
+                                                                    "/r/" +
+                                                                    applicationImage
+                                                                }
+                                                                target="_blank"
+                                                            >
+                                                                {registry.url}
+                                                                /r/
+                                                                {
+                                                                    applicationImage
+                                                                }
+                                                            </Link>
+                                                        </p>
+                                                    </>
+                                                )}
                                         </div>
                                     </div>
                                 )}

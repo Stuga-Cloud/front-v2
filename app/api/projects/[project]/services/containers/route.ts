@@ -110,12 +110,12 @@ export async function GET(
         return ResponseService.unauthorized();
     }
     try {
-        const databases = await prisma.container.findMany({
+        const containers = await prisma.container.findMany({
             where: { projectId: params.project },
         });
 
-        console.log("databases:", databases);
-        return ResponseService.success(databases);
+        console.log("containers:", containers);
+        return ResponseService.success(containers);
     } catch (error) {
         console.error("Error fetching databases:", error);
         return ResponseService.internalServerError();
