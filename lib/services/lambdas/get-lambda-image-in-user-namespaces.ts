@@ -37,6 +37,6 @@ export const getLambdaImageInProject = async ({
         if (e instanceof StugaError) {
             throw e;
         }
-        return InternalServerError(e);
+        throw InternalServerError(e);
     }
 };

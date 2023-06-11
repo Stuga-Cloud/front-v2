@@ -16,6 +16,8 @@ export default function Nav({ session, breadcrumbItems }: { session: Session | n
 
     useEffect(() => {
         toastEventEmitter.on("pop", (toast) => {
+            console.log("emet un toast")
+            console.log(toast)
             setToast({ ...toast, visible: true });
             setTimeout(() => {
                 setToast({ ...toast, visible: false });

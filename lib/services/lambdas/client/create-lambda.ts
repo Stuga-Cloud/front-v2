@@ -1,7 +1,7 @@
 import { LambdaCreateResponse } from "@/app/api/projects/[project]/services/lambdas/route";
-import { LambdaCreateCandidate } from "@/components/services/lambdas/create/types/lambda-create";
 import axios, { AxiosError } from "axios";
-import { InternalServerError, StugaError } from "../error/error";
+import { InternalServerError, StugaError } from "../../error/error";
+import { LambdaCreateCandidate } from "@/lib/models/lambdas/lambda-create";
 
 export const CreateLambda = async (
     projectId: string,
@@ -15,6 +15,7 @@ export const CreateLambda = async (
         return result.data.name;
     } catch (e) {
         if (e instanceof AxiosError) {
+            console.log("error axios");
             throw new StugaError({
                 message: e.response?.data?.message,
                 status: e.response?.status ?? 500,

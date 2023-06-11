@@ -16,7 +16,7 @@ export const Breadcrumb = ({ items }: { items: BreadcrumbItem[] }) => {
     const localUrl = location.protocol + "//" + location.host;
     return (
         <nav
-            className="fixed left-2 top-2 z-50 flex rounded-lg border border-gray-200 bg-gray-50 px-5 py-3 text-gray-700"
+            className="fixed left-2 top-2 z-20 flex rounded-lg border border-gray-200 bg-gray-50 px-5 py-3 text-gray-700"
             aria-label="Breadcrumb"
         >
             <ol className="inline-flex items-center space-x-1 md:space-x-3">

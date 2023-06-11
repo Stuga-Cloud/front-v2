@@ -6,7 +6,13 @@ import UserDropdown from "./user-dropdown";
 import { Session } from "next-auth";
 import { Breadcrumb, BreadcrumbItem } from "../shared/breadcrumb";
 
-export default function NavBar({ session, breadcrumbItems }: { session: Session | null, breadcrumbItems: BreadcrumbItem[] }) {
+export default function NavBar({
+    session,
+    breadcrumbItems,
+}: {
+    session: Session | null;
+    breadcrumbItems: BreadcrumbItem[];
+}) {
     const { SignInModal, setShowSignInModal } = useSignInModal();
     const scrolled = useScroll(50);
 
@@ -18,11 +24,11 @@ export default function NavBar({ session, breadcrumbItems }: { session: Session 
                     scrolled
                         ? "border-b border-gray-200 bg-white/50 backdrop-blur-xl"
                         : "bg-white/0"
-                } z-30 transition-all`}
+                } z-20 transition-all`}
             >
                 <div className="mx-5 flex h-16 max-w-screen-xl items-center justify-end xl:mx-auto">
-                  <Breadcrumb items={breadcrumbItems} />
-                    <div>
+                    <Breadcrumb items={breadcrumbItems} />
+                    <div >
                         {session ? (
                             <UserDropdown session={session} />
                         ) : (

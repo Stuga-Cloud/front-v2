@@ -16,6 +16,7 @@ import { getProjectNamespaces } from "@/lib/services/registry/namespace/get-proj
 import { StugaErrorToNextResponse } from "@/lib/services/error/stuga-error-to-next-response";
 import { getLambdaImageInProject } from "@/lib/services/lambdas/get-lambda-image-in-user-namespaces";
 import { checkIfDockerHubImageExists } from "@/lib/services/utils/check-if-docker-hub-image-exists";
+import { GetLambdaByNameInProject } from "@/lib/services/lambdas/get-image-by-name";
 
 export interface LambdaCreateResponse {
     name: string;
@@ -52,17 +53,29 @@ export async function POST(request: Request, { params }: NextRequest) {
         return InternalServerError(e);
     }
 
-    
+    try {
+        const lambda = await GetLambdaByNameInProject({
+            name: req.name,
+            projectId: projectId,
+        });
+        if (lambda) {
+            return ResponseService.conflict("lambda-name-already-exists");
+        }
+    } catch (e) {
+        if (e instanceof StugaError) {
+            return StugaErrorToNextResponse(e);
+        }
+        return ResponseService.internalServerError("internal-server-error", e);
+    }
 
     if (req.confidentiality.visibility === "private") {
         try {
-
             const image = await getLambdaImageInProject({
                 imageName: req.imageName,
                 projectId: projectId,
                 dependencies: {
                     getProjectNamespaces: getProjectNamespaces,
-                }
+                },
             });
         } catch (e) {
             if (e instanceof StugaError) {
@@ -76,7 +89,10 @@ export async function POST(request: Request, { params }: NextRequest) {
     } else {
         try {
             const imageNameSplit = req.imageName.split(":");
-            const imageExist = await checkIfDockerHubImageExists(imageNameSplit[0], imageNameSplit[1]);
+            const imageExist = await checkIfDockerHubImageExists(
+                imageNameSplit[0],
+                imageNameSplit[1],
+            );
             if (!imageExist) {
                 return ResponseService.badRequest("image does not exist");
             }
@@ -115,23 +131,41 @@ export async function POST(request: Request, { params }: NextRequest) {
         },
     });
 
-    // mappé l'object avec l'objet Lambda
+    return ResponseService.created({
+        name: req.name,
+        imageName: req.imageName,
+        cpuLimit: req.cpuLimit,
+        memoryLimit: req.memoryLimit,
+        confidentiality: req.confidentiality,
+        minInstanceNumber: req.minInstanceNumber,
+        maxInstanceNumber: req.maxInstanceNumber,
+        timeout: req.timeout,
+    } as LambdaCreateResponse);
+}
 
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            console.log("project created");
-            resolve(
-                ResponseService.created({
-                    name: req.name,
-                    imageName: req.imageName,
-                    cpuLimit: req.cpuLimit,
-                    memoryLimit: req.memoryLimit,
-                    confidentiality: req.confidentiality,
-                    minInstanceNumber: req.minInstanceNumber,
-                    maxInstanceNumber: req.maxInstanceNumber,
-                    timeout: req.timeout,
-                } as LambdaCreateResponse),
-            );
-        }, 5000);
-    });
+export async function GET(request: Request, { params }: NextRequest) {
+
+    const session = await getServerSession(authOptions);
+    const projectId = params!.project;
+
+    const projectGetOrNextResponse = await VerifyIfUserCanAccessProject(
+        projectId,
+        session,
+    );
+
+    if (projectGetOrNextResponse instanceof StugaError) {
+        return projectGetOrNextResponse;
+    }
+
+    try {
+        const lambdas = await prisma.lambda.findMany({
+            where: {
+                projectId: projectId,
+            },
+        });
+        console.log(lambdas[0].createdAt);
+        return ResponseService.success(lambdas);
+    } catch (e) {
+        return ResponseService.internalServerError("internal-server-error", e);
+    }
 }

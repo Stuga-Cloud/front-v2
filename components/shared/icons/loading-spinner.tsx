@@ -1,4 +1,8 @@
-export default function LoadingSpinner({ size = "medium" }) {
+export default function LoadingSpinner({
+    size = "medium",
+}: {
+    size?: "small" | "medium" | "large";
+}) {
     let width, height;
     switch (size) {
         case "small":

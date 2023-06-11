@@ -66,8 +66,15 @@ export async function GET(request: Request, { params }: NextRequest) {
         },
     });
 
+
+    const lambda = await prisma.lambda.findFirst({
+        where: {
+            projectId: project.id,
+        },
+    });
+
     return NextResponse.json(
-        { registry, lambda: null, database: null, containers: containers },
+        { registry, lambda, database: null, containers },
         { status: 200 },
     );
 }

@@ -223,10 +223,10 @@ export default function Project({
                                 key={servicesSupported.lambda.id}
                                 title="Lambdas"
                                 description="your serverless functions"
-                                imageName="docker.png"
+                                imageName="lambda.png"
                                 onClick={() => {
                                     router.push(
-                                        `/projects/${project.id}/services/lambda`,
+                                        `/projects/${project.id}/services/lambdas`,
                                     );
                                 }}
                             />

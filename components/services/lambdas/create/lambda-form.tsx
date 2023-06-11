@@ -16,7 +16,7 @@ import {
     memoryLimitsChoices,
     stepsBase,
 } from "../../../../lib/models/lambdas/config/lambda-create-config";
-import { CreateLambda } from "@/lib/services/lambdas/create-lambda";
+import { CreateLambda } from "@/lib/services/lambdas/client/create-lambda";
 import { toastEventEmitter } from "@/lib/event-emitter/toast-event-emitter";
 import { StugaError } from "@/lib/services/error/error";
 import { LambdaCPULimit, LambdaCreateCandidate, LambdaMemoryLimit, LambdaVisibility } from "@/lib/models/lambdas/lambda-create";
@@ -52,8 +52,6 @@ export default function NewLambdaForm({
 
     const handleSubmit = async (event: { preventDefault: () => void }) => {
         event.preventDefault();
-        console.log("submit");
-        console.log(confidentiality);
         setErrorFormMessage("");
         const form: LambdaCreateCandidate = {
             minInstanceNumber,
@@ -71,8 +69,6 @@ export default function NewLambdaForm({
                 }),
             ),
         };
-        console.log("form");
-        console.log(form);
         try {
             throwIfLambdaCreationCandidateIsNotValid(form);
         } catch (error) {

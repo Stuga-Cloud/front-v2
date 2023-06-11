@@ -61,7 +61,7 @@ export default function Toast({
     };
 
     return (
-        <div className=" z-20 fixed left-1/2 top-10 mb-4 mt-10 flex w-full max-w-xs -translate-x-1/2 transform items-center rounded-lg bg-white p-4 text-gray-500 shadow">
+        <div className="z-20 fixed left-1/2 top-10 mb-4 mt-10 flex w-full max-w-xs -translate-x-1/2 transform items-center rounded-lg bg-white p-4 text-gray-500 shadow">
             <div
                 className={`inline-flex h-8 w-8 flex-shrink-0 items-center justify-center ${types[type].text} ${types[type].bg}`}
             >

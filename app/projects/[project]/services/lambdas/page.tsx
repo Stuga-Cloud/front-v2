@@ -1,9 +1,10 @@
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import LambdaAccueil from "@/components/services/lambdas/all/lambdas-accueil";
 import NewLambdaForm from "@/components/services/lambdas/create/lambda-form";
 import { Breadcrumb, BreadcrumbItem } from "@/components/shared/breadcrumb";
 import { getServerSession } from "next-auth";
 
-export default async function LambdaNewPage({
+export default async function LambdaPage({
     params,
     searchParams,
 }: {
@@ -17,19 +18,17 @@ export default async function LambdaNewPage({
         { text: "project", slug: `/projects/${projectId}` },
         {
             text: "lambdas",
-            slug: `/projects/${projectId}/services/lambdas`,
-        },
-        {
-            text: "new",
-            slug: `/projects/${projectId}/services/lambdas/new`,
+            slug: `/projects/${projectId}/services/lambdas/`,
         },
     ];
+
+    if (session === null) return;
 
     return (
         <>
             <div className="z-10 mt-5 flex flex w-full flex-col">
                 <Breadcrumb items={breadcrumbItem} />
-                <NewLambdaForm session={session} projectId={projectId} />
+                <LambdaAccueil session={session} projectId={projectId} />
             </div>
         </>
     );
