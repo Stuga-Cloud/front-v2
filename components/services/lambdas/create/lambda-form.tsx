@@ -29,6 +29,7 @@ import {
 } from "./config/lambda-create-config";
 import { CreateLambda } from "@/lib/services/lambdas/create-lambda";
 import { toastEventEmitter } from "@/lib/event-emitter/toast-event-emitter";
+import { StugaError } from "@/lib/services/error/error";
 
 export default function NewLambdaForm({
     session,
@@ -99,7 +100,13 @@ export default function NewLambdaForm({
                 duration: 4000,
             });
         } catch (error) {
-            console.error(error);
+            if (error instanceof StugaError) {
+                toastEventEmitter.emit("pop", {
+                    type: "danger",
+                    message: error.message,
+                    duration: 4000,
+                });
+            }
         } finally {
             setLoading(false);
         }
