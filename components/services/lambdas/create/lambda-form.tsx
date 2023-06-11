@@ -13,10 +13,9 @@ import { ContainerEnvironmentVariable } from "@/lib/models/containers/container-
 import LambdaSettingsForm from "./lambda-settings-form";
 import {
     Step,
-    cpuLimitsChoices,
-    memoryLimitsChoices,
 } from "./types/lambda-create";
 import LambdaScalabilityForm from "./lambda-scalability-form";
+import { cpuLimitsChoices, memoryLimitsChoices } from './config/lambda-create-config';
 
 export default function NewLambdaForm({
     session,

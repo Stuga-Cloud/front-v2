@@ -34,6 +34,14 @@ export default function LambdaConfidentialityForm({
                     handleVisibilityChange(value as "public" | "private");
                 }}
             />
+            {value === "public" && (
+                <div className="mt-4 flex flex-row items-center">
+                <InfoCircledIcon />
+                <p className="ms-2 text-sm text-gray-500">
+                    Public lambdas can be accessed by anyone.
+                </p>
+            </div>
+            )}
             {value === "private" && (
                 <>
                     <div className="mt-4 flex flex-row items-center">
