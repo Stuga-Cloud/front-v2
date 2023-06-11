@@ -15,7 +15,7 @@ export default function RadioButtons({
                     value="public"
                     id="r1"
                     onClick={(e) => {
-                        const selectedValue = e.target.value;
+                        const selectedValue = e.target.value as string;
                         onChangeValue(selectedValue);
                     }}
                 >
@@ -28,7 +28,7 @@ export default function RadioButtons({
                     value="private"
                     id="r2"
                     onClick={(e) => {
-                        const selectedValue = e.target.value;
+                        const selectedValue = e.target.value as string;
                         onChangeValue(selectedValue);
                     }}
                 >

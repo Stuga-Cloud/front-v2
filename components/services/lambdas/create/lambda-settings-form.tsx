@@ -12,12 +12,12 @@ export default function LambdaSettingsForm({
 }: {
     cpuChoices: LambdaCPULimit[];
     memoryChoices: LambdanMemoryLimit[];
-    cpuConfig: string;
-    memoryConfig: string;
+    cpuConfig: LambdaCPULimit;
+    memoryConfig: LambdanMemoryLimit;
     timeout: number;
     onChange: (
-        cpuConfig: string,
-        memoryConfig: string,
+        cpuConfig: LambdaCPULimit,
+        memoryConfig: LambdanMemoryLimit,
         timeout: number,
     ) => void;
 }) {
@@ -34,9 +34,11 @@ export default function LambdaSettingsForm({
             </label>
             <select
                 className="bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500"
-                value={cpuConfig}
+                value={cpuConfig.value + ' ' + cpuConfig.unit}
                 onChange={(e) => {
-                    onChange(e.target.value, memoryConfig, timeout);
+                    const valueSplit = e.target.value.split(" ");
+                    const cpuLimit = {value: parseInt(valueSplit[0]), unit: valueSplit[1] }
+                    onChange(cpuLimit as LambdaCPULimit, memoryConfig, timeout);
                 }}
             >
                 {cpuChoices.map((choice) => (
@@ -56,9 +58,11 @@ export default function LambdaSettingsForm({
             </label>
             <select
                 className="bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 "
-                value={memoryConfig}
+                value={memoryConfig.value + ' ' + memoryConfig.unit}
                 onChange={(e) => {
-                    onChange(cpuConfig, e.target.value, timeout);
+                    const valueSplit = e.target.value.split(" ");
+                    const memoryLimit = {value: parseInt(valueSplit[0]), unit: valueSplit[1] }
+                    onChange(cpuConfig, memoryLimit as LambdanMemoryLimit, timeout);
                 }}
             >
                 {memoryChoices.map((choice) => (

@@ -1,11 +1,8 @@
-import { Namespace } from "@/lib/models/registry/namespace";
 import { NamespaceWithImageInformationsResponse } from "./namespace-detail";
-import { CodeBlock, nord } from "react-code-blocks";
-import { CopyToClipboard } from "react-copy-to-clipboard";
+
 import { useState } from "react";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
-import { capitalize } from "../../../../lib/utils";
-import { yellow } from "@radix-ui/colors";
+
 import { Session } from "next-auth";
 import DockerLoginCode from "./docker-login-code";
 

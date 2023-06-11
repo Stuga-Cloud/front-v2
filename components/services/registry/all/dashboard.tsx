@@ -2,10 +2,10 @@ import { Dropdown } from "@/components/shared/dropdown";
 import { Namespace } from "../../../../lib/models/registry/namespace";
 import { DropdownAction } from "../dropdown-action";
 import ConfirmDeleteModal from "../modal-delete-confirm";
-import { DeleteNamespace } from "../services/delete-namespace";
 import { toastEventEmitter } from "@/lib/event-emitter/toast-event-emitter";
 import { useState } from "react";
 import { LoadingSpinner } from "@/components/shared/icons";
+import { DeleteNamespace } from '../../../../lib/services/registry/namespace/delete-namespace';
 export default function Dashboard({
     projectId,
     namespaces,

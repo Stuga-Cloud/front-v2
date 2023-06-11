@@ -78,7 +78,7 @@ export default function LambdaScalabilityForm({
                                 : ""
                         }`}
                         value={maxInstanceNumber}
-                        onChange={(e) => setMaxInstanceNumber(e)}
+                        onChange={(e) => setMaxInstanceNumber(Number(e.target.value))}
                         placeholder="Enter CPU Usage Threshold"
                         min="0"
                         max="100"

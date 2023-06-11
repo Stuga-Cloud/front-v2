@@ -1,6 +1,7 @@
 import { useState } from "react";
 import RadioButtons from "./radio-buttons";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
+import { LambdaVisibility } from "./types/lambda-create";
 
 function arrayBufferToBase64(buffer: ArrayBuffer): string {
     return btoa(
@@ -21,28 +22,38 @@ export default function LambdaConfidentialityForm({
     value,
     handleVisibilityChange,
 }: {
-    value: "public" | "private";
-    handleVisibilityChange: (value: "public" | "private") => void;
+    value: LambdaVisibility;
+    handleVisibilityChange: (lambdaVisibility: LambdaVisibility) => void;
 }) {
     const [apiKey, setApiKey] = useState<string | null>(null);
     return (
         <div className="mb-10 ms-5 flex min-h-96 w-full flex-col">
             <RadioButtons
                 onChangeValue={(value: string) => {
-                    console.log("value");
-                    console.log(value);
-                    handleVisibilityChange(value as "public" | "private");
+                    if (value === "private" && apiKey) {
+                        handleVisibilityChange({
+                            visibility: "private",
+                            access: {
+                                mode: "apiKey",
+                                apiKey,
+                            },
+                        });
+                    } else {
+                        handleVisibilityChange({
+                            visibility: value as "public" | "private",
+                        });
+                    }
                 }}
             />
-            {value === "public" && (
+            {value.visibility === "public" && (
                 <div className="mt-4 flex flex-row items-center">
-                <InfoCircledIcon />
-                <p className="ms-2 text-sm text-gray-500">
-                    Public lambdas can be accessed by anyone.
-                </p>
-            </div>
+                    <InfoCircledIcon />
+                    <p className="ms-2 text-sm text-gray-500">
+                        Public lambdas can be accessed by anyone.
+                    </p>
+                </div>
             )}
-            {value === "private" && (
+            {value.visibility === "private" && (
                 <>
                     <div className="mt-4 flex flex-row items-center">
                         <InfoCircledIcon />

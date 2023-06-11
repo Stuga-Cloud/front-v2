@@ -1,9 +1,9 @@
 import { Namespace } from "@/lib/models/registry/namespace";
 import { DropdownAction } from "../dropdown-action";
-import { deleteNamespaceImage } from "../services/delete-namespace-image";
 import { Image } from "./namespace-detail";
 import { Dispatch, SetStateAction } from "react";
 import { toastEventEmitter } from "@/lib/event-emitter/toast-event-emitter";
+import { deleteNamespaceImage } from '../../../../lib/services/registry/namespace/delete-namespace-image';
 
 export default function DetailDashboard({
     projectId,

@@ -4,12 +4,12 @@ import LoadingSpinner from "@/components/shared/icons/loading-spinner";
 import axios from "axios";
 import { toastEventEmitter } from "@/lib/event-emitter/toast-event-emitter";
 import { Namespace } from "@/lib/models/registry/namespace";
-import { GetAccountInNamespace } from "../../services/get-account-in-namespace";
 import { CodeBlock, nord } from "react-code-blocks";
 import CopyToClipboard from "react-copy-to-clipboard";
 import DockerLoginCode from "../docker-login-code";
-import { AddAccountInNamespace } from "../../services/add-account-in-namespace";
+import { AddAccountInNamespace } from "../../../../../lib/services/registry/namespace/add-account-in-namespace";
 import { StugaError } from "@/lib/services/error/error";
+import { GetAccountInNamespace } from '../../../../../lib/services/registry/namespace/get-account-in-namespace';
 export default function Access({
     session,
     namespace,

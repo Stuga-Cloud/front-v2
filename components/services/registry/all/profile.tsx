@@ -5,9 +5,9 @@ import PasswordForm from "./password-form";
 import LoadingSpinner from "@/components/shared/icons/loading-spinner";
 import axios from "axios";
 import { toastEventEmitter } from "@/lib/event-emitter/toast-event-emitter";
-import { GetAccountInRegistry } from "../services/get-account-in-registry";
-import { CreateUserInRegistry } from "../services/create-user";
-import { ModifyPassword } from "../services/modify-pasword";
+import { CreateUserInRegistry } from '../../../../lib/services/registry/namespace/create-user';
+import { GetAccountInRegistry } from '../../../../lib/services/registry/namespace/get-account-in-registry';
+import { ModifyPassword } from '../../../../lib/services/registry/namespace/modify-pasword';
 export default function Profile({
     session,
     projectId,

@@ -1,6 +1,5 @@
 "use client";
-import { use, useEffect, useState } from "react";
-import Dashboard from "./namespace-detail";
+import { useEffect, useState } from "react";
 import { Session } from "next-auth";
 import { toastEventEmitter } from "@/lib/event-emitter/toast-event-emitter";
 import { LoadingSpinner } from "@/components/shared/icons";

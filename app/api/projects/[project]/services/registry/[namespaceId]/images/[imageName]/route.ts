@@ -22,7 +22,7 @@ export async function DELETE(request: Request, { params }: NextRequest) {
         );
 
         if (projectGetOrNextResponse instanceof StugaError) {
-            return projectGetOrNextResponse;
+            return StugaErrorToNextResponse(projectGetOrNextResponse);
         }
 
         const namespace = await GetNamespaceById(namespaceId);
