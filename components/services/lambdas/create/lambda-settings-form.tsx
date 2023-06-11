@@ -25,7 +25,7 @@ export default function LambdaSettingsForm({
         return timeout >= 1 && timeout <= 600;
     };
     return (
-        <div className="mb-10 ms-5 flex min-h-96 w-full flex-col">
+        <div className="mb-10 flex min-h-96 w-full flex-col">
             <label
                 htmlFor="cpu-limit"
                 className="mb-2 block text-sm font-medium text-gray-900 "

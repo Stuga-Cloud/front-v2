@@ -42,3 +42,31 @@ export async function DELETE(request: Request, { params }: NextRequest) {
         message: "lambda-deleted",
     });
 }
+
+export async function GET(request: Request, { params }: NextRequest) {
+    const session = await getServerSession(authOptions);
+    const projectId = params!.project;
+    const lambdaId = params!.lambdaId;
+
+    const projectGetOrNextResponse = await VerifyIfUserCanAccessProject(
+        projectId,
+        session,
+    );
+
+    if (projectGetOrNextResponse instanceof StugaError) {
+        return StugaErrorToNextResponse(projectGetOrNextResponse);
+    }
+
+    const lambda = await prisma.lambda.findFirst({
+        where: {
+            id: lambdaId,
+            projectId: projectId,
+        },
+    });
+
+    if (!lambda) {
+        return ResponseService.notFound("lambda-not-found");
+    }
+
+    return ResponseService.success(lambda);
+}

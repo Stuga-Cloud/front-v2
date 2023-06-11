@@ -2,6 +2,8 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import NewLambdaForm from "@/components/services/lambdas/create/lambda-form";
 import { Breadcrumb, BreadcrumbItem } from "@/components/shared/breadcrumb";
 import { getServerSession } from "next-auth";
+import { Suspense } from "react";
+import Nav from "@/components/layout/nav";
 
 export default async function LambdaNewPage({
     params,
@@ -27,6 +29,9 @@ export default async function LambdaNewPage({
 
     return (
         <>
+            <Suspense fallback="...">
+                <Nav session={session} breadcrumbItems={breadcrumbItem} />
+            </Suspense>
             <div className="z-10 mt-5 flex flex w-full flex-col">
                 <Breadcrumb items={breadcrumbItem} />
                 <NewLambdaForm session={session} projectId={projectId} />
