@@ -5,27 +5,17 @@ import { Lambda } from "@prisma/client";
 import { Session } from "next-auth";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import LambdaNameForm from "../create/lambda-name-form";
-import { isLambdaNameValid } from "@/lib/models/lambdas/validation/lambda-create-candidate";
-import LambdaImageForm, {
-    AvailableRegistriesInformation,
-} from "../create/lambda-image-form";
-import LambdaScalabilityForm from "../create/lambda-scalability-form";
-import LambdaSettingsForm from "../create/lambda-settings-form";
-import { cp } from "fs";
-import {
-    cpuLimitsChoices,
-    memoryLimitsChoices,
-} from "../../../../lib/models/lambdas/config/lambda-create-config";
-import {
-    LambdaCPULimit,
-    LambdaMemoryLimit,
-} from "@/lib/models/lambdas/lambda-create";
 import { LoadingSpinner } from "@/components/shared/icons";
 import TabsLambdaDetail from "./tabs-lambda-detail";
 import LambdaInformation from "./lambda-information";
 import LambdaEnvVarForm from "../create/lambda-env-var";
 import LambdaConfidentialityForm from "../create/lambda-confidentiality-form";
+import { LambdaModel } from "@/lib/models/lambdas/lambda";
+import { LambdaVisibility } from "@/lib/models/lambdas/lambda-create";
+import LambdaImageForm, {
+    AvailableRegistriesInformation,
+} from "../create/lambda-image-form";
+import LambdaImageUpdate from "./lambda-image-update";
 
 export default function LambdaDetail({
     session,
@@ -37,9 +27,9 @@ export default function LambdaDetail({
     projectId: string;
 }) {
     const [activeTab, setActiveTab] = useState<
-        "details" | "environments" | "visibility" | "monitor"
+        "image" | "details" | "environments" | "visibility" | "monitor"
     >("details");
-    const [lambda, setLambda] = useState<Lambda>();
+    const [lambda, setLambda] = useState<LambdaModel>();
     const [loading, setLoading] = useState(true);
     const router = useRouter();
 
@@ -82,7 +72,8 @@ export default function LambdaDetail({
                                 | "details"
                                 | "environments"
                                 | "visibility"
-                                | "monitor",
+                                | "monitor"
+                                | "image",
                         ) => {
                             setActiveTab(tab);
                         }}
@@ -91,30 +82,50 @@ export default function LambdaDetail({
                 {!loading && lambda && activeTab === "details" && (
                     <LambdaInformation lambda={lambda} setLambda={setLambda} />
                 )}
+                {!loading && lambda && activeTab === "image" && (
+                    <>
+                        <h2 className="mb-5 ms-5 mt-10 w-4/5 text-xl font-bold">
+                            Image Used
+                        </h2>
+                        <LambdaImageUpdate
+                            imageNameValue={lambda.imageName}
+                            handleImageNameChange={(image: string) => {
+                                setLambda({
+                                    ...lambda,
+                                    imageName: image,
+                                });
+                            }}
+                            handleRegistryChange={(
+                                registry: AvailableRegistriesInformation,
+                            ) => {}}
+                        />
+                    </>
+                )}
                 {!loading && lambda && activeTab === "environments" && (
                     <LambdaEnvVarForm
                         variables={[]}
                         handleAddEnvironmentVariable={() => {
                             const newEnvironmentVariables = [
-                                ...applicationEnvironmentVariables,
+                                ...lambda.environmentVariables,
                             ];
                             newEnvironmentVariables.push({
-                                name: "",
+                                key: "",
                                 value: "",
                             });
-                            setApplicationEnvironmentVariables(
-                                newEnvironmentVariables,
-                            );
-                            console.log(applicationEnvironmentVariables);
+                            setLambda({
+                                ...lambda,
+                                environmentVariables: newEnvironmentVariables,
+                            });
                         }}
                         handleRemoveEnvironmentVariable={(index: number) => {
                             const newEnvironmentVariables = [
-                                ...applicationEnvironmentVariables,
+                                ...lambda.environmentVariables,
                             ];
                             newEnvironmentVariables.splice(index, 1);
-                            setApplicationEnvironmentVariables(
-                                newEnvironmentVariables,
-                            );
+                            setLambda({
+                                ...lambda,
+                                environmentVariables: newEnvironmentVariables,
+                            });
                         }}
                         handleEnvironmentVariableChange={(
                             index: number,
@@ -122,25 +133,29 @@ export default function LambdaDetail({
                             value: string,
                         ) => {
                             const newEnvironmentVariables = [
-                                ...applicationEnvironmentVariables,
+                                ...lambda.environmentVariables,
                             ];
-                            newEnvironmentVariables[index][whereToChange] =
-                                value;
-                            setApplicationEnvironmentVariables(
-                                newEnvironmentVariables,
-                            );
+                            newEnvironmentVariables[index][
+                                whereToChange === "name" ? "key" : "value"
+                            ] = value;
+                            setLambda({
+                                ...lambda,
+                                environmentVariables: newEnvironmentVariables,
+                            });
                         }}
                     />
                 )}
                 {!loading && lambda && activeTab === "visibility" && (
                     <LambdaConfidentialityForm
-                        value={confidentiality}
-                        handleVisibilityChange={(
-                            value: LambdaVisibility,
-                        ) => {
-                            setConfidentiality(value);
+                        value={lambda.confidentiality}
+                        handleVisibilityChange={(value: LambdaVisibility) => {
+                            setLambda({
+                                ...lambda,
+                                confidentiality: value,
+                            });
                         }}
-                />
+                    />
+                )}
             </div>
         </>
     );

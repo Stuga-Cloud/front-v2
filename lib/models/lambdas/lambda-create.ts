@@ -19,6 +19,8 @@ export interface LambdaEnvironmentVariable {
     value: string;
 }
 
+export type Registry = "dockerhub" | "pcr";
+
 export interface LambdaVisibility {
     visibility: "public" | "private";
     access?: {
@@ -33,6 +35,7 @@ export interface LambdaCreateCandidate {
     imageName: string;
     cpuLimit: LambdaCPULimit;
     memoryLimit: LambdaMemoryLimit;
+    registry: Registry;
     environmentVariables: {key: string, value: string}[];
     confidentiality: LambdaVisibility;
     minInstanceNumber: number;

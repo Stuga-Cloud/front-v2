@@ -1,16 +1,10 @@
 import { toastEventEmitter } from "@/lib/event-emitter/toast-event-emitter";
-import { InfoCircledIcon } from "@radix-ui/react-icons";
+import { AvailableRegistriesInformation, AvailableRegistriesName } from "../create/lambda-image-form";
+import { availableRegistries } from "@/lib/models/lambdas/config/lambda-create-config";
 import { useState } from "react";
 import Link from "next/link";
 import { isLambdaImageNameValid } from "@/lib/models/lambdas/validation/lambda-create-candidate";
-import { availableRegistries } from "@/lib/models/lambdas/config/lambda-create-config";
 
-export type AvailableRegistriesName = "Docker hub" | "Our private registry";
-
-export interface AvailableRegistriesInformation {
-    name: AvailableRegistriesName;
-    url: string;
-}
 
 const findRegistryByName = (
     name: AvailableRegistriesName,
@@ -26,7 +20,7 @@ const findRegistryByName = (
     return availableRegistries[0];
 };
 
-export default function LambdaImageForm({
+export default function LambdaImageUpdate({
     imageNameValue,
     handleImageNameChange,
     handleRegistryChange,

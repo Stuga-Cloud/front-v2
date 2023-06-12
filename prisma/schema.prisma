@@ -132,14 +132,14 @@ model Lambda {
   envVars        Json[]
   timeoutSeconds Int
   visibility     String
-  privateConfig  Json?
-  modifiedAt     DateTime @default(now())
-  createdAt      DateTime @default(now())
-  projectId      String
-  createdBy      String
-  user           User     @relation(fields: [createdBy], references: [id], onDelete: Cascade)
-  project        Project  @relation(fields: [projectId], references: [id])
-
+  registry       String
+  privateConfig Json?
+  modifiedAt DateTime @default(now())
+  createdAt  DateTime @default(now())
+  projectId  String
+  createdBy  String
+  user       User                @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  project    Project  @relation(fields: [projectId], references: [id])
   @@index([projectId])
   @@index([createdBy])
 }

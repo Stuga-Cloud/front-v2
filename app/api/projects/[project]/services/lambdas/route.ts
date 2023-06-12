@@ -118,6 +118,7 @@ export async function POST(request: Request, { params }: NextRequest) {
         data: {
             name: req.name,
             imageName: req.imageName,
+            registry: req.registry,
             cpuLimitmCPU: req.cpuLimit.value,
             memoryLimitMB: req.memoryLimit.value,
             visibility: req.confidentiality.visibility,

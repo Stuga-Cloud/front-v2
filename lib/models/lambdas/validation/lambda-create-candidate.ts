@@ -2,7 +2,7 @@ import {
     cpuLimitsChoices,
     memoryLimitsChoices,
 } from "../config/lambda-create-config";
-import { LambdaCreateCandidate } from "../lambda-create";
+import { LambdaCreateCandidate, Registry } from "../lambda-create";
 
 export const isLambdaNameValid = (lambdaName: string): boolean => {
     var regex = /^[a-zA-Z0-9-]*$/;
@@ -14,6 +14,10 @@ export const isLambdaImageNameValid = (imageName: string): boolean => {
     var regex = /^[a-zA-Z0-9-:]*$/;
 
     return imageName.length > 4 && regex.test(imageName);
+};
+
+export const isRegistryIsValid = (registry: Registry): boolean => {
+    return registry === "dockerhub" || registry === "pcr";
 };
 
 export const throwIfLambdaCreationCandidateIsNotValid = (
@@ -47,6 +51,10 @@ export const throwIfLambdaCreationCandidateIsNotValid = (
         ) === undefined
     ) {
         errorMessages.push("memory limit is not valid");
+    }
+
+    if (!isRegistryIsValid(lambdaCreateCandidate.registry)) {
+        errorMessages.push("registry is not valid");
     }
 
     if (

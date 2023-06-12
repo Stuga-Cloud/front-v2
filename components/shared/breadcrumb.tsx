@@ -9,11 +9,15 @@ export interface BreadcrumbItem {
 }
 
 function createUrl(slug: string) {
+    if (!location) return slug;
     return location.protocol + "//" + location.host + slug;
 }
 
 export const Breadcrumb = ({ items }: { items: BreadcrumbItem[] }) => {
-    const localUrl = location.protocol + "//" + location.host;
+    let localUrl = "";
+    if (location) {
+        localUrl = location.protocol + "//" + location.host;
+    }
     return (
         <nav
             className="fixed left-2 top-2 z-20 flex rounded-lg border border-gray-200 bg-gray-50 px-5 py-3 text-gray-700"

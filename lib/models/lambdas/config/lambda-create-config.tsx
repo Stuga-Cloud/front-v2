@@ -1,3 +1,4 @@
+import { AvailableRegistriesInformation } from "@/components/services/lambdas/create/lambda-image-form";
 import { LambdaCPULimit, LambdaMemoryLimit, Step } from "@/lib/models/lambdas/lambda-create";
 
 export const cpuLimitsChoices: LambdaCPULimit[] = [
@@ -16,6 +17,19 @@ export const memoryLimitsChoices: LambdaMemoryLimit[] = [
     { value: 1024, unit: "MB" },
     { value: 2048, unit: "MB" },
     { value: 4096, unit: "MB" },
+];
+
+export const availableRegistries: AvailableRegistriesInformation[] = [
+    {
+        name: "Docker hub",
+        url: process.env.NEXT_PUBLIC_DOCKER_HUB_URL || "what are you doing?",
+    },
+    {
+        name: "Our private registry",
+        url:
+            process.env.NEXT_PUBLIC_PRIVATE_REGISTRY_URL ||
+            "what are you doing?",
+    },
 ];
 
 export const stepsBase: Step[] = [

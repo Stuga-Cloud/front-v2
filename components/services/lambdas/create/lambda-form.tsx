@@ -19,8 +19,16 @@ import {
 import { CreateLambda } from "@/lib/services/lambdas/client/create-lambda";
 import { toastEventEmitter } from "@/lib/event-emitter/toast-event-emitter";
 import { StugaError } from "@/lib/services/error/error";
-import { LambdaCPULimit, LambdaCreateCandidate, LambdaMemoryLimit, LambdaVisibility } from "@/lib/models/lambdas/lambda-create";
+import { LambdaCPULimit, LambdaCreateCandidate, LambdaMemoryLimit, LambdaVisibility, Registry } from "@/lib/models/lambdas/lambda-create";
 import { isLambdaNameValid, throwIfLambdaCreationCandidateIsNotValid } from "@/lib/models/lambdas/validation/lambda-create-candidate";
+
+export const availableRegistriesToRegistry = (availableRegistry: AvailableRegistriesInformation): Registry => {
+    if (availableRegistry.name === "Docker hub") {
+        return "dockerhub";
+    } else {
+        return "pcr";
+    }
+};
 
 export default function NewLambdaForm({
     session,
@@ -42,7 +50,7 @@ export default function NewLambdaForm({
         applicationEnvironmentVariables,
         setApplicationEnvironmentVariables,
     ] = useState<LambdaEnvironmentVariable[]>([]);
-    const [registry, setRegistry] = useState<AvailableRegistriesInformation>();
+    const [registry, setRegistry] = useState<Registry>("dockerhub");
     const [cpuConfig, setCpuConfig] = useState(cpuLimitsChoices[0]);
     const [memoryConfig, setMemoryConfig] = useState(memoryLimitsChoices[0]);
     const [loading, setLoading] = useState(false);
@@ -60,6 +68,7 @@ export default function NewLambdaForm({
             confidentiality,
             name: lambdaName,
             imageName,
+            registry,
             cpuLimit: cpuConfig,
             memoryLimit: memoryConfig,
             environmentVariables: applicationEnvironmentVariables.map(
@@ -188,7 +197,10 @@ export default function NewLambdaForm({
                                         handleRegistryChange={(
                                             registry: AvailableRegistriesInformation,
                                         ) => {
-                                            setRegistry(registry);
+                                            const registryModel = availableRegistriesToRegistry(
+                                                registry,
+                                            );
+                                            setRegistry(registryModel);
                                         }}
                                     />
                                 )}
