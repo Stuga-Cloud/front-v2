@@ -183,6 +183,7 @@ export default function NewLambdaForm({
                                 )}
                                 {activeStep === 2 && (
                                     <LambdaImageForm
+                                        imageNameValue={imageName}
                                         handleImageNameChange={(
                                             image: string,
                                         ) => {

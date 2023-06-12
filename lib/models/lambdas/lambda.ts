@@ -1,5 +1,5 @@
 import { Lambda } from "@prisma/client";
-import { LambdaCPULimit, Registry } from './lambda-create';
+import { LambdaCPULimit, Registry } from "./lambda-create";
 import {
     LambdaMemoryLimit,
     LambdaVisibility,
@@ -33,23 +33,18 @@ export class LambdaModelMapper {
             (memory) => memory.value === lambda.memoryLimitMB,
         )!;
 
-        const envVars: { key: string; value: string }[] = (
-            lambda.envVars as { [key: string]: string }[]
-        ).flatMap((obj) =>
-            Object.entries(obj).map(([key, value]) => ({ key, value })),
-        );
-        
-        const privateConfig: {
-            mode: "apiKey" | "jwt";
-            apiKey?: string | undefined;
-            jwt?: string | undefined;
-        } | undefined = lambda.privateConfig;
+        const privateConfig:
+            | {
+                  mode: "apiKey" | "jwt";
+                  apiKey?: string | undefined;
+                  jwt?: string | undefined;
+              }
+            | undefined = lambda.privateConfig;
 
         const confidentiality: LambdaVisibility = {
             visibility: (lambda.visibility as "public" | "private") ?? "public",
             access: privateConfig,
         };
-
 
         return {
             id: lambda.id,
@@ -58,7 +53,13 @@ export class LambdaModelMapper {
             cpuLimit: lambdaCPULimit,
             registry: lambda.registry as Registry,
             memoryLimit: lambdaMemeoryLimit,
-            environmentVariables: envVars,
+            environmentVariables: lambda.envVars.map((envVar) => {
+                const envVarConvert = envVar as { key: string; value: string };
+                return {
+                    key: envVarConvert.key,
+                    value: envVarConvert.value,
+                };
+            }),
             confidentiality: confidentiality,
             minInstanceNumber: lambda.minInstances,
             maxInstanceNumber: lambda.maxInstances,

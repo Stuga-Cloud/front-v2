@@ -17,6 +17,8 @@ import { StugaErrorToNextResponse } from "@/lib/services/error/stuga-error-to-ne
 import { getLambdaImageInProject } from "@/lib/services/lambdas/get-lambda-image-in-user-namespaces";
 import { checkIfDockerHubImageExists } from "@/lib/services/utils/check-if-docker-hub-image-exists";
 import { GetLambdaByNameInProject } from "@/lib/services/lambdas/get-image-by-name";
+import { Registry } from '../../../../../../lib/models/lambdas/lambda-create';
+import { encrypt } from "@/lib/services/utils/crypt";
 
 export interface LambdaCreateResponse {
     name: string;
@@ -34,6 +36,9 @@ export async function POST(request: Request, { params }: NextRequest) {
     const session = await getServerSession(authOptions);
     const projectId = params!.project;
     const userId = session!.user!.id as string;
+
+    console.log(req);
+
 
     const projectGetOrNextResponse = await VerifyIfUserCanAccessProject(
         projectId,
@@ -68,7 +73,7 @@ export async function POST(request: Request, { params }: NextRequest) {
         return ResponseService.internalServerError("internal-server-error", e);
     }
 
-    if (req.confidentiality.visibility === "private") {
+    if (req.registry === 'pcr') {
         try {
             const image = await getLambdaImageInProject({
                 imageName: req.imageName,
@@ -104,6 +109,14 @@ export async function POST(request: Request, { params }: NextRequest) {
         }
     }
 
+    const envVarCrypted = req.environmentVariables.map((envVar) => {
+        return {
+            key: encrypt(envVar.key),
+            value: encrypt(envVar.value),
+        };
+    });
+
+
     var now = new Date();
     var now_utc = new Date(
         now.getUTCFullYear(),
@@ -125,6 +138,7 @@ export async function POST(request: Request, { params }: NextRequest) {
             privateConfig: req.confidentiality.access,
             minInstances: req.minInstanceNumber,
             maxInstances: req.maxInstanceNumber,
+            envVars: envVarCrypted,
             timeoutSeconds: req.timeout,
             createdAt: now_utc,
             createdBy: userId,

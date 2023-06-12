@@ -11,10 +11,10 @@ export default function RadioButtons({
     onChangeValue: (value: string) => void;
 }) {
     return (
-        <RadioGroupRoot defaultValue="public">
+        <RadioGroupRoot defaultValue={value || "public"}>
             <Flex css={{ alignItems: "center" }}>
                 <RadioGroupItem
-                    value={value || "public"}
+                    value="public"
                     id="r1"
                     onClick={(e) => {
                         const selectedValue = e.target.value as string;

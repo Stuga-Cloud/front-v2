@@ -6,6 +6,7 @@ import { NextRequest } from "next/server";
 import prisma from "@/lib/prisma";
 import { StugaErrorToNextResponse } from "@/lib/services/error/stuga-error-to-next-response";
 import ResponseService from "@/lib/next-response";
+import { decrypt } from "@/lib/services/utils/crypt";
 
 export async function DELETE(request: Request, { params }: NextRequest) {
     const session = await getServerSession(authOptions);
@@ -68,5 +69,16 @@ export async function GET(request: Request, { params }: NextRequest) {
         return ResponseService.notFound("lambda-not-found");
     }
 
-    return ResponseService.success(lambda);
+    const envVarDecrypted = lambda.envVars.map((envVar) => {
+        const environmentFormat = envVar as { key: string; value: string };
+        return {
+            key: decrypt(environmentFormat.key),
+            value: decrypt(environmentFormat.value),
+        };
+    });
+
+    return ResponseService.success({
+        ...lambda,
+        envVars: envVarDecrypted,
+    });
 }

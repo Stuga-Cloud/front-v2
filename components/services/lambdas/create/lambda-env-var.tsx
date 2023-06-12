@@ -16,6 +16,8 @@ export default function LambdaEnvVarForm({
         value: string,
     ) => void;
 }) {
+    console.log("env var form")
+    console.log(variables)
     return (
         <div className="mb-10 ms-5 flex min-h-96  w-full flex-col">
             <label
