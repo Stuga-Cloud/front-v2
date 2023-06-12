@@ -1,10 +1,12 @@
 import { toastEventEmitter } from "@/lib/event-emitter/toast-event-emitter";
-import { AvailableRegistriesInformation, AvailableRegistriesName } from "../create/lambda-image-form";
+import {
+    AvailableRegistriesInformation,
+    AvailableRegistriesName,
+} from "../create/lambda-image-form";
 import { availableRegistries } from "@/lib/models/lambdas/config/lambda-create-config";
 import { useState } from "react";
 import Link from "next/link";
 import { isLambdaImageNameValid } from "@/lib/models/lambdas/validation/lambda-create-candidate";
-
 
 const findRegistryByName = (
     name: AvailableRegistriesName,
@@ -22,19 +24,21 @@ const findRegistryByName = (
 
 export default function LambdaImageUpdate({
     imageNameValue,
+    registryValue,
     handleImageNameChange,
     handleRegistryChange,
 }: {
-    imageNameValue?: string
+    imageNameValue?: string;
+    registryValue: AvailableRegistriesInformation;
     handleImageNameChange: (imageName: string) => void;
     handleRegistryChange: (registry: AvailableRegistriesInformation) => void;
 }) {
     const [imageName, setImageName] = useState(imageNameValue || "");
     const [registry, setRegistry] = useState<AvailableRegistriesInformation>(
-        availableRegistries[0],
+        registryValue ?? availableRegistries[0],
     );
     return (
-        <div className="mb-10 flex min-h-96 w-full flex-col">
+        <div className="mb-10 flex min-h-96 w-4/5 flex-col">
             {/*    Remember that step 2 is concerning the docker image (or other registry) */}
             <div className="mb-2 ms-5 flex flex-col items-start">
                 {/* Choice between docker and our private registry */}
@@ -43,11 +47,12 @@ export default function LambdaImageUpdate({
                     htmlFor="image-registries"
                     className="mb-2 block text-sm font-medium text-gray-900"
                 >
-                    Select a registry
+                    registry selected
                 </label>
                 <select
                     id="image-registries"
                     className="bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 "
+                    value={registry.name}
                     onChange={(e) => {
                         handleRegistryChange(
                             findRegistryByName(
@@ -61,10 +66,13 @@ export default function LambdaImageUpdate({
                         );
                     }}
                 >
-                    {availableRegistries.map((registry) => {
+                    {availableRegistries.map((registryMap) => {
                         return (
-                            <option key={registry.name} value={registry.name}>
-                                {registry.name} ({registry.url})
+                            <option
+                                key={registryMap.name}
+                                value={registryMap.name}
+                            >
+                                {registryMap.name} ({registryMap.url})
                             </option>
                         );
                     })}
@@ -102,6 +110,14 @@ export default function LambdaImageUpdate({
                         {imageName}
                     </Link>
                 </p>
+            </div>
+            <div className="flex justify-center mt-10">
+                <button
+                    type="submit"
+                    className="Button stuga-primary-color mt-10 w-4/5"
+                >
+                    Deploy lambda
+                </button>
             </div>
         </div>
     );

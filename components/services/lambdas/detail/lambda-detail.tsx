@@ -8,14 +8,18 @@ import { useState, useEffect } from "react";
 import { LoadingSpinner } from "@/components/shared/icons";
 import TabsLambdaDetail from "./tabs-lambda-detail";
 import LambdaInformation from "./lambda-information";
-import LambdaEnvVarForm from "../create/lambda-env-var";
-import LambdaConfidentialityForm from "../create/lambda-confidentiality-form";
+
 import { LambdaModel } from "@/lib/models/lambdas/lambda";
 import { LambdaVisibility } from "@/lib/models/lambdas/lambda-create";
-import LambdaImageForm, {
-    AvailableRegistriesInformation,
-} from "../create/lambda-image-form";
+import { AvailableRegistriesInformation } from "../create/lambda-image-form";
 import LambdaImageUpdate from "./lambda-image-update";
+import { lambdaModelEnvToLambdaEnvironment } from "../utils/lambda-env-var-mapper";
+import LambdaConfidentialityUpdate from "./lambda-confidentiaity-update";
+import {
+    AvailableRegistriesToRegistry,
+    LambdaRegistryToAvailableRegistriesInformation,
+} from "../utils/lambda-registry-mapper";
+import LambdaEnvVarForm from "../create/lambda-env-var";
 
 export default function LambdaDetail({
     session,
@@ -89,6 +93,9 @@ export default function LambdaDetail({
                         </h2>
                         <LambdaImageUpdate
                             imageNameValue={lambda.imageName}
+                            registryValue={LambdaRegistryToAvailableRegistriesInformation(
+                                lambda.registry,
+                            )}
                             handleImageNameChange={(image: string) => {
                                 setLambda({
                                     ...lambda,
@@ -97,64 +104,97 @@ export default function LambdaDetail({
                             }}
                             handleRegistryChange={(
                                 registry: AvailableRegistriesInformation,
-                            ) => {}}
+                            ) => {
+                                setLambda({
+                                    ...lambda,
+                                    registry:
+                                        AvailableRegistriesToRegistry(registry),
+                                });
+                            }}
                         />
                     </>
                 )}
                 {!loading && lambda && activeTab === "environments" && (
-                    <LambdaEnvVarForm
-                        variables={[]}
-                        handleAddEnvironmentVariable={() => {
-                            const newEnvironmentVariables = [
-                                ...lambda.environmentVariables,
-                            ];
-                            newEnvironmentVariables.push({
-                                key: "",
-                                value: "",
-                            });
-                            setLambda({
-                                ...lambda,
-                                environmentVariables: newEnvironmentVariables,
-                            });
-                        }}
-                        handleRemoveEnvironmentVariable={(index: number) => {
-                            const newEnvironmentVariables = [
-                                ...lambda.environmentVariables,
-                            ];
-                            newEnvironmentVariables.splice(index, 1);
-                            setLambda({
-                                ...lambda,
-                                environmentVariables: newEnvironmentVariables,
-                            });
-                        }}
-                        handleEnvironmentVariableChange={(
-                            index: number,
-                            whereToChange: "name" | "value",
-                            value: string,
-                        ) => {
-                            const newEnvironmentVariables = [
-                                ...lambda.environmentVariables,
-                            ];
-                            newEnvironmentVariables[index][
-                                whereToChange === "name" ? "key" : "value"
-                            ] = value;
-                            setLambda({
-                                ...lambda,
-                                environmentVariables: newEnvironmentVariables,
-                            });
-                        }}
-                    />
+                    <div className="w-4/5">
+                        <h2 className="mb-5 ms-5 mt-10 w-4/5 text-xl font-bold">
+                            Lambda Variables
+                        </h2>
+                        <LambdaEnvVarForm
+                            variables={lambdaModelEnvToLambdaEnvironment(
+                                lambda.environmentVariables,
+                            )}
+                            handleAddEnvironmentVariable={() => {
+                                const newEnvironmentVariables = [
+                                    ...lambda.environmentVariables,
+                                ];
+                                newEnvironmentVariables.push({
+                                    key: "",
+                                    value: "",
+                                });
+                                setLambda({
+                                    ...lambda,
+                                    environmentVariables:
+                                        newEnvironmentVariables,
+                                });
+                            }}
+                            handleRemoveEnvironmentVariable={(
+                                index: number,
+                            ) => {
+                                const newEnvironmentVariables = [
+                                    ...lambda.environmentVariables,
+                                ];
+                                newEnvironmentVariables.splice(index, 1);
+                                setLambda({
+                                    ...lambda,
+                                    environmentVariables:
+                                        newEnvironmentVariables,
+                                });
+                            }}
+                            handleEnvironmentVariableChange={(
+                                index: number,
+                                whereToChange: "name" | "value",
+                                value: string,
+                            ) => {
+                                const newEnvironmentVariables = [
+                                    ...lambda.environmentVariables,
+                                ];
+                                newEnvironmentVariables[index][
+                                    whereToChange === "name" ? "key" : "value"
+                                ] = value;
+                                setLambda({
+                                    ...lambda,
+                                    environmentVariables:
+                                        newEnvironmentVariables,
+                                });
+                            }}
+                        />
+                        <div className="flex w-full items-center justify-center">
+                            <button
+                                type="submit"
+                                className="Button stuga-primary-color mt-10 w-full"
+                            >
+                                Update environnement variables
+                            </button>
+                        </div>
+                    </div>
                 )}
                 {!loading && lambda && activeTab === "visibility" && (
-                    <LambdaConfidentialityForm
-                        value={lambda.confidentiality}
-                        handleVisibilityChange={(value: LambdaVisibility) => {
-                            setLambda({
-                                ...lambda,
-                                confidentiality: value,
-                            });
-                        }}
-                    />
+                    <div className="w-4/5">
+                        <h2 className="mb-5 ms-5 mt-10 w-4/5 text-xl font-bold">
+                            Lambda Visibility
+                        </h2>
+                        <LambdaConfidentialityUpdate
+                            value={lambda.confidentiality}
+                            handleVisibilityChange={(
+                                value: LambdaVisibility,
+                            ) => {
+                                setLambda({
+                                    ...lambda,
+                                    confidentiality: value,
+                                });
+                            }}
+                        />
+                    </div>
                 )}
             </div>
         </>

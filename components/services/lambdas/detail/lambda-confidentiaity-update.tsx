@@ -1,7 +1,7 @@
 import { useState } from "react";
-import RadioButtons from "./radio-buttons";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
 import { LambdaVisibility } from "@/lib/models/lambdas/lambda-create";
+import RadioButtons from "../create/radio-buttons";
 
 function arrayBufferToBase64(buffer: ArrayBuffer): string {
     return btoa(
@@ -18,7 +18,7 @@ async function generateApiKey(): Promise<string> {
     return arrayBufferToBase64(array.buffer);
 }
 
-export default function LambdaConfidentialityForm({
+export default function LambdaConfidentialityUpdate({
     value,
     handleVisibilityChange,
 }: {
@@ -29,6 +29,7 @@ export default function LambdaConfidentialityForm({
     return (
         <div className="mb-10 ms-5 flex min-h-96 w-full flex-col">
             <RadioButtons
+                value={value.visibility}
                 onChangeValue={(value: string) => {
                     if (value === "private" && apiKey) {
                         handleVisibilityChange({

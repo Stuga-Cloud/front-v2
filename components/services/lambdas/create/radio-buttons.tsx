@@ -4,15 +4,17 @@ import { styled } from "@stitches/react";
 import { blackA, green } from "@radix-ui/colors";
 
 export default function RadioButtons({
+    value,
     onChangeValue,
 }: {
+    value?: string;
     onChangeValue: (value: string) => void;
 }) {
     return (
         <RadioGroupRoot defaultValue="public">
             <Flex css={{ alignItems: "center" }}>
                 <RadioGroupItem
-                    value="public"
+                    value={value || "public"}
                     id="r1"
                     onClick={(e) => {
                         const selectedValue = e.target.value as string;

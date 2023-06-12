@@ -1,7 +1,5 @@
-export interface LambdaEnvironmentVariable {
-    name: string;
-    value: string;
-}
+import { LambdaEnvironmentVariable } from "@/lib/models/lambdas/lambda-create";
+
 
 export default function LambdaEnvVarForm({
     variables,
