@@ -7,6 +7,7 @@ import { availableRegistries } from "@/lib/models/lambdas/config/lambda-create-c
 import { useState } from "react";
 import Link from "next/link";
 import { isLambdaImageNameValid } from "@/lib/models/lambdas/validation/lambda-create-candidate";
+import { InfoCircledIcon } from "@radix-ui/react-icons";
 
 const findRegistryByName = (
     name: AvailableRegistriesName,
@@ -23,11 +24,13 @@ const findRegistryByName = (
 };
 
 export default function LambdaImageUpdate({
+    onUpdateDeploy,
     imageNameValue,
     registryValue,
     handleImageNameChange,
     handleRegistryChange,
 }: {
+    onUpdateDeploy: () => void;
     imageNameValue?: string;
     registryValue: AvailableRegistriesInformation;
     handleImageNameChange: (imageName: string) => void;
@@ -39,6 +42,12 @@ export default function LambdaImageUpdate({
     );
     return (
         <div className="mb-10 flex min-h-96 w-4/5 flex-col">
+            <div className="mb-10 ms-2 flex flex-row items-center">
+                <InfoCircledIcon />
+                <p className="ms-2 text-sm text-gray-500">
+                    In this section you can update the deployment of your lambda or do a new one with a new image
+                </p>
+            </div>
             {/*    Remember that step 2 is concerning the docker image (or other registry) */}
             <div className="mb-2 ms-5 flex flex-col items-start">
                 {/* Choice between docker and our private registry */}
@@ -111,13 +120,16 @@ export default function LambdaImageUpdate({
                     </Link>
                 </p>
             </div>
-            <div className="flex justify-center mt-10">
-                <button
-                    type="submit"
-                    className="Button stuga-primary-color mt-10 w-4/5"
-                >
-                    Deploy lambda
-                </button>
+            <div className="mt-10 flex justify-between">
+                <div className="mt-10 w-2/5">
+                    <button
+                        type="submit"
+                        className="Button stuga-primary-color w-full"
+                        onClick={onUpdateDeploy}
+                    >
+                        Update lambda deployment
+                    </button>
+                </div>
             </div>
         </div>
     );

@@ -12,9 +12,11 @@ import LambdaNameForm from "../create/lambda-name-form";
 import { LambdaModel } from "../../../../lib/models/lambdas/lambda";
 
 export default function LambdaInformation({
+    onUpdate,
     setLambda,
     lambda,
 }: {
+    onUpdate: () => void;
     setLambda: (lambdaModel: LambdaModel) => void;
     lambda: LambdaModel;
 }) {
@@ -96,7 +98,11 @@ export default function LambdaInformation({
                     />
                 </div>
             </div>
-            <button type="submit" className="mt-10 Button stuga-primary-color">
+            <button 
+            type="submit" 
+            className="mt-10 Button stuga-primary-color"
+            onClick={onUpdate}
+            >
                 Update lambda
             </button>
         </>

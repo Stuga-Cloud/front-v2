@@ -1,15 +1,17 @@
 import { useState } from "react";
 
 export default function TabsLambdaDetail({
+    tab,
     onClick,
 }: {
+    tab: "details" | "image" | "environments" | "visibility" | "monitor",
     onClick: (
         tab: "details" | "image" | "environments" | "visibility" | "monitor",
     ) => void;
 }) {
     const [activeTab, setActiveTab] = useState<
         "details" | "image" | "environments" | "visibility" | "monitor"
-    >("details");
+    >(tab || "details");
     const handleClick = (
         tab: "details" | "image" | "environments" | "visibility" | "monitor",
     ) => {

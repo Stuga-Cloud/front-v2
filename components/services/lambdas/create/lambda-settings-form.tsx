@@ -1,6 +1,7 @@
 import { time } from "console";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
 import { LambdaCPULimit, LambdaMemoryLimit } from "@/lib/models/lambdas/lambda-create";
+import { useState } from "react";
 
 export default function LambdaSettingsForm({
     cpuChoices,
@@ -34,12 +35,15 @@ export default function LambdaSettingsForm({
             </label>
             <select
                 className="bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500"
-                value={cpuConfig.value + ' ' + cpuConfig.unit}
                 onChange={(e) => {
-                    const valueSplit = e.target.value.split(" ");
-                    const cpuLimit = {value: parseInt(valueSplit[0]), unit: valueSplit[1] }
+                    const valueSplit = e.target.value.split("m");
+                    console.log(valueSplit);
+                    const cpuLimit = {value: parseInt(valueSplit[0]), unit: 'mCPU' }
+                    console.log('cpuLimit');
+                    console.log(cpuLimit);
                     onChange(cpuLimit as LambdaCPULimit, memoryConfig, timeout);
                 }}
+                value={`${cpuConfig.value}${cpuConfig.unit}`}
             >
                 {cpuChoices.map((choice) => (
                     <option
@@ -58,12 +62,12 @@ export default function LambdaSettingsForm({
             </label>
             <select
                 className="bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 "
-                value={memoryConfig.value + ' ' + memoryConfig.unit}
                 onChange={(e) => {
                     const valueSplit = e.target.value.split(" ");
                     const memoryLimit = {value: parseInt(valueSplit[0]), unit: valueSplit[1] }
                     onChange(cpuConfig, memoryLimit as LambdaMemoryLimit, timeout);
                 }}
+                value={`${memoryConfig.value}${memoryConfig.unit}`}
             >
                 {memoryChoices.map((choice) => (
                     <option

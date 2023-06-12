@@ -3,7 +3,7 @@ import ResponseService from "@/lib/next-response";
 import { InternalServerError, StugaError } from "@/lib/services/error/error";
 import { VerifyIfUserCanAccessProject } from "@/lib/services/project/verify-user-access";
 import { getServerSession } from "next-auth";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { throwIfLambdaCreationCandidateIsNotValid } from "@/lib/models/lambdas/validation/lambda-create-candidate";
 import prisma from "@/lib/prisma";
 import {
@@ -19,6 +19,7 @@ import { checkIfDockerHubImageExists } from "@/lib/services/utils/check-if-docke
 import { GetLambdaByNameInProject } from "@/lib/services/lambdas/get-image-by-name";
 import { Registry } from '../../../../../../lib/models/lambdas/lambda-create';
 import { encrypt } from "@/lib/services/utils/crypt";
+import { verifyIfImageExists } from "@/lib/services/lambdas/verify-if-image-exists";
 
 export interface LambdaCreateResponse {
     name: string;
@@ -73,40 +74,13 @@ export async function POST(request: Request, { params }: NextRequest) {
         return ResponseService.internalServerError("internal-server-error", e);
     }
 
-    if (req.registry === 'pcr') {
-        try {
-            const image = await getLambdaImageInProject({
-                imageName: req.imageName,
-                projectId: projectId,
-                dependencies: {
-                    getProjectNamespaces: getProjectNamespaces,
-                },
-            });
-        } catch (e) {
-            if (e instanceof StugaError) {
-                return StugaErrorToNextResponse(e);
-            }
-            return ResponseService.internalServerError(
-                "internal-server-error",
-                e,
-            );
-        }
-    } else {
-        try {
-            const imageNameSplit = req.imageName.split(":");
-            const imageExist = await checkIfDockerHubImageExists(
-                imageNameSplit[0],
-                imageNameSplit[1],
-            );
-            if (!imageExist) {
-                return ResponseService.badRequest("image does not exist");
-            }
-        } catch (e) {
-            return ResponseService.internalServerError(
-                "internal-server-error",
-                e,
-            );
-        }
+    const verifyIfImageExistsResponse = await verifyIfImageExists(
+        req.imageName,
+        projectId,
+        req.registry,
+    );
+    if (verifyIfImageExistsResponse instanceof NextResponse) {
+        return verifyIfImageExistsResponse;
     }
 
     const envVarCrypted = req.environmentVariables.map((envVar) => {

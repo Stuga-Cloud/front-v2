@@ -20,6 +20,9 @@ import {
     LambdaRegistryToAvailableRegistriesInformation,
 } from "../utils/lambda-registry-mapper";
 import LambdaEnvVarForm from "../create/lambda-env-var";
+import { UpdateLambda } from "@/lib/services/lambdas/client/update-lambda";
+import { UpdateDeployLambda } from "@/lib/services/lambdas/client/update-deploy-lambda";
+import { throwIfLambdaCreationCandidateIsNotValid } from "@/lib/models/lambdas/validation/lambda-create-candidate";
 
 export default function LambdaDetail({
     session,
@@ -30,12 +33,84 @@ export default function LambdaDetail({
     lambdaId: string;
     projectId: string;
 }) {
+    const [lambdaInit, setLambdaInit] = useState<LambdaModel>();
+    const [lambda, setLambda] = useState<LambdaModel>();
+    const [errorFromMessage, setErrorFormMessage] = useState<string | null>(
+        null,
+    );
     const [activeTab, setActiveTab] = useState<
         "image" | "details" | "environments" | "visibility" | "monitor"
     >("details");
-    const [lambda, setLambda] = useState<LambdaModel>();
     const [loading, setLoading] = useState(true);
     const router = useRouter();
+
+    const handleUpdateImage = async (lambdaParam: LambdaModel) => {
+        try {
+            throwIfLambdaCreationCandidateIsNotValid(lambda!);
+        } catch (error) {
+            if (error instanceof Error) {
+                setErrorFormMessage(error.message);
+                return;
+            }
+        }
+
+        try {
+            setLoading(true);
+            await UpdateDeployLambda(projectId, lambdaParam);
+            toastEventEmitter.emit("pop", {
+                type: "success",
+                message: "lambda updated",
+                duration: 5000,
+            });
+            const lambdaUpdated = await GetLambdaById(projectId, lambdaId);
+            setLambda(lambdaUpdated);
+            setLambdaInit(lambdaUpdated);
+        } catch (error) {
+            toastEventEmitter.emit("pop", {
+                type: "danger",
+                message: error.error ?? "error when try to update lambda",
+                duration: 5000,
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleUpdateLambda = async (lambdaParam: LambdaModel) => {
+        try {
+            throwIfLambdaCreationCandidateIsNotValid(lambda!);
+            console.log("zeo problems")
+        } catch (error) {
+            console.log("problème dans le throw")
+            if (error instanceof Error) {
+                setErrorFormMessage(error.message);
+                return;
+            }
+        }
+
+        try {
+            setLoading(true);
+            console.log("try to update lambda")
+            console.log(lambdaParam)
+            await UpdateLambda(projectId, lambdaParam);
+            toastEventEmitter.emit("pop", {
+                type: "success",
+                message: "lambda updated",
+                duration: 5000,
+            });
+            const lambdaUpdated = await GetLambdaById(projectId, lambdaId);
+            setLambda(lambdaUpdated);
+            setLambdaInit(lambdaUpdated);
+        } catch (error) {
+            toastEventEmitter.emit("pop", {
+                type: "danger",
+                message: error.error ?? "error when try to update lambda",
+                duration: 5000,
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
         if (!lambdaId) return;
@@ -44,11 +119,12 @@ export default function LambdaDetail({
         GetLambdaById(projectId, lambdaId)
             .then((lambda) => {
                 setLambda(lambda);
+                setLambdaInit(lambda);
             })
             .catch((error) => {
                 toastEventEmitter.emit("pop", {
                     type: "danger",
-                    message: "error when try to get namespaces",
+                    message: error.message ?? "error when try to update lambda",
                     duration: 5000,
                 });
             })
@@ -62,15 +138,25 @@ export default function LambdaDetail({
             <div className="z-10 flex w-full flex-col items-center justify-center">
                 <div className="flex w-4/5 flex-row items-center justify-between">
                     <h2 className="mb-5 w-4/5 text-4xl font-bold">
-                        {lambda?.name}
+                        {lambdaInit?.name}
                     </h2>
                 </div>
+                {errorFromMessage && (
+                    <div
+                        className="mb-4 flex w-2/6 flex-col items-center justify-center rounded-lg bg-red-50 p-4 text-sm text-red-800"
+                        role="alert"
+                    >
+                        <span className="font-medium">Form not valid</span>
+                        <p>{errorFromMessage}</p>
+                    </div>
+                )}
                 {loading ? (
                     <div className="flex items-center justify-center">
-                        <LoadingSpinner />
+                        <LoadingSpinner size="large" />
                     </div>
                 ) : (
                     <TabsLambdaDetail
+                        tab={activeTab}
                         onClick={(
                             tab:
                                 | "details"
@@ -84,7 +170,7 @@ export default function LambdaDetail({
                     />
                 )}
                 {!loading && lambda && activeTab === "details" && (
-                    <LambdaInformation lambda={lambda} setLambda={setLambda} />
+                    <LambdaInformation onUpdate={() => handleUpdateLambda(lambda)} lambda={lambda} setLambda={setLambda} />
                 )}
                 {!loading && lambda && activeTab === "image" && (
                     <>
@@ -92,6 +178,7 @@ export default function LambdaDetail({
                             Image Used
                         </h2>
                         <LambdaImageUpdate
+                            onUpdateDeploy={() => handleUpdateImage(lambda)}
                             imageNameValue={lambda.imageName}
                             registryValue={LambdaRegistryToAvailableRegistriesInformation(
                                 lambda.registry,
@@ -172,6 +259,9 @@ export default function LambdaDetail({
                             <button
                                 type="submit"
                                 className="Button stuga-primary-color mt-10 w-full"
+                                onClick={() => {
+                                    handleUpdateLambda(lambda);
+                                }}
                             >
                                 Update environnement variables
                             </button>
@@ -194,6 +284,17 @@ export default function LambdaDetail({
                                 });
                             }}
                         />
+                        <div className="flex w-full items-center justify-center">
+                            <button
+                                type="submit"
+                                className="Button stuga-primary-color mt-10 w-full"
+                                onClick={() => {
+                                    handleUpdateLambda(lambda);
+                                }}
+                            >
+                                Update visibility
+                            </button>
+                        </div>
                     </div>
                 )}
             </div>
