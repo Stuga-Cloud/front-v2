@@ -43,7 +43,7 @@ export const Breadcrumb = ({ items }: { items: BreadcrumbItem[] }) => {
                 {items.map((item, index) => (
                     <li aria-current="page" key={index}>
                         <div className="flex items-center">
-                            <a
+                            <Link
                                 href={createUrl(item.slug)}
                                 className="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600"
                             >
@@ -63,7 +63,7 @@ export const Breadcrumb = ({ items }: { items: BreadcrumbItem[] }) => {
                                 <span className="ml-1 text-sm font-medium text-gray-500 hover:text-blue-600 md:ml-2">
                                     {item.text}
                                 </span>
-                            </a>
+                            </Link>
                         </div>
                     </li>
                 ))}

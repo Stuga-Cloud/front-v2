@@ -1,6 +1,5 @@
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import LambdaAccueil from "@/components/services/lambdas/all/lambdas-accueil";
-import NewLambdaForm from "@/components/services/lambdas/create/lambda-form";
 import { Breadcrumb, BreadcrumbItem } from "@/components/shared/breadcrumb";
 import { getServerSession } from "next-auth";
 

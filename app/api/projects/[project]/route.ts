@@ -24,6 +24,19 @@ export async function GET(request: Request, { params }: NextRequest) {
         },
     });
 
+    if (
+        !projectMemberships.some(
+            (membership) => membership.userId === session.user!.id,
+        )
+    ) {
+        return NextResponse.json(
+            {
+                error: "Vous n'êtes pas autorisé à récupérer ce projet.",
+            },
+            { status: 403 },
+        );
+    }
+
     const usersInProject = await prisma.user.findMany({
         where: {
             OR: projectMemberships.map((membership) => ({

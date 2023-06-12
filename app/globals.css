@@ -69,6 +69,11 @@
     outline: 1px solid var(--green9);
 }
 
+.Button.stuga-primary-color:disabled {
+    background-color: var(--gray3);
+    color: var(--gray9);
+}
+
 .Button.stuga-primary-color[aria-expanded='true'] {
     background-color: transparent;
     color: var(--green2);
@@ -95,6 +100,11 @@
     outline: 1px solid var(--red8);
 }
 
+.Button.stuga-red-color:disabled {
+    background-color: var(--gray3);
+    color: var(--gray9);
+}
+
 .Button.stuga-red-color[aria-expanded='true'] {
     background-color: transparent;
 }
@@ -118,6 +128,11 @@
 
 .Button.stuga-orange-color:focus-visible {
     outline: 1px solid var(--orange7);
+}
+
+.Button.stuga-orange-color:disabled {
+    background-color: var(--gray3);
+    color: var(--gray9);
 }
 
 .Button.stuga-orange-color[aria-expanded='true'] {

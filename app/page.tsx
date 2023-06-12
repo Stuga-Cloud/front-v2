@@ -13,7 +13,17 @@ export default async function Home() {
             <Suspense fallback="...">
                 <Nav session={session} breadcrumbItems={[]} />
             </Suspense>
-            {session ? <Authentified session={session} /> : <UnAuthentified />}
+            {session ? (
+                <>
+                    <div className="z-10 flex flex w-full flex-col">
+                        <Authentified session={session} />
+                    </div>
+                </>
+            ) : (
+                <>
+                    <UnAuthentified />
+                </>
+            )}
         </>
     );
 }

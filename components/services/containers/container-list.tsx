@@ -9,6 +9,7 @@ import { LoadingSpinner } from "@/components/shared/icons";
 import { ContainerNamespace } from "@/lib/models/containers/container-namespace";
 import Image from "next/image";
 import ContainerCard from "@/components/services/containers/container-card";
+import axios from "axios";
 
 export default function ContainerList({
     session,
@@ -27,10 +28,13 @@ export default function ContainerList({
 
     const getProject = async (projectId: string) => {
         try {
-            const res = await fetch(`/api/projects/${projectId}`);
-            return await res.json();
-        } catch (error) {
+            const res = await axios.get(`/api/projects/${projectId}`);
+            return res.data;
+        } catch (error: any) {
             console.log(error);
+            if (error.response.status === 404) {
+                throw new Error("Project not found");
+            }
         }
     };
 
@@ -45,8 +49,7 @@ export default function ContainerList({
             .catch((error) => {
                 toastEventEmitter.emit("pop", {
                     type: "danger",
-                    message:
-                        "error when try to get project in containers list page",
+                    message: "Could not find project",
                     duration: 2000,
                 });
                 console.error(
@@ -54,21 +57,26 @@ export default function ContainerList({
                     error,
                 );
                 setLoading(false);
+                router.push(`/projects`);
             });
     }, [projectId]);
 
     const getContainers = async (projectId: string) => {
         try {
-            const res = await fetch(
-                `/api/projects/${projectId}/services/containers/namespace`,
+            const res = await axios.get(
+                `/api/projects/${projectId}/services/containers/namespaces`,
             );
-            return await res.json();
-        } catch (error) {
+            return res.data;
+        } catch (error: any) {
             console.log(error);
+            if (error.response.status === 404) {
+                throw new Error("Container namespace not found");
+            }
         }
     };
 
     useEffect(() => {
+        if (!project) return;
         setLoading(true);
         getContainers(projectId)
             .then((foundContainerNamespace) => {
@@ -80,7 +88,7 @@ export default function ContainerList({
                 toastEventEmitter.emit("pop", {
                     type: "danger",
                     message:
-                        "error when try to get container namespace in containers list page",
+                        "Could not find container namespace for this project",
                     duration: 2000,
                 });
                 console.error(
@@ -88,30 +96,30 @@ export default function ContainerList({
                     error,
                 );
                 setLoading(false);
+                router.push(`/projects/${projectId}/`);
             });
-    }, []);
+    }, [project]);
 
     return (
         <div className="z-10 flex w-full flex-col items-center justify-center">
-            <div className=" w-4/5">
-                {loading && (
-                    <div className="flex flex-col items-center justify-center">
-                        <LoadingSpinner />
-                    </div>
-                )}
-                {!loading && project && (
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                            <h6 className="my-4 text-4xl font-bold text-gray-700 md:text-4xl">
-                                {project.name}
-                            </h6>
+            {loading && (
+                <div className="flex flex-col items-center justify-center">
+                    <LoadingSpinner />
+                </div>
+            )}
+            {!loading && project && (
+                <div className="mt-10 flex w-4/5 flex-row items-center justify-between">
+                    <div className="z-10 w-4/5 justify-start">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <h6 className="my-4 text-4xl font-bold text-gray-700 md:text-4xl">
+                                    {project.name}
+                                </h6>
+                            </div>
                         </div>
+                    </div>
+                    <div className="flex items-center justify-end gap-1 py-4">
                         <a
-                            // onClick={() =>
-                            //     router.push(
-                            //         `/projects/${project.id}/services/containers/new`,
-                            //     )
-                            // }
                             href={`/projects/${project.id}/services/containers/new`}
                             className="Button stuga-primary-color"
                         >
@@ -133,39 +141,39 @@ export default function ContainerList({
                             New Container
                         </a>
                     </div>
-                )}
-                {!loading && (!containers || containers.length == 0) && (
-                    <div className="flex h-[50vh] w-full items-center justify-center gap-2 border-2  border-dashed">
-                        <Image
-                            src="/stuga-logo.png"
-                            alt="Description de l'image"
-                            width="60"
-                            height="60"
-                        ></Image>
-                        <div className="flex h-16 flex-col justify-center overflow-hidden text-sm">
-                            <h5 className="text-2xl font-bold text-gray-500 md:text-2xl">
-                                Create a new containerized application
-                            </h5>
-                            <p className="text-gray-500">
-                                Deploy API, web apps, and databases and more
-                            </p>
+                </div>
+            )}
+            {!loading && (!containers || containers.length == 0) && (
+                <div className="flex h-[50vh] w-4/5 items-center justify-center gap-2 border-2  border-dashed">
+                    <Image
+                        src="/stuga-logo.png"
+                        alt="Description de l'image"
+                        width="60"
+                        height="60"
+                    ></Image>
+                    <div className="flex h-16 flex-col justify-center overflow-hidden text-sm">
+                        <h5 className="text-2xl font-bold text-gray-500 md:text-2xl">
+                            Create a new containerized application
+                        </h5>
+                        <p className="text-gray-500">
+                            Deploy API, web apps, and databases and more
+                        </p>
+                    </div>
+                </div>
+            )}
+            {!loading && containers && containers.length > 0 && (
+                <div className="flex flex-col items-start justify-start">
+                    {containers.map((container: ContainerApplication) => (
+                        <div key={container.id} className="w-2/5">
+                            <ContainerCard
+                                projectId={projectId}
+                                key={container.id}
+                                application={container}
+                            />
                         </div>
-                    </div>
-                )}
-                {!loading && containers && containers.length > 0 && (
-                    <div className="flex flex-col items-start justify-start">
-                        {containers.map((container: ContainerApplication) => (
-                            <div key={container.id} className="w-2/5">
-                                <ContainerCard
-                                    projectId={projectId}
-                                    key={container.id}
-                                    application={container}
-                                />
-                            </div>
-                        ))}
-                    </div>
-                )}
-            </div>
+                    ))}
+                </div>
+            )}
         </div>
     );
 }

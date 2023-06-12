@@ -61,15 +61,15 @@ model User {
 }
 
 model Project {
-  id         String              @id @default(cuid())
-  name       String
-  createdBy  String
-  containers Container[]         @relation("ProjectContainers")
-  databases  Database[]          @relation("ProjectDatabases")
-  lambdas    Lambda[]
-  user       User                @relation(fields: [createdBy], references: [id], onDelete: Cascade)
-  members    ProjectMembership[]
-  registry   Registry?
+  id        String               @id @default(cuid())
+  name      String
+  createdBy String
+  Container ContainerNamespace[] @relation("ProjectContainerNamespaces")
+  databases Database[]           @relation("ProjectDatabases")
+  lambdas   Lambda[]
+  user      User                 @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  members   ProjectMembership[]
+  registry  Registry?
 
   @@index([createdBy])
 }
@@ -111,12 +111,23 @@ model Database {
 }
 
 model Container {
-  id         String   @id @default(cuid())
-  name       String   @unique
-  modifiedAt DateTime @default(now())
-  createdAt  DateTime @default(now())
-  projectId  String
-  project    Project  @relation("ProjectContainers", fields: [projectId], references: [id])
+  id          String             @id @default(cuid())
+  name        String             @unique
+  modifiedAt  DateTime           @default(now())
+  createdAt   DateTime           @default(now())
+  namespaceId String
+  namespace   ContainerNamespace @relation(fields: [namespaceId], references: [id])
+}
+
+model ContainerNamespace {
+  id          String      @id @default(cuid())
+  name        String
+  modifiedAt  DateTime    @default(now())
+  createdAt   DateTime    @default(now())
+  projectId   String
+  description String?
+  containers  Container[]
+  project     Project     @relation("ProjectContainerNamespaces", fields: [projectId], references: [id])
 
   @@index([projectId])
 }
@@ -133,13 +144,14 @@ model Lambda {
   timeoutSeconds Int
   visibility     String
   registry       String
-  privateConfig Json?
-  modifiedAt DateTime @default(now())
-  createdAt  DateTime @default(now())
-  projectId  String
-  createdBy  String
-  user       User                @relation(fields: [createdBy], references: [id], onDelete: Cascade)
-  project    Project  @relation(fields: [projectId], references: [id])
+  privateConfig  Json?
+  modifiedAt     DateTime @default(now())
+  createdAt      DateTime @default(now())
+  projectId      String
+  createdBy      String
+  user           User     @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  project        Project  @relation(fields: [projectId], references: [id])
+
   @@index([projectId])
   @@index([createdBy])
 }

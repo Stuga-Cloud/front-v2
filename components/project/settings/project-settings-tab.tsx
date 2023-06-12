@@ -7,6 +7,8 @@ import { useRouter } from "next/navigation";
 import { toastEventEmitter } from "@/lib/event-emitter/toast-event-emitter";
 import { Project } from "@/lib/models/project";
 import LoadingSpinner from "../../shared/icons/loading-spinner";
+import { StugaError } from "@/lib/services/error/error";
+import axios from "axios";
 
 export type ProjectSettingsPages = "global" | "members";
 
@@ -22,10 +24,32 @@ export default function ProjectSettingsTab({
 
     const getProject = async (projectId: string) => {
         try {
-            const res = await fetch(`/api/projects/${projectId}`);
-            return await res.json();
-        } catch (error) {
+            const res = await axios.get(`/api/projects/${projectId}`);
+            return res.data;
+        } catch (error: any) {
             console.log(error);
+            if (error.response.status === 404) {
+                throw new StugaError({
+                    message: "Project not found",
+                    status: 404,
+                    error: "project_not_found",
+                    context: error,
+                });
+            }
+            if (error.response.status === 403) {
+                throw new StugaError({
+                    message: "You are not allowed to access this project",
+                    status: 403,
+                    error: "project_not_allowed",
+                    context: error,
+                });
+            }
+            throw new StugaError({
+                message: "Error when try to get project",
+                status: 500,
+                error: "internal_server_error",
+                context: error,
+            });
         }
     };
 
@@ -37,6 +61,18 @@ export default function ProjectSettingsTab({
                 setLoader(false);
             })
             .catch((error) => {
+                if (error.status === 404 || error.status === 403) {
+                    toastEventEmitter.emit("pop", {
+                        type: "danger",
+                        message: error.message,
+                        duration: 2000,
+                    });
+                    console.error(error);
+                    setTimeout(() => {
+                        router.push(`/`);
+                    }, 2500);
+                    return;
+                }
                 toastEventEmitter.emit("pop", {
                     type: "danger",
                     message: "error when try to get project settings",

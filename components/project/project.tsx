@@ -98,19 +98,8 @@ export default function Project({
                 <div className="z-10 w-4/5 justify-start">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                            <div className="overflow-hidden rounded-full">
-                                <Image
-                                    alt={email}
-                                    src={
-                                        image ||
-                                        `https://avatars.dicebear.com/api/micah/${email}.svg`
-                                    }
-                                    width={40}
-                                    height={40}
-                                />
-                            </div>
                             <h6 className="my-4 text-4xl font-bold text-gray-700 md:text-4xl">
-                                {name}
+                                {project.name}
                             </h6>
                         </div>
                     </div>
@@ -152,7 +141,7 @@ export default function Project({
                                     break;
                                 case "container":
                                     router.push(
-                                        `/projects/${project.id}/services/containers/new`,
+                                        `/projects/${project.id}/services/containers/namespaces/new`,
                                     );
                                     break;
                                 case "database":

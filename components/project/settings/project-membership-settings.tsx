@@ -56,13 +56,13 @@ export default function ProjectMembersSettings({
                     />
                 </div>
                 <div className="flex items-center gap-2">
-                    <table className="w-full text-left text-sm text-gray-500 dark:text-gray-400">
+                    <table className="w-full text-left text-sm text-gray-500">
                         <tbody>
                             {members.length > 0 &&
                                 members.map((member) => {
                                     return (
                                         <tr
-                                            className="bg-white dark:bg-gray-800"
+                                            className="bg-white"
                                             key={member.id}
                                         >
                                             {/* User image */}
@@ -104,7 +104,7 @@ export default function ProjectMembersSettings({
                                             )}
                                             <th
                                                 scope="row"
-                                                className="whitespace-nowrap px-6 py-4 font-medium text-gray-900 dark:text-white"
+                                                className="whitespace-nowrap px-6 py-4 font-medium text-gray-900"
                                             >
                                                 {member.name}
                                             </th>
@@ -114,11 +114,11 @@ export default function ProjectMembersSettings({
                                             <td className="px-6 py-4">
                                                 {member.id ===
                                                 project.createdBy ? (
-                                                    <span className="inline-flex rounded-full bg-green-100 px-2 text-xs font-semibold leading-5 text-green-800">
+                                                    <span className="inline-flex rounded-full bg-green-100 px-2 text-center text-xs font-semibold leading-5 text-green-800">
                                                         Creator 💮
                                                     </span>
                                                 ) : (
-                                                    <span className="inline-flex rounded-full bg-blue-100 px-2 text-xs font-semibold leading-5 text-blue-800">
+                                                    <span className="inline-flex rounded-full bg-blue-100 px-2 text-center text-xs font-semibold leading-5 text-blue-800">
                                                         Collaborator
                                                     </span>
                                                 )}

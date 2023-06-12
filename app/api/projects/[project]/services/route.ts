@@ -60,7 +60,7 @@ export async function GET(request: Request, { params }: NextRequest) {
         },
     });
 
-    const containers = await prisma.container.findFirst({
+    const containers = await prisma.containerNamespace.findFirst({
         where: {
             projectId: project.id,
         },

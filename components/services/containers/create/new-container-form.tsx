@@ -137,7 +137,7 @@ export default function NewContainerForm({
         useState<number>(80);
     const [replicas, setReplicas] = useState<number>(1);
 
-    const [administatorEmail, setAdministratorEmail] = useState<
+    const [administratorEmail, setAdministratorEmail] = useState<
         string | undefined
     >(undefined);
 
@@ -293,7 +293,7 @@ export default function NewContainerForm({
                     error,
                 );
                 setLoading(false);
-                // router.push(`/`);
+                router.push(`/`);
             });
     }, [projectId]);
 
@@ -313,21 +313,9 @@ export default function NewContainerForm({
         isApplicationNameAvailableInNamespace();
     };
 
-    // const namespaceUpdated = (e: any) => {
-    //     setApplicationNamespace(e.target.value);
-    //     isNamespaceAvailable();
-    //     isApplicationNameAvailableInNamespace();
-    // };
-
     const stringInSubdomainRegex = new RegExp(
         "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
     );
-    const isNamespaceValid = (namespace: string | undefined): boolean => {
-        return (
-            namespace == undefined ||
-            (namespace.length > 0 && stringInSubdomainRegex.test(namespace))
-        );
-    };
 
     const isApplicationNameValid = (
         applicationName: string | undefined,
@@ -467,7 +455,7 @@ export default function NewContainerForm({
                         cpuUsagePercentageThreshold: cpuUsageThreshold!,
                         isAutoScaled: isAutoscalingEnabled!,
                     },
-                    administratorEmail: administatorEmail!,
+                    administratorEmail: administratorEmail!,
                     userId: "",
                     namespaceId: "",
                 };
@@ -567,7 +555,6 @@ export default function NewContainerForm({
                                                     onClick={() => {
                                                         setStep(index + 1);
                                                     }}
-                                                    href="#step-name"
                                                 >
                                                     <li
                                                         key={index}
@@ -705,7 +692,9 @@ export default function NewContainerForm({
                                                             : ""
                                                     }`}
                                                     type="text"
-                                                    value={applicationName}
+                                                    value={
+                                                        applicationName || ""
+                                                    }
                                                     onChange={(e) => {
                                                         applicationNameUpdated(
                                                             e,
@@ -826,7 +815,7 @@ export default function NewContainerForm({
                                                     applicationImage,
                                                 )}`}
                                                 type="text"
-                                                value={applicationImage}
+                                                value={applicationImage || ""}
                                                 onChange={(e) => {
                                                     applicationImageUpdated(e);
                                                 }}
@@ -905,7 +894,7 @@ export default function NewContainerForm({
                                                         ? "border-red-500 bg-red-50 p-2.5 text-sm text-red-900 placeholder-red-700 focus:border-red-500 focus:ring-red-500 dark:border-red-500 dark:bg-gray-700 dark:text-red-500 dark:placeholder-red-500"
                                                         : ""
                                                 }`}
-                                                value={applicationPort}
+                                                value={applicationPort || ""}
                                                 onChange={(e: {
                                                     target: {
                                                         value: string;
@@ -1084,7 +1073,9 @@ export default function NewContainerForm({
                                                                     ? "border-red-500 bg-red-50 p-2.5 text-sm text-red-900 placeholder-red-700 focus:border-red-500 focus:ring-red-500 dark:border-red-500 dark:bg-gray-700 dark:text-red-500 dark:placeholder-red-500"
                                                                     : ""
                                                             }`}
-                                                            value={replicas}
+                                                            value={
+                                                                replicas || ""
+                                                            }
                                                             onChange={(e) => {
                                                                 updateReplicas(
                                                                     e,
@@ -1133,7 +1124,8 @@ export default function NewContainerForm({
                                                                     : ""
                                                             }`}
                                                             value={
-                                                                cpuUsageThreshold
+                                                                cpuUsageThreshold ||
+                                                                ""
                                                             }
                                                             onChange={(e) =>
                                                                 updateCpuUsageThreshold(
@@ -1183,7 +1175,8 @@ export default function NewContainerForm({
                                                                     : ""
                                                             }`}
                                                             value={
-                                                                memoryUsageThreshold
+                                                                memoryUsageThreshold ||
+                                                                ""
                                                             }
                                                             onChange={(e) =>
                                                                 updateMemoryUsageThreshold(
@@ -1230,7 +1223,8 @@ export default function NewContainerForm({
                                                             className="bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500"
                                                             placeholder="Key"
                                                             value={
-                                                                variable.name
+                                                                variable.name ||
+                                                                ""
                                                             }
                                                             onChange={(e) =>
                                                                 handleEnvironmentVariableChange(
@@ -1249,7 +1243,8 @@ export default function NewContainerForm({
                                                             className="bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500"
                                                             placeholder="Value"
                                                             value={
-                                                                variable.value
+                                                                variable.value ||
+                                                                ""
                                                             }
                                                             onChange={(e) =>
                                                                 handleEnvironmentVariableChange(
@@ -1304,7 +1299,10 @@ export default function NewContainerForm({
                                                             type="text"
                                                             className="bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500"
                                                             placeholder="Key"
-                                                            value={secret.name}
+                                                            value={
+                                                                secret.name ||
+                                                                ""
+                                                            }
                                                             onChange={(e) =>
                                                                 handleSecretChange(
                                                                     index,
@@ -1321,7 +1319,10 @@ export default function NewContainerForm({
                                                             type="text"
                                                             className="bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500"
                                                             placeholder="Value"
-                                                            value={secret.value}
+                                                            value={
+                                                                secret.value ||
+                                                                ""
+                                                            }
                                                             onChange={(e) =>
                                                                 handleSecretChange(
                                                                     index,
@@ -1360,7 +1361,9 @@ export default function NewContainerForm({
                                             htmlFor="admin-email"
                                             className={
                                                 "mb-2 block text-sm font-medium" +
-                                                (isEmailValid(administatorEmail)
+                                                (isEmailValid(
+                                                    administratorEmail,
+                                                )
                                                     ? "gray-900 dark:text-white"
                                                     : "red-700 dark:text-red-500")
                                             }
@@ -1371,11 +1374,13 @@ export default function NewContainerForm({
                                             type="email"
                                             id="admin-email"
                                             className={`bg-gray-40 mb-1 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500 ${
-                                                !isEmailValid(administatorEmail)
+                                                !isEmailValid(
+                                                    administratorEmail,
+                                                )
                                                     ? "border-red-500 bg-red-50 p-2.5 text-sm text-red-900 placeholder-red-700 focus:border-red-500 focus:ring-red-500 dark:border-red-500 dark:bg-gray-700 dark:text-red-500 dark:placeholder-red-500"
                                                     : ""
                                             }`}
-                                            value={administatorEmail}
+                                            value={administratorEmail || ""}
                                             onChange={(e) =>
                                                 setAdministratorEmail(
                                                     e.target.value,
@@ -1385,7 +1390,7 @@ export default function NewContainerForm({
                                             required
                                         />
 
-                                        {!isEmailValid(administatorEmail) ? (
+                                        {!isEmailValid(administratorEmail) ? (
                                             <p className="mt-2 text-sm text-red-600 dark:text-red-500">
                                                 Please enter a valid email
                                                 address.
@@ -1393,60 +1398,6 @@ export default function NewContainerForm({
                                         ) : null}
                                     </div>
                                 )}
-
-                                {/*FIELDS : */}
-                                {/*    "name": "basic-api",*/}
-                                {/*    "image": "williamqch/basic-api:latest",*/}
-                                {/*    "namespaceId": "dd6ce4af-6aa8-42ad-8ba4-6a0b21f78a3d",*/}
-                                {/*    "userId": "300899ca-6afb-4081-ab1d-14df4b05f457",*/}
-                                {/*    "port": 3000,*/}
-                                {/*    "applicationType": "LOAD_BALANCED",*/}
-                                {/*    "environmentVariables": [*/}
-                                {/*{*/}
-                                {/*    "name": "SERVER_PORT",*/}
-                                {/*    "value": "3000"*/}
-                                {/*},*/}
-                                {/*{*/}
-                                {/*    "name": "NODE_ENV",*/}
-                                {/*    "value": "development"*/}
-                                {/*},*/}
-                                {/*{*/}
-                                {/*    "name": "A_SIMPLE_ENVIRONMENT_VARIABLE",*/}
-                                {/*    "value": "an environment variable value"*/}
-                                {/*}*/}
-                                {/*    ],*/}
-                                {/*    "secrets": [*/}
-                                {/*{*/}
-                                {/*    "name": "A_SECRET_ENVIRONMENT_VARIABLE",*/}
-                                {/*    "value": "a secret key value"*/}
-                                {/*}*/}
-                                {/*    ],*/}
-                                {/*    "containerSpecifications": {*/}
-                                {/*    "cpuLimit": {*/}
-                                {/*    "value": 256,*/}
-                                {/*    "unit": "MB"*/}
-                                {/*},*/}
-                                {/*    "memoryLimit": {*/}
-                                {/*    "value": 128,*/}
-                                {/*    "unit": "MB"*/}
-                                {/*},*/}
-                                {/*    "ephemeralStorageLimit": {*/}
-                                {/*    "value": 256,*/}
-                                {/*    "unit": "MB"*/}
-                                {/*},*/}
-                                {/*    "storageLimit": {*/}
-                                {/*    "value": 256,*/}
-                                {/*    "unit": "MB"*/}
-                                {/*}*/}
-                                {/*},*/}
-                                {/*    "scalabilitySpecifications": {*/}
-                                {/*    "maximumInstanceCount": 1,*/}
-                                {/*    "minimumInstanceCount": 1,*/}
-                                {/*    "replicas": 1,*/}
-                                {/*    "isAutoScaled": false*/}
-                                {/*},*/}
-                                {/*    "administratorEmail": "william.quach@outlook.fr"*/}
-                                {/*}*/}
 
                                 <div className="flex justify-between">
                                     {step === 1 && (

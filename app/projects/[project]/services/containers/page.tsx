@@ -1,5 +1,4 @@
 import { BreadcrumbItem } from "@/components/shared/breadcrumb";
-import ContainerList from "@/components/services/containers/container-list";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import UnAuthentified from "@/components/home/un-authentified";
@@ -29,10 +28,13 @@ export default async function ContainerListPage({
             {session ? (
                 <>
                     <div className="z-10 mt-5 flex flex w-full flex-col">
-                        <ContainerList
-                            session={session}
-                            projectId={projectId}
-                        />
+                        <div className="flex flex-col items-center justify-center">
+                            <h1>Welcome to the containers page</h1>
+                            <p>
+                                This page is under construction. Please come
+                                back later. Thank you. 🚧
+                            </p>
+                        </div>
                     </div>
                 </>
             ) : (
