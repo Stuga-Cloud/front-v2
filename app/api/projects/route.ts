@@ -46,6 +46,7 @@ export async function POST(request: Request) {
             data: {
                 userId: user.id,
                 projectId: project.id,
+                role: "ADMIN",
             },
         });
         return NextResponse.json(project, { status: 201 });

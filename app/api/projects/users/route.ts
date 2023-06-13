@@ -2,10 +2,12 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getServerSession } from "next-auth/next";
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { ProjectMembershipRole } from "@/lib/models/project";
 
 interface RequestBody {
     email: string;
     projectId: string;
+    role: ProjectMembershipRole;
 }
 
 /**
@@ -18,7 +20,7 @@ interface RequestBody {
 export async function POST(request: Request) {
     const session = await getServerSession(authOptions);
     const req = await request.json();
-    const { email, projectId }: RequestBody = req;
+    const { email, projectId, role }: RequestBody = req;
     if (!session) {
         return NextResponse.json(
             {
@@ -105,6 +107,7 @@ export async function POST(request: Request) {
                 userId: member.id,
                 projectId,
                 hasAccepted: false,
+                role,
             },
         });
         return NextResponse.json(projectMembership, { status: 201 });

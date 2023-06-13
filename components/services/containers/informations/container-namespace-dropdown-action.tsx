@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import ConfirmDeleteModal from "./modal-delete-confirm";
+import ConfirmDeleteContainerNamespaceModal from "@/components/services/containers/informations/modal-delete-container-namespace-confirm";
 
-export const DropdownAction = ({
+export const ContainerNamespaceDropdownAction = ({
     deleteAction,
     messagePopup,
 }: {
@@ -10,14 +10,14 @@ export const DropdownAction = ({
 }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [isOpenDeleteModal, setIsOpenDeleteModal] = useState(false);
-    const ref = useRef(null);
+    const ref = useRef<any>(null);
 
     const handleButtonClick = () => {
         setIsOpen(!isOpen);
     };
 
     useEffect(() => {
-        const handleClickOutside = (event) => {
+        const handleClickOutside = (event: any) => {
             if (ref.current && !ref.current.contains(event.target)) {
                 setIsOpen(false);
             }
@@ -40,7 +40,21 @@ export const DropdownAction = ({
                     aria-haspopup="true"
                     onClick={handleButtonClick}
                 >
-                    Actions
+                    <svg
+                        className="h-5 w-5"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="black"
+                        stroke="black"
+                        strokeWidth="1.5"
+                        aria-hidden="true"
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"
+                        ></path>
+                    </svg>
                 </button>
             </div>{" "}
             {isOpen && (
@@ -68,11 +82,14 @@ export const DropdownAction = ({
                     </div>
                 </div>
             )}
-            <ConfirmDeleteModal
+            <ConfirmDeleteContainerNamespaceModal
                 text={messagePopup}
                 onClose={() => setIsOpenDeleteModal(false)}
                 isOpenFromParent={isOpenDeleteModal}
-                deleteAction={deleteAction}
+                deleteAction={() => {
+                    deleteAction();
+                    setIsOpenDeleteModal(false);
+                }}
             />
         </div>
     );

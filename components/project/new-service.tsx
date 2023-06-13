@@ -83,24 +83,28 @@ export default function NewService({
                         {!alreadyHave.includes("registry") && (
                             <ServicePopUpCard
                                 title="Container Registry"
+                                description="A collection of repositories made to store container images."
                                 onClick={() => afterCreate("registry")}
                             />
                         )}
                         {!alreadyHave.includes("lambda") && (
                             <ServicePopUpCard
                                 title="Lambdas"
+                                description="Functions that can be executed on demand."
                                 onClick={() => afterCreate("lambda")}
                             />
                         )}
                         {!alreadyHave.includes("container") && (
                             <ServicePopUpCard
                                 title="Containers"
+                                description="Deploy containers on demand (API, Web, Worker, DB etc)."
                                 onClick={() => afterCreate("container")}
                             />
                         )}
                         {!alreadyHave.includes("database") && (
                             <ServicePopUpCard
                                 title="Database"
+                                description="Secure database to store your data."
                                 onClick={() => afterCreate("database")}
                             />
                         )}

@@ -5,9 +5,7 @@ import { NextRequest } from "next/server";
 import { isConnected } from "@/lib/utils";
 import ResponseService from "@/lib/next-response";
 import { GetContainerNamespaceByName } from "@/lib/services/containers/namespaces/get-container-namespace";
-import { UpsertContainerNamespace } from "@/lib/services/containers/namespaces/create-container-namespace";
-import { CreateContainerNamespaceBody } from "@/lib/services/containers/namespaces/create-container-namespace.body";
-import { ContainerNamespaceAlreadyExistError } from "@/lib/services/containers/errors/container-namespace-already-exist";
+import { DeleteContainerNamespace } from "@/lib/services/containers/namespaces/delete-container-namespace";
 
 export async function GET(
     _req: NextRequest,
@@ -46,9 +44,9 @@ export async function GET(
     }
 }
 
-export async function POST(
-    req: NextRequest,
-    { params }: { params: { project: string } },
+export async function DELETE(
+    _req: NextRequest,
+    { params }: { params: { project: string; namespaceId: string } },
 ) {
     const session = await getServerSession(authOptions);
 
@@ -57,68 +55,59 @@ export async function POST(
     }
     try {
         const projectId = params.project;
+        const namespaceId = params.namespaceId;
 
         const project = await prisma.project.findFirst({
             where: { id: projectId },
-            include: {
-                members: {
-                    select: {
-                        userId: true,
-                    },
-                },
-            },
         });
         if (!project) {
             return ResponseService.notFound(
                 `Project not found with id ${projectId}`,
             );
         }
-        if (
-            !project.members.some(
-                (m) => m.userId === (session!.user! as any).id,
-            )
-        ) {
-            return ResponseService.unauthorized(
-                "You are not a member of this project",
+
+        const namespace = await prisma.containerNamespace.findFirst({
+            where: { id: namespaceId },
+        });
+        if (!namespace) {
+            return ResponseService.notFound(
+                `Namespace not found with id ${namespaceId}`,
             );
         }
 
-        const { data: body }: { data: CreateContainerNamespaceBody } =
-            await req.json();
-        const name = body.name;
-        const description = body.description;
-        const userId = (session!.user! as any).id;
-
-        const namespace = await UpsertContainerNamespace(
-            name,
-            userId,
-            description,
+        const namespaceInAPI = await GetContainerNamespaceByName(
+            namespace.name,
+            (session!.user! as any).id,
         );
-        if (!namespace) {
-            console.log("Error creating namespace :", namespace);
-            return ResponseService.internalServerError();
+        if (!namespaceInAPI) {
+            return ResponseService.notFound(
+                `Namespace not found with name ${namespace.name}`,
+            );
         }
 
-        const containerNamespace = await prisma.containerNamespace.create({
-            data: {
-                name: namespace.name,
-                description: namespace.description,
-                projectId: project.id,
-                idInAPI: namespace.id,
-            },
+        // Also delete namespace from API
+        const deletedNamespace = await DeleteContainerNamespace(
+            namespaceInAPI.id,
+            (session!.user as any).id,
+        );
+        if (!deletedNamespace) {
+            return ResponseService.internalServerError(
+                `Error deleting namespace with id ${namespaceId} from API`,
+            );
+        }
+
+        const containerNamespace = await prisma.containerNamespace.delete({
+            where: { id: namespaceId },
         });
         if (!containerNamespace) {
             return ResponseService.internalServerError(
-                "Error creating container namespace",
+                `Error deleting namespace with id ${namespaceId}`,
             );
         }
 
         return ResponseService.success(namespace);
-    } catch (error: any) {
-        if (error instanceof ContainerNamespaceAlreadyExistError) {
-            return ResponseService.conflict(error.message);
-        }
-        console.error("Error updating namespace:", error);
+    } catch (error) {
+        console.error("Error deleting namespace:", error);
         return ResponseService.internalServerError();
     }
 }

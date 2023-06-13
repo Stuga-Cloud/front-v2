@@ -61,23 +61,29 @@ model User {
 }
 
 model Project {
-  id        String               @id @default(cuid())
-  name      String
-  createdBy String
-  Container ContainerNamespace[] @relation("ProjectContainerNamespaces")
-  databases Database[]           @relation("ProjectDatabases")
-  lambdas   Lambda[]
-  user      User                 @relation(fields: [createdBy], references: [id], onDelete: Cascade)
-  members   ProjectMembership[]
-  registry  Registry?
+  id                  String               @id @default(cuid())
+  name                String
+  createdBy           String
+  containerNamespaces ContainerNamespace[] @relation("ProjectContainerNamespaces")
+  databases           Database[]           @relation("ProjectDatabases")
+  lambdas             Lambda[]
+  user                User                 @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  members             ProjectMembership[]
+  registry            Registry?
 
   @@index([createdBy])
+}
+
+enum Role {
+  ADMIN @map("ADMIN")
+  MEMBER @map("MEMBER")
 }
 
 model ProjectMembership {
   projectId   String
   userId      String
   hasAccepted Boolean @default(false)
+  role        Role
   project     Project @relation(fields: [projectId], references: [id])
   user        User    @relation(fields: [userId], references: [id])
 
@@ -128,6 +134,7 @@ model ContainerNamespace {
   description String?
   containers  Container[]
   project     Project     @relation("ProjectContainerNamespaces", fields: [projectId], references: [id])
+  idInAPI     String
 
   @@index([projectId])
 }

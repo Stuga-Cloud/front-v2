@@ -1,8 +1,7 @@
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { InternalServerError, StugaError } from "@/lib/services/error/error";
-import { CreateUser } from "@/lib/services/registry/harbor/user/create-user";
 import { GetUser } from "@/lib/services/registry/harbor/user/get-user";
-import { ModifyUserPassword } from "@/lib/services/harbor/modify-password";
+import { ModifyUserPassword } from "@/lib/services/registry/harbor/user/modify-password";
 import { VerifyIfUserCanAccessProject } from "@/lib/services/project/verify-user-access";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";

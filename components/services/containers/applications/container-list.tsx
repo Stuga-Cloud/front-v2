@@ -8,7 +8,7 @@ import { toastEventEmitter } from "@/lib/event-emitter/toast-event-emitter";
 import { LoadingSpinner } from "@/components/shared/icons";
 import { ContainerNamespace } from "@/lib/models/containers/container-namespace";
 import Image from "next/image";
-import ContainerCard from "@/components/services/containers/container-card";
+import ContainerCard from "@/components/services/containers/applications/container-card";
 import axios from "axios";
 
 export default function ContainerList({

@@ -4,7 +4,7 @@ import { BreadcrumbItem } from "@/components/shared/breadcrumb";
 import Nav from "@/components/layout/nav";
 import { Suspense } from "react";
 import UnAuthentified from "@/components/home/un-authentified";
-import NewNamespaceForm from "@/components/services/containers/namespace/create/new-namespace-form";
+import NewNamespaceForm from "@/components/services/containers/namespaces/create/new-namespace-form";
 
 export default async function ContainerNewNamespacePage({
     params,

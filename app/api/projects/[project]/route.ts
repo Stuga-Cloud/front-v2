@@ -49,6 +49,9 @@ export async function GET(request: Request, { params }: NextRequest) {
         where: {
             id: projectId,
         },
+        include: {
+            containerNamespaces: true,
+        },
     });
 
     if (!project) {
@@ -72,6 +75,7 @@ export async function GET(request: Request, { params }: NextRequest) {
         id: project!.id,
         name: project!.name,
         members: members,
+        containerNamespaces: project!.containerNamespaces,
         createdBy: project!.createdBy,
     };
     return NextResponse.json(projectResponse, { status: 200 });

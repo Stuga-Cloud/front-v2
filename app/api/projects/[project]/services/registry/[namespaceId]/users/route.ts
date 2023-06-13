@@ -1,14 +1,11 @@
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
-import { Project } from "@prisma/client";
-import axios, { AxiosError } from "axios";
-import { StugaError } from "../../../../../../../../lib/services/error/error";
+import { StugaError } from "@/lib/services/error/error";
 import { VerifyIfUserCanAccessProject } from "@/lib/services/project/verify-user-access";
-import { AddUserInNamespace } from "../../../../../../../../lib/services/registry/harbor/add-user-in-namespace";
+import { AddUserInNamespace } from "@/lib/services/registry/harbor/add-user-in-namespace";
 import { GetUser } from "@/lib/services/registry/harbor/user/get-user";
-import { GetNamespaceById } from "@/lib/services/namespace/get-namespace-by-id";
+import { GetNamespaceById } from "@/lib/services/registry/namespace/get-namespace-by-id";
 
 export interface RequestBody {
     password: string;

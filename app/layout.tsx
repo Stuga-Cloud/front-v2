@@ -4,6 +4,7 @@ import { Analytics } from "@vercel/analytics/react";
 import cx from "classnames";
 import { inter, sfPro } from "./fonts";
 import Footer from "@/components/layout/footer";
+import Providers from "@/app/providers";
 
 // export const metadata = {
 //     title: "Precedent - Building blocks for your Next.js project",
@@ -26,18 +27,19 @@ export default async function RootLayout({
     children: React.ReactNode;
 }) {
     return (
-      <html lang="en">
-          <body
-            className={ cx(sfPro.variable, inter.variable)}
-            suppressHydrationWarning={true}
-          >
-          <div className="fixed h-screen w-full bg-gradient-to-br from-indigo-50 via-white to-cyan-100" />
-          <main className="flex min-h-screen w-full flex-col py-32">
-            {children}
-          </main>
-          <Footer />
-          <Analytics />
-        </body>
-      </html>
+        <html lang="en">
+            <body
+                className={cx(sfPro.variable, inter.variable)}
+                suppressHydrationWarning={true}
+            >
+                <div className="fixed h-screen w-full bg-gradient-to-br from-indigo-50 via-white to-cyan-100" />
+                <main className="flex min-h-screen w-full flex-col py-32">
+                    {children}
+                </main>
+                <Footer />
+                <Providers />
+                <Analytics />
+            </body>
+        </html>
     );
 }

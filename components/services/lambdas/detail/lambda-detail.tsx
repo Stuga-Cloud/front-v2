@@ -1,10 +1,9 @@
 "use client";
 import { toastEventEmitter } from "@/lib/event-emitter/toast-event-emitter";
 import { GetLambdaById } from "@/lib/services/lambdas/client/get-lambda-by-id";
-import { Lambda } from "@prisma/client";
 import { Session } from "next-auth";
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { LoadingSpinner } from "@/components/shared/icons";
 import TabsLambdaDetail from "./tabs-lambda-detail";
 import LambdaInformation from "./lambda-information";
@@ -79,9 +78,9 @@ export default function LambdaDetail({
     const handleUpdateLambda = async (lambdaParam: LambdaModel) => {
         try {
             throwIfLambdaCreationCandidateIsNotValid(lambda!);
-            console.log("zeo problems")
+            console.log("zeo problems");
         } catch (error) {
-            console.log("problème dans le throw")
+            console.log("problème dans le throw");
             if (error instanceof Error) {
                 setErrorFormMessage(error.message);
                 return;
@@ -90,8 +89,8 @@ export default function LambdaDetail({
 
         try {
             setLoading(true);
-            console.log("try to update lambda")
-            console.log(lambdaParam)
+            console.log("try to update lambda");
+            console.log(lambdaParam);
             await UpdateLambda(projectId, lambdaParam);
             toastEventEmitter.emit("pop", {
                 type: "success",
@@ -170,7 +169,11 @@ export default function LambdaDetail({
                     />
                 )}
                 {!loading && lambda && activeTab === "details" && (
-                    <LambdaInformation onUpdate={() => handleUpdateLambda(lambda)} lambda={lambda} setLambda={setLambda} />
+                    <LambdaInformation
+                        onUpdate={() => handleUpdateLambda(lambda)}
+                        lambda={lambda}
+                        setLambda={setLambda}
+                    />
                 )}
                 {!loading && lambda && activeTab === "image" && (
                     <>

@@ -3,7 +3,7 @@ import axios from "axios";
 import { FindContainerNamespaceError } from "@/lib/services/containers/errors/get-container-namespace.error";
 import { GetContainersAPIInfo } from "@/lib/services/containers/get-containers-api-info";
 
-export const FindContainerNamespaceByName = async (
+export const GetContainerNamespaceByName = async (
     name: string,
     userId: string,
 ): Promise<ContainerNamespace | null> => {

@@ -12,7 +12,12 @@ export default async function ProjectPage({ params }: ProjectParam) {
     return (
         <>
             <Suspense fallback="...">
-              <Nav session={session} breadcrumbItems={[{text: "Project", slug: `project/${params.project}` }]} />
+                <Nav
+                    session={session}
+                    breadcrumbItems={[
+                        { text: "project", slug: `project/${params.project}` },
+                    ]}
+                />
             </Suspense>
             {session ? (
                 <Project session={session} projectId={projectId} />

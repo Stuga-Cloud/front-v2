@@ -4,7 +4,7 @@ import { BreadcrumbItem } from "@/components/shared/breadcrumb";
 import { Suspense } from "react";
 import Nav from "@/components/layout/nav";
 import UnAuthentified from "@/components/home/un-authentified";
-import NamespaceDetails from "@/components/services/containers/namespace/details/namespace-details";
+import NamespaceDetails from "@/components/services/containers/namespaces/details/namespace-details";
 
 export default async function NamespaceDetailsPage({
     params,

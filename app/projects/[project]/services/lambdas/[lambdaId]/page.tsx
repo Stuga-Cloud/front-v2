@@ -1,7 +1,6 @@
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import Nav from "@/components/layout/nav";
 import LambdaDetail from "@/components/services/lambdas/detail/lambda-detail";
-import NamespaceDetail from "@/components/services/registry/detail/namespace-detail";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
@@ -25,8 +24,11 @@ export default async function LambdaDetailPage({
                 <Nav
                     session={session}
                     breadcrumbItems={[
-                        { text: "Project", slug: `project/${params.project}` },
-                        { text: "lambdas", slug: `project/${params.project}/services/lambdas` },
+                        { text: "project", slug: `project/${params.project}` },
+                        {
+                            text: "lambdas",
+                            slug: `project/${params.project}/services/lambdas`,
+                        },
                     ]}
                 />
             </Suspense>

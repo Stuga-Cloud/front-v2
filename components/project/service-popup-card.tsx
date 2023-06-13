@@ -1,8 +1,10 @@
 export default function ServicePopUpCard({
     title,
+    description,
     onClick,
 }: {
     title: string;
+    description: string;
     onClick: () => void;
 }) {
     return (
@@ -13,7 +15,7 @@ export default function ServicePopUpCard({
             <div className="rounded-lg bg-blue-500"></div>
             <div className="flex-1 p-4">
                 <h2 className="mb-2 text-lg font-bold">{title}</h2>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                <p>{description}</p>
             </div>
         </div>
     );

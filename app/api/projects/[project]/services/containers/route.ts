@@ -4,7 +4,7 @@ import prisma from "@/lib/prisma";
 import { NextRequest } from "next/server";
 import { isConnected } from "@/lib/utils";
 import ResponseService from "@/lib/next-response";
-import { UpsertContainerNamespace } from "@/lib/services/containers/create-container-namespace";
+import { UpsertContainerNamespace } from "@/lib/services/containers/namespaces/create-container-namespace";
 import { CreateContainerApplication } from "@/lib/services/containers/create-container-application";
 import { CreateContainerApplicationBody } from "@/lib/services/containers/create-container-application.body";
 import { PrismaClientKnownRequestError } from "prisma/prisma-client/runtime";
@@ -57,6 +57,7 @@ export async function POST(
         });
         console.log("new container:", newContainer);
 
+        // TODO CHANGE THIS TO USE EXISTING NAMESPACE
         const namespace = await UpsertContainerNamespace(
             project.name,
             "",

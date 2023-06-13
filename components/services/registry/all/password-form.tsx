@@ -1,4 +1,3 @@
-import LoadingSpinner from "@/components/shared/icons/loading-spinner";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
 import React, { useState } from "react";
 
@@ -53,7 +52,7 @@ export default function PasswordForm({
                     <div className="flex flex-row items-center gap-2">
                         <InfoCircledIcon />
                         <p className="text-sm text-gray-500">
-                            Your username is your email you can't modify it
+                            Your username is your email you can&apos;t modify it
                         </p>
                     </div>
                 </div>

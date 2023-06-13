@@ -1,6 +1,6 @@
 import axios from "axios";
-import { HarborUser, GetUser } from "./get-user";
-import { InternalServerError, StugaError } from "../error/error";
+import { GetUser, HarborUser } from "./get-user";
+import { InternalServerError, StugaError } from "../../../error/error";
 
 export const ModifyUserPassword = async (
     oldPassword: string,

@@ -1,7 +1,7 @@
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { BreadcrumbItem } from "@/components/shared/breadcrumb";
-import ContainerDetails from "@/components/services/containers/container-details";
+import ContainerDetails from "@/components/services/containers/applications/container-details";
 import { Suspense } from "react";
 import Nav from "@/components/layout/nav";
 import UnAuthentified from "@/components/home/un-authentified";

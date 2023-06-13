@@ -11,7 +11,7 @@ import {
 
 import axios from "axios";
 import { useState } from "react";
-import { Project } from "@/lib/models/project";
+import { Project, ProjectMembershipRole } from "@/lib/models/project";
 import { Cross2Icon } from "@radix-ui/react-icons";
 import LoadingDots from "@/components/shared/icons/loading-dots";
 
@@ -23,6 +23,7 @@ export default function AddUserToProject({
     afterAddedMember: () => void;
 }) {
     const [email, setEmail] = useState("");
+    const [role, setRole] = useState<ProjectMembershipRole>("MEMBER");
     const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(false);
 
@@ -33,6 +34,7 @@ export default function AddUserToProject({
             const response = await axios.post("/api/projects/users", {
                 email,
                 projectId: project.id,
+                role,
             });
             setEmail("");
             setLoading(false);
@@ -82,6 +84,21 @@ export default function AddUserToProject({
                             placeholder={"john.doe@example.com"}
                             onChange={(e) => setEmail(e.target.value)}
                         />
+                    </fieldset>
+                    <fieldset className="Fieldset">
+                        <label className="Label" htmlFor="role">
+                            Role
+                        </label>
+                        <select
+                            className="Input"
+                            id="role"
+                            onChange={(e) =>
+                                setRole(e.target.value as ProjectMembershipRole)
+                            }
+                        >
+                            <option value="MEMBER">Member</option>
+                            <option value="ADMIN">Admin</option>
+                        </select>
                     </fieldset>
                     <div
                         style={{

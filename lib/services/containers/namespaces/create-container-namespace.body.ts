@@ -1,5 +1,5 @@
 export interface CreateContainerNamespaceBody {
     name: string;
-    description: string;
+    description?: string;
     userId: string;
 }

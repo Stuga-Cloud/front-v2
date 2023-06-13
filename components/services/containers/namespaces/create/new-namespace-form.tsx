@@ -8,7 +8,8 @@ import { Project } from "@/lib/models/project";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
 import axios from "axios";
 import { StugaError } from "@/lib/services/error/error";
-import { CreateContainerNamespaceBody } from "@/lib/services/containers/create-container-namespace.body";
+import { CreateContainerNamespaceBody } from "@/lib/services/containers/namespaces/create-container-namespace.body";
+import { DisplayToast } from "@/components/shared/toast/display-toast";
 
 export default function NewNamespaceForm({
     session,
@@ -62,7 +63,7 @@ export default function NewNamespaceForm({
                 setLoading(false);
                 router.push(`/projects`);
             });
-    }, [projectId]);
+    }, [projectId, router]);
 
     const namespaceUpdated = (e: any) => {
         setNamespace(e.target.value);
@@ -84,27 +85,22 @@ export default function NewNamespaceForm({
     const handleSubmit = async (event: { preventDefault: () => void }) => {
         event.preventDefault();
         try {
-            if (!namespace || !description) {
-                toastEventEmitter.emit("pop", {
-                    type: "danger",
-                    message: "Please fill all fields (namespace & description)",
+            if (!namespace) {
+                DisplayToast({
+                    type: "error",
+                    message: "Please fill at least the namespace field",
                     duration: 3000,
                 });
                 return;
             }
             setLoading(true);
-            // Query back to verify that the application and namespace are available
             const createContainerApplicationBody: CreateContainerNamespaceBody =
                 {
                     name: namespace,
                     description: description,
                     userId: (user! as any).id!,
                 };
-            console.log(
-                "Create container application body",
-                createContainerApplicationBody,
-            );
-            const createdNamespace = await axios.post(
+            await axios.post(
                 `/api/projects/${projectId}/services/containers/namespaces`,
                 {
                     headers: {
@@ -113,20 +109,26 @@ export default function NewNamespaceForm({
                     data: createContainerApplicationBody,
                 },
             );
-            toastEventEmitter.emit("pop", {
+            DisplayToast({
                 type: "success",
-                message: "Namespace created",
+                message: `Namespace ${namespace} created successfully`,
                 duration: 4000,
             });
             setLoading(false);
-            setTimeout(() => {
-                router.push(
-                    `/projects/${projectId}/services/containers/namespaces/${createdNamespace.data.id}`,
-                );
-            }, 1000);
-        } catch (error) {
+            router.push(`/projects/${projectId}/services/containers`);
+        } catch (error: any) {
             setLoading(false);
             console.log("Error while creating namespace", error);
+
+            if (error.response.status === 409) {
+                DisplayToast({
+                    type: "error",
+                    message: `Namespace ${namespace} already exists, please choose another name`,
+                    duration: 4000,
+                });
+                return;
+            }
+
             if (error instanceof StugaError) {
                 toastEventEmitter.emit("pop", {
                     type: "danger",
@@ -196,6 +198,8 @@ export default function NewNamespaceForm({
                                                     ? "border-red-500 bg-red-50 p-2.5 text-sm text-red-900 placeholder-red-700 focus:border-red-500 focus:ring-red-500"
                                                     : ""
                                             }`}
+                                            id="namespace"
+                                            name="namespace"
                                             type="text"
                                             value={namespace || ""}
                                             onChange={(e) => {
@@ -236,17 +240,13 @@ export default function NewNamespaceForm({
                                             setDescription(e.target.value);
                                         }}
                                         placeholder="A namespace to deploy my applications"
-                                        required
                                     />
                                     <div className="flex flex-row items-center gap-2">
                                         <InfoCircledIcon />
                                         <p className="text-sm font-semibold text-gray-500">
                                             The description is optional but
-                                            recommended.
-                                        </p>
-                                        <p className="text-sm font-semibold text-gray-500">
-                                            It will help you to remember what
-                                            this namespace is for.
+                                            recommended. It will help you to
+                                            remember what this namespace is for.
                                         </p>
                                     </div>
                                 </div>

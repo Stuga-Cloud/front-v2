@@ -1,4 +1,4 @@
-export default function ConfirmDeleteModal({
+export default function ConfirmDeleteContainerNamespaceModal({
     text,
     onClose,
     isOpenFromParent,

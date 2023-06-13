@@ -28,7 +28,7 @@ export default function RegistryForm({
             });
             toastEventEmitter.emit("pop", {
                 type: "success",
-                message: "namespace created",
+                message: "Namespace created",
                 duration: 4000,
             });
             router.push(`/projects/${projectId}/services/registry`);
