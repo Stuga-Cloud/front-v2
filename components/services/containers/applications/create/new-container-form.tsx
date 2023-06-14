@@ -3,7 +3,7 @@ import { Session } from "next-auth";
 import React, { useEffect, useState } from "react";
 import LoadingSpinner from "@/components/shared/icons/loading-spinner";
 import { toastEventEmitter } from "@/lib/event-emitter/toast-event-emitter";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { Project } from "@/lib/models/project";
 import * as process from "process";
 import { ContainerApplicationType } from "@/lib/models/containers/container-application-type";
@@ -16,6 +16,9 @@ import { ContainerEnvironmentVariable } from "@/lib/models/containers/container-
 import { ContainerApplicationSecret } from "@/lib/models/containers/container-application-secrets";
 import { ContainerLimitUnit } from "@/lib/models/containers/container-application-specifications";
 import { StugaError } from "@/lib/services/error/error";
+import { ContainerApplicationNamespace } from "@/lib/models/containers/container-application-namespace";
+import { DisplayToast } from "@/components/shared/toast/display-toast";
+import { ContainerApplication } from "@/lib/models/containers/container-application";
 
 interface Step {
     name: string;
@@ -71,18 +74,57 @@ interface ApplicationMemoryLimit {
 export default function NewContainerForm({
     session,
     projectId,
+    namespaceId,
 }: {
     session: Session | null;
     projectId: string;
+    namespaceId: string;
 }) {
+    if (!session) redirect("/");
+    const router = useRouter();
+
     const user = session?.user;
-    const [step, setStep] = useState(1);
+
     const [loading, setLoading] = useState(false);
+    const [step, setStep] = useState(1);
+
+    const [applicationNamespace, setApplicationNamespace] =
+        useState<ContainerApplicationNamespace | null>(null);
+    const [containers, setContainers] = useState<ContainerApplication[]>([]);
+
+    const loadNamespace = async () => {
+        setLoading(true);
+        return axios.get(
+            `/api/projects/${projectId}/services/containers/namespaces/${namespaceId}`,
+        );
+    };
+
+    useEffect(() => {
+        if (!projectId || !namespaceId) return;
+
+        loadNamespace()
+            .then((response) => {
+                setApplicationNamespace(response.data.namespace);
+                setContainers(response.data.namespaceInAPI.applications);
+            })
+            .catch((error) => {
+                console.log(error);
+                DisplayToast({
+                    type: "error",
+                    message:
+                        "Could not retrieve namespace information, please try again later or contact support",
+                    duration: 3000,
+                });
+                router.push(`/projects/${projectId}/services/containers`);
+            })
+            .finally(() => setLoading(false));
+    }, [projectId, namespaceId]);
+
     const [project, setProject] = useState({} as Project);
-    // const [applicationNamespace, setApplicationNamespace] = useState<
-    //     string | undefined
-    // >(undefined);
     const [applicationName, setApplicationName] = useState<string | undefined>(
+        undefined,
+    );
+    const [description, setDescription] = useState<string | undefined>(
         undefined,
     );
     const [registry, setRegistry] = useState<AvailableRegistriesInformation>(
@@ -140,8 +182,6 @@ export default function NewContainerForm({
     const [administratorEmail, setAdministratorEmail] = useState<
         string | undefined
     >(undefined);
-
-    const router = useRouter();
 
     const handleNext = () => {
         setStep((prevStep) => prevStep + 1);
@@ -298,19 +338,19 @@ export default function NewContainerForm({
     }, [projectId]);
 
     const isApplicationNameAvailableInNamespace = () => {
-        console.log(
-            "TODO : Check if application name is available in applicationNamespace",
-        );
-    };
-    const isNamespaceAvailable = () => {
-        console.log(
-            "TODO : Check if applicationNamespace is available or is user's one",
+        if (!applicationName || !applicationNamespace) return true;
+        return !containers.some(
+            (application) => application.name === applicationName,
         );
     };
 
     const applicationNameUpdated = (e: any) => {
         setApplicationName(e.target.value);
         isApplicationNameAvailableInNamespace();
+    };
+
+    const applicationDescriptionUpdated = (e: any) => {
+        setDescription(e.target.value);
     };
 
     const stringInSubdomainRegex = new RegExp(
@@ -324,6 +364,17 @@ export default function NewContainerForm({
             applicationName == undefined ||
             (applicationName.length > 0 &&
                 stringInSubdomainRegex.test(applicationName))
+        );
+    };
+
+    const isImageValid = (image: string | undefined) => {
+        return (
+            image != undefined &&
+            image.length > 0 &&
+            image.includes("/") &&
+            image.includes(":") &&
+            image[image.length - 1] !== ":" &&
+            image[image.length - 1] !== "/"
         );
     };
 
@@ -409,13 +460,19 @@ export default function NewContainerForm({
     const isCpuUsageThresholdValid = (
         cpuUsageThreshold: number | undefined,
     ): boolean => {
-        return cpuUsageThreshold == undefined || cpuUsageThreshold >= 0;
+        return (
+            cpuUsageThreshold == undefined ||
+            (cpuUsageThreshold >= 0 && cpuUsageThreshold <= 100)
+        );
     };
 
     const isMemoryUsageThresholdValid = (
         memoryUsageThreshold: number | undefined,
     ): boolean => {
-        return memoryUsageThreshold == undefined || memoryUsageThreshold >= 0;
+        return (
+            memoryUsageThreshold == undefined ||
+            (memoryUsageThreshold >= 0 && memoryUsageThreshold <= 100)
+        );
     };
 
     const handleKeyDown = (event: any) => {
@@ -423,17 +480,72 @@ export default function NewContainerForm({
             event.preventDefault();
         }
     };
+
+    const validateForm = () => {
+        const errors: string[] = [];
+        if (!applicationName || !isApplicationNameValid(applicationName)) {
+            errors.push("Application name is not valid");
+        }
+        if (!isApplicationNameAvailableInNamespace()) {
+            errors.push(
+                "Application name is not available in this namespace, please choose another one",
+            );
+        }
+        if (!applicationPort || !isPortValid(applicationPort)) {
+            errors.push(
+                "Application port is not valid, it should be between 1 and 65535",
+            );
+        }
+        if (!administratorEmail || !isEmailValid(administratorEmail)) {
+            errors.push(
+                "Application email is not valid, please use a valid email",
+            );
+        }
+        if (!applicationImage || !isImageValid(applicationImage)) {
+            errors.push(
+                "Application image is not valid, please use the format: <registry>/<image>:<tag>",
+            );
+        }
+        if (!isReplicasValid(replicas)) {
+            errors.push("Replicas is not valid, it should be between 1 and 10");
+        }
+        if (!isCpuUsageThresholdValid(cpuUsageThreshold)) {
+            errors.push(
+                "CPU usage threshold is not valid, it should be >= 0 and <= 100",
+            );
+        }
+        if (!isMemoryUsageThresholdValid(memoryUsageThreshold)) {
+            errors.push(
+                "Memory usage threshold is not valid, it should be >= 0 and <= 100",
+            );
+        }
+        return errors;
+    };
+
     const handleSubmit = async (event: { preventDefault: () => void }) => {
         event.preventDefault();
+        const errors = validateForm();
+        if (errors.length > 0) {
+            const displayTime =
+                errors.reduce((acc, error) => acc + error.length, 0) * 100;
+
+            DisplayToast({
+                type: "error",
+                message: `Your form is not valid, please fix the following errors: \n${errors
+                    .map((error) => `- ${error}`)
+                    .join("\n")}`,
+                duration: displayTime,
+            });
+            return;
+        }
         try {
             setLoading(true);
             // Query back to verify that the application and namespace are available
-            console.log("Application CPU Limit : ", applicationCpuLimit);
             const createContainerApplicationBody: CreateContainerApplicationBody =
                 {
                     name: applicationName!,
-                    description: "",
-                    zone: "",
+                    description: description!,
+                    zone: "europe-west-1",
                     image: applicationImage!,
                     port: applicationPort!,
                     applicationType: applicationType!,
@@ -460,7 +572,7 @@ export default function NewContainerForm({
                     namespaceId: "",
                 };
             const createdContainer = await axios(
-                `/api/projects/${projectId}/services/containers`,
+                `/api/projects/${projectId}/services/containers/namespaces/${namespaceId}/applications`,
                 {
                     method: "POST",
                     headers: {
@@ -475,9 +587,14 @@ export default function NewContainerForm({
                 message: "Application created",
                 duration: 4000,
             });
+            DisplayToast({
+                type: "success",
+                message: `Application ${applicationName} created`,
+                duration: 4000,
+            });
             setLoading(false);
             router.push(
-                `/projects/${projectId}/services/containers/${createdContainer.data.id}`,
+                `/projects/${projectId}/services/containers/namespaces/${namespaceId}/applications/${createdContainer.data.id}`,
             );
         } catch (error) {
             setLoading(false);
@@ -628,7 +745,7 @@ export default function NewContainerForm({
                                 </h4>
 
                                 {step === 1 && (
-                                    <div className="mb-10 ms-5 flex h-96 w-full flex-col">
+                                    <div className="mb-10 ms-5 flex h-96 w-full flex-col gap-5">
                                         <div className="mb-2 ms-5 flex flex-col">
                                             {/*<div className="mb-2 flex flex-col">*/}
                                             {/*    <label*/}
@@ -691,6 +808,8 @@ export default function NewContainerForm({
                                                             ? "border-red-500 bg-red-50 p-2.5 text-sm text-red-900 placeholder-red-700 focus:border-red-500 focus:ring-red-500 dark:border-red-500 dark:bg-gray-700 dark:text-red-500 dark:placeholder-red-500"
                                                             : ""
                                                     }`}
+                                                    id="applicationName"
+                                                    name="applicationName"
                                                     type="text"
                                                     value={
                                                         applicationName || ""
@@ -707,7 +826,15 @@ export default function NewContainerForm({
                                                 ) && (
                                                     <p className="text-sm text-red-500">
                                                         Please enter a valid
-                                                        application name.
+                                                        application name and
+                                                        check the below rules.
+                                                    </p>
+                                                )}
+                                                {!isApplicationNameAvailableInNamespace() && (
+                                                    <p className="text-sm text-red-500">
+                                                        This application name is
+                                                        already taken in this
+                                                        namespace.
                                                     </p>
                                                 )}
                                             </div>
@@ -716,7 +843,10 @@ export default function NewContainerForm({
                                                 <p className="text-sm font-semibold text-gray-500">
                                                     The application name can
                                                     only contain alphanumeric
-                                                    characters and hyphens.
+                                                    characters and hyphens, it
+                                                    must be at least 3
+                                                    characters long and cannot
+                                                    start or end with a hyphen.
                                                 </p>
                                             </div>
                                             {applicationName &&
@@ -742,7 +872,11 @@ export default function NewContainerForm({
                                                         >
                                                             https://
                                                             {applicationName}.
-                                                            {project.name}.
+                                                            {
+                                                                applicationNamespace!
+                                                                    .name
+                                                            }
+                                                            .
                                                             {
                                                                 process.env
                                                                     .NEXT_PUBLIC_BASE_CONTAINER_DOMAIN
@@ -756,6 +890,35 @@ export default function NewContainerForm({
                                                         </p>
                                                     </div>
                                                 )}
+                                        </div>
+                                        <div className="mb-2 ms-5 mt-6 flex flex-col items-start">
+                                            <label
+                                                htmlFor="applicationDescription"
+                                                className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+                                            >
+                                                Description
+                                            </label>
+                                            <textarea
+                                                className="bg-gray-40 mb-2 block max-h-28 w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500"
+                                                id="applicationDescription"
+                                                name="applicationDescription"
+                                                rows={3}
+                                                value={description || ""}
+                                                onChange={(e) => {
+                                                    applicationDescriptionUpdated(
+                                                        e,
+                                                    );
+                                                }}
+                                                placeholder="This is my first application"
+                                            />
+                                            <div className="flex flex-row items-center gap-2">
+                                                <InfoCircledIcon />
+                                                <p className="text-sm font-semibold text-gray-500">
+                                                    The application description
+                                                    is optional and can be
+                                                    changed later.
+                                                </p>
+                                            </div>
                                         </div>
                                     </div>
                                 )}
@@ -805,15 +968,20 @@ export default function NewContainerForm({
                                         <div className="mb-2 ms-5 flex flex-col gap-1">
                                             <label
                                                 htmlFor="image-name"
-                                                className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+                                                className={`mb-2 block text-sm font-medium text-gray-900 dark:text-white ${!isImageValid(
+                                                    applicationImage,
+                                                )}`}
                                             >
                                                 Image from {registry.name}
                                             </label>
                                             <input
                                                 id="image-name"
-                                                className={`bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500 ${!isApplicationNameValid(
-                                                    applicationImage,
-                                                )}`}
+                                                name="image-name"
+                                                className={`bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500 ${
+                                                    !isImageValid(
+                                                        applicationImage,
+                                                    ) && "border-red-500"
+                                                }`}
                                                 type="text"
                                                 value={applicationImage || ""}
                                                 onChange={(e) => {
@@ -821,6 +989,16 @@ export default function NewContainerForm({
                                                 }}
                                                 placeholder="organization/my-first-application:latest"
                                             />
+                                            {!isImageValid(
+                                                applicationImage,
+                                            ) && (
+                                                <p className="text-sm font-semibold text-red-500">
+                                                    The image name is not valid.
+                                                    Please verify that the
+                                                    format respect the below
+                                                    format.
+                                                </p>
+                                            )}
                                             <div className="flex flex-row items-center gap-2">
                                                 <InfoCircledIcon />
                                                 <p className="text-sm font-semibold text-gray-500">
@@ -832,26 +1010,38 @@ export default function NewContainerForm({
                                                 </p>
                                             </div>
                                             {applicationImage &&
-                                                applicationImage.length > 0 && (
+                                                isImageValid(
+                                                    applicationImage,
+                                                ) && (
                                                     <>
                                                         <h4 className="pt-8 text-2xl font-bold dark:text-white">
                                                             The used image is
-                                                            at:
+                                                            stored at:
                                                         </h4>
                                                         <p className="text-1xl font-semibold leading-normal text-blue-800 dark:text-white">
                                                             <Link
                                                                 href={
                                                                     registry.url +
                                                                     "/r/" +
-                                                                    applicationImage
+                                                                    applicationImage.substring(
+                                                                        0,
+                                                                        applicationImage.lastIndexOf(
+                                                                            ":",
+                                                                        ),
+                                                                    ) +
+                                                                    "/tags"
                                                                 }
                                                                 target="_blank"
                                                             >
                                                                 {registry.url}
                                                                 /r/
-                                                                {
-                                                                    applicationImage
-                                                                }
+                                                                {applicationImage.substring(
+                                                                    0,
+                                                                    applicationImage.lastIndexOf(
+                                                                        ":",
+                                                                    ),
+                                                                )}
+                                                                /tags
                                                             </Link>
                                                         </p>
                                                     </>
@@ -886,6 +1076,7 @@ export default function NewContainerForm({
                                             </label>
                                             <input
                                                 id="port"
+                                                name="port"
                                                 type="number"
                                                 className={`bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500 ${
                                                     !isPortValid(
@@ -1373,6 +1564,7 @@ export default function NewContainerForm({
                                         <input
                                             type="email"
                                             id="admin-email"
+                                            name="admin-email"
                                             className={`bg-gray-40 mb-1 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500 ${
                                                 !isEmailValid(
                                                     administratorEmail,

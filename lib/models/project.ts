@@ -1,5 +1,5 @@
 import { Member } from "@/lib/models/member";
-import { ContainerNamespace } from "@/lib/models/containers/container-namespace";
+import { ContainerNamespace } from "@/lib/models/containers/prisma/container-namespace";
 
 const enum Role {
     ADMIN = "ADMIN",

@@ -3,29 +3,31 @@ import { Session } from "next-auth";
 import { redirect, useRouter } from "next/navigation";
 import { useState } from "react";
 import { Project } from "@/lib/models/project";
-import { ContainerApplicationNamespace } from "@/lib/models/containers/container-application-namespace";
 import { LoadingSpinner } from "@/components/shared/icons";
+import { ContainerApplication } from "@/lib/models/containers/container-application";
 import axios from "axios";
 import { DisplayToast } from "@/components/shared/toast/display-toast";
-import { ContainerNamespaceDropdownAction } from "@/components/services/containers/informations/container-namespace-dropdown-action";
 import { ContainerNamespace } from "@/lib/models/containers/prisma/container-namespace";
+import { ContainerApplicationNamespace } from "@/lib/models/containers/container-application-namespace";
+import { applicationStatusToComponent } from "@/lib/services/containers/application-status-to-component";
 
-export default function ContainersNamespaces({
+export default function NamespaceContainers({
     session,
     project,
-    namespaces,
-    namespacesInAPI,
-    reloadNamespaces,
+    namespace,
+    namespaceInAPI,
+    containers,
+    reloadContainers,
 }: {
     session: Session;
     project: Project;
-    namespaces: ContainerNamespace[];
-    namespacesInAPI: ContainerApplicationNamespace[];
-    reloadNamespaces: () => void;
+    namespace: ContainerNamespace;
+    namespaceInAPI: ContainerApplicationNamespace;
+    containers: ContainerApplication[];
+    reloadContainers: () => void;
 }) {
     if (!session) redirect("/");
-    if (!project || !namespacesInAPI)
-        redirect(`/projects/${project.id}/services/containers`);
+    if (!namespace) redirect(`/projects/${project.id}/services/containers`);
 
     const router = useRouter();
     const [errorFromMessage, setErrorFormMessage] = useState<string | null>(
@@ -33,66 +35,49 @@ export default function ContainersNamespaces({
     );
     const [loading, setLoading] = useState(false);
 
-    const clickOnNamespace = (
-        namespaceInAPI: ContainerApplicationNamespace,
-    ) => {
-        const correspondingNamespace = namespaces.find(
-            (namespace) => namespace.idInAPI === namespaceInAPI.id,
-        );
-        if (!correspondingNamespace) return;
+    const clickOnContainer = (container: ContainerApplication) => {
         router.push(
-            `/projects/${project.id}/services/containers/namespaces/${correspondingNamespace.id}`,
+            `/projects/${project.id}/services/containers/namespaces/${namespace.id}/applications/${container.id}`,
         );
     };
 
-    const deleteContainerNamespace = async (
-        namespace: ContainerApplicationNamespace,
-    ) => {
+    const deleteContainer = async (container: ContainerApplication) => {
         setLoading(true);
         try {
-            const res = await axios.delete(
-                `/api/projects/${project.id}/services/containers/namespaces/${namespace.id}`,
-            );
-            if (res.status === 200) {
-                DisplayToast({
-                    type: "success",
-                    message: "Namespace deleted",
-                    duration: 3000,
-                });
-                setLoading(false);
-                reloadNamespaces();
-            } else {
-                console.log("error when try to delete namespace", res);
+            const res = await axios.delete(`/api/containers/${container.id}`);
+            if (res.status !== 200) {
                 DisplayToast({
                     type: "error",
                     message:
-                        "Could not delete namespace, please try again later or contact support",
-                    duration: 7000,
+                        "Could not delete container, please try again later or contact support",
+                    duration: 3000,
                 });
                 setLoading(false);
+                return;
             }
-        } catch (error: any) {
+            reloadContainers();
             setLoading(false);
-            console.log("error when try to delete namespace", error);
+        } catch (error) {
             DisplayToast({
                 type: "error",
                 message:
-                    "Could not delete namespace, please try again later or contact support",
-                duration: 7000,
+                    "Could not delete container, please try again later or contact support",
+                duration: 3000,
             });
+            setLoading(false);
         }
     };
 
     return (
         <>
             <div className="z-10 flex w-full flex-col items-center justify-center">
-                <div className="mb-2 flex w-4/5 flex-row items-center justify-between">
+                <div className="mb-4 flex w-4/5 flex-row items-center justify-between">
                     <h2 className="mb-5 w-2/5 text-4xl font-bold"></h2>
                     <button
                         className="Button stuga-primary-color cursor-pointer"
                         onClick={() => {
                             router.push(
-                                `/projects/${project.id}/services/containers/namespaces/new`,
+                                `/projects/${project.id}/services/containers/namespaces/${namespace.id}/applications/new`,
                             );
                         }}
                     >
@@ -111,19 +96,19 @@ export default function ContainersNamespaces({
                                 d="M12 4v16m8-8H4"
                             ></path>
                         </svg>
-                        New namespace
+                        New container
                     </button>
                 </div>
                 {loading && <LoadingSpinner />}
 
-                {namespacesInAPI && namespacesInAPI.length === 0 && (
+                {containers && containers.length === 0 && (
                     <div className="flex h-[50vh] items-center justify-center">
                         <p className="text-gray-500">
-                            No namespace found, start by creating one ! 🚀
+                            No container found, start by creating one ! 🚀
                         </p>
                     </div>
                 )}
-                {namespacesInAPI && namespacesInAPI.length > 0 && (
+                {containers && containers.length > 0 && (
                     <div className="flex w-4/5 justify-center">
                         <div className="w-full text-gray-500 shadow-md dark:text-gray-400 sm:rounded-lg">
                             <table className="w-full text-left text-sm text-gray-500">
@@ -136,73 +121,75 @@ export default function ContainersNamespaces({
                                             description
                                         </th>
                                         <th scope="col" className="px-6 py-3">
-                                            created at (UTC)
+                                            image
                                         </th>
                                         <th scope="col" className="px-6 py-3">
-                                            <span className="sr-only">
-                                                Actions
-                                            </span>
+                                            status
+                                        </th>
+                                        <th scope="col" className="px-6 py-3">
+                                            created at (UTC)
                                         </th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {namespacesInAPI &&
-                                        namespacesInAPI.map((namespace) => (
+                                    {containers &&
+                                        containers.map((container) => (
                                             <tr
-                                                key={namespace.id}
+                                                key={container.id}
                                                 className="cursor-pointer border-b bg-gray-100 hover:bg-green-50"
                                             >
                                                 <th
                                                     scope="row"
                                                     className="whitespace-nowrap px-6 py-4 font-medium"
                                                     onClick={() => {
-                                                        clickOnNamespace(
-                                                            namespace,
+                                                        clickOnContainer(
+                                                            container,
                                                         );
                                                     }}
                                                 >
-                                                    {namespace.name}
+                                                    {container.name}
                                                 </th>
                                                 <td
                                                     className="px-6 py-4"
                                                     onClick={() => {
-                                                        clickOnNamespace(
-                                                            namespace,
+                                                        clickOnContainer(
+                                                            container,
                                                         );
                                                     }}
                                                 >
-                                                    {namespace.description}
+                                                    {container.description}
                                                 </td>
                                                 <td
                                                     className="px-6 py-4"
                                                     onClick={() => {
-                                                        clickOnNamespace(
-                                                            namespace,
+                                                        clickOnContainer(
+                                                            container,
                                                         );
                                                     }}
                                                 >
-                                                    {namespace.createdAt.toLocaleString()}
+                                                    {container.image}
                                                 </td>
-                                                <td className="px-6 py-4 text-right">
-                                                    {/*<a*/}
-                                                    {/*    href="#"*/}
-                                                    {/*    className="font-medium text-blue-600 hover:underline dark:text-blue-500"*/}
-                                                    {/*    onClick={(e) => {*/}
-                                                    {/*        e.preventDefault();*/}
-                                                    {/*        console.log(*/}
-                                                    {/*            "je déclenche l'action",*/}
-                                                    {/*        );*/}
-                                                    {/*    }}*/}
-                                                    {/*>*/}
-                                                    <ContainerNamespaceDropdownAction
-                                                        messagePopup="Are you sure you want to delete this namespace?"
-                                                        deleteAction={async () =>
-                                                            await deleteContainerNamespace(
-                                                                namespace,
-                                                            )
-                                                        }
-                                                    />
-                                                    {/*</a>*/}
+                                                <td
+                                                    className="px-6 py-4"
+                                                    onClick={() => {
+                                                        clickOnContainer(
+                                                            container,
+                                                        );
+                                                    }}
+                                                >
+                                                    {applicationStatusToComponent(
+                                                        container.status,
+                                                    )}
+                                                </td>
+                                                <td
+                                                    className="px-6 py-4"
+                                                    onClick={() => {
+                                                        clickOnContainer(
+                                                            container,
+                                                        );
+                                                    }}
+                                                >
+                                                    {container.createdAt.toLocaleString()}
                                                 </td>
                                             </tr>
                                         ))}

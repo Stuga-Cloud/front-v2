@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import Nav from "@/components/layout/nav";
 import ContainersInfo from "@/components/services/containers/informations/containers-info";
 import { redirect } from "next/navigation";
+import UnAuthentified from "@/components/home/un-authentified";
 
 export default async function ContainerListPage({
     params,
@@ -28,15 +29,15 @@ export default async function ContainerListPage({
             <Suspense fallback="...">
                 <Nav session={session} breadcrumbItems={breadcrumbItems} />
             </Suspense>
-            {/*{session ? (*/}
-            {/*    <>*/}
-            <ContainersInfo session={session} projectId={projectId} />
-            {/*//     </>*/}
-            {/*// ) : (*/}
-            {/*// <>*/}
-            {/*// <UnAuthentified/>*/}
-            {/*// </>*/}
-            {/*// )}*/}
+            {session ? (
+                <>
+                    <ContainersInfo session={session} projectId={projectId} />
+                </>
+            ) : (
+                <>
+                    <UnAuthentified />
+                </>
+            )}
         </>
     );
 }

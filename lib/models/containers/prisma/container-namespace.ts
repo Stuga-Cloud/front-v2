@@ -1,8 +1,8 @@
 export interface ContainerNamespace {
     id: string;
     name: string;
-    description: string;
-    userId: string;
+    modifiedAt: Date;
     createdAt: Date;
-    updatedAt: Date;
+    projectId: string;
+    idInAPI: string;
 }

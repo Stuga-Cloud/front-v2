@@ -14,6 +14,7 @@ import { useState } from "react";
 import { Project, ProjectMembershipRole } from "@/lib/models/project";
 import { Cross2Icon } from "@radix-ui/react-icons";
 import LoadingDots from "@/components/shared/icons/loading-dots";
+import { DisplayToast } from "@/components/shared/toast/display-toast";
 
 export default function AddUserToProject({
     project,
@@ -40,9 +41,15 @@ export default function AddUserToProject({
             setLoading(false);
             setOpen(false);
             await afterAddedMember();
-        } catch (error) {
+        } catch (error: any) {
             setLoading(false);
             console.error(error);
+            if (error.response.status === 409) {
+                DisplayToast({
+                    type: "error",
+                    message: "This user is already a member of this project.",
+                });
+            }
         }
     };
     return (

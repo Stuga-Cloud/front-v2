@@ -11,7 +11,10 @@ export const CreateContainerApplication = async (
     const containerAPIInfo = GetContainersAPIInfo();
 
     try {
-        const application = await axios.post<ContainerApplication>(
+        const application = await axios.post<{
+            application: ContainerApplication;
+            message: string;
+        }>(
             `${containerAPIInfo.url}/applications`,
             createContainerApplicationBody,
             {
@@ -21,7 +24,7 @@ export const CreateContainerApplication = async (
                 },
             },
         );
-        return application.data;
+        return application.data.application;
     } catch (e: any) {
         console.log("Error creating application:", e);
         if (e.response.status === 409) {

@@ -10,10 +10,12 @@ export default function ContainerDetails({
     session,
     projectId,
     containerId,
+    namespaceId,
 }: {
     session: Session | null;
     projectId: string;
     containerId: string;
+    namespaceId: string;
 }) {
     const user = session?.user;
     const router = useRouter();
@@ -38,7 +40,6 @@ export default function ContainerDetails({
         setLoading(true);
         getProject(projectId)
             .then((foundProject) => {
-                console.log("foundProject", foundProject);
                 setProject(foundProject);
                 setLoading(false);
             })
@@ -56,6 +57,8 @@ export default function ContainerDetails({
                 setLoading(false);
             });
     }, [projectId]);
+
+    // TODO If container not found -> redirect to /services/containers/namespaces/[namespaceId]
 
     return (
         <>

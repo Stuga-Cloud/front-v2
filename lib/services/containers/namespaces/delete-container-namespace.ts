@@ -1,4 +1,4 @@
-import { ContainerNamespace } from "@/lib/models/containers/container-namespace";
+import { ContainerApplicationNamespace } from "@/lib/models/containers/container-application-namespace";
 import axios from "axios";
 import { GetContainersAPIInfo } from "@/lib/services/containers/get-containers-api-info";
 import { DeleteContainerNamespaceError } from "@/lib/services/containers/errors/delete-container-namespace.error";
@@ -6,12 +6,12 @@ import { DeleteContainerNamespaceError } from "@/lib/services/containers/errors/
 export const DeleteContainerNamespace = async (
     namespaceId: string,
     userId: string,
-): Promise<ContainerNamespace | null> => {
+): Promise<ContainerApplicationNamespace | null> => {
     const containerAPIInfo = GetContainersAPIInfo();
 
     try {
         const namespace = axios.delete<{
-            namespace: ContainerNamespace | null;
+            namespace: ContainerApplicationNamespace | null;
         }>(
             `${containerAPIInfo.url}/namespaces/${namespaceId}?userId=${userId}`,
             {

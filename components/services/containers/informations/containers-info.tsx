@@ -6,8 +6,11 @@ import { Project } from "@/lib/models/project";
 import { toastEventEmitter } from "@/lib/event-emitter/toast-event-emitter";
 import { LoadingSpinner } from "@/components/shared/icons";
 import ContainersNamespaces from "@/components/services/containers/informations/containers-namespaces";
-import { ContainerNamespace } from "@/lib/models/containers/container-namespace";
+import { ContainerApplicationNamespace } from "@/lib/models/containers/container-application-namespace";
 import TabsContainersInfo from "@/components/services/containers/informations/tabs-containers-info";
+import axios from "axios";
+import { DisplayToast } from "@/components/shared/toast/display-toast";
+import { ContainerNamespace } from "@/lib/models/containers/prisma/container-namespace";
 
 export type AvailableContainersInfoTab = "namespaces";
 export default function ContainersInfo({
@@ -23,15 +26,21 @@ export default function ContainersInfo({
 
     const user = session?.user;
     const [project, setProject] = useState<Project | null>(null);
-    const [namespaces, setNamespaces] = useState<ContainerNamespace[]>([]);
+    const [namespaces, setNamespaces] = useState<ContainerNamespace[] | null>(
+        null,
+    );
+    const [namespacesInAPI, setNamespacesInAPI] = useState<
+        ContainerApplicationNamespace[] | null
+    >(null);
 
     const [activeTab, setActiveTab] =
         useState<AvailableContainersInfoTab>("namespaces");
 
     const getProject = async (projectId: string) => {
         try {
-            const res = await fetch(`/api/projects/${projectId}`);
-            return await res.json();
+            const res = await axios.get(`/api/projects/${projectId}`);
+            console.log("Retrieved project from API", res.data);
+            return res.data;
         } catch (error) {
             console.log(error);
         }
@@ -43,8 +52,66 @@ export default function ContainersInfo({
         getProject(projectId)
             .then((foundProject) => {
                 setProject(foundProject);
-                console.log("Project found", foundProject);
                 setNamespaces(foundProject.containerNamespaces);
+                getNamespaces(foundProject.id)
+                    .then((namespaces) => {
+                        setNamespacesInAPI(namespaces);
+                    })
+                    .catch((error) => {
+                        DisplayToast({
+                            type: "error",
+                            message:
+                                "Could not get namespaces, please try again later or contact support",
+                            duration: 3000,
+                        });
+                    });
+            })
+            .catch((error) => {
+                toastEventEmitter.emit("pop", {
+                    type: "danger",
+                    message:
+                        "error when try to get project in containers list page",
+                    duration: 2000,
+                });
+                console.error(
+                    "error when try to get project in containers list page",
+                    error,
+                );
+                router.push("/services/containers");
+            })
+            .finally(() => {
+                setLoading(false);
+            });
+    }, [router, projectId]);
+
+    const handleClick = (tab: "namespaces") => {
+        setActiveTab(tab);
+    };
+
+    const getNamespaces = async (projectID: string) => {
+        const res = await axios.get(
+            `/api/projects/${projectID}/services/containers/namespaces`,
+        );
+        console.log("Retrieved namespaces from API", res.data);
+        return res.data;
+    };
+    const reloadNamespaces = async () => {
+        getProject(projectId)
+            .then((foundProject) => {
+                setProject(foundProject);
+                setNamespaces(foundProject.containerNamespaces);
+                getNamespaces(foundProject.id)
+                    .then((namespaces) => {
+                        setNamespacesInAPI(namespaces);
+                    })
+                    .catch((error) => {
+                        DisplayToast({
+                            type: "error",
+                            message:
+                                "Could not get namespaces, please try again later or contact support",
+                            duration: 3000,
+                        });
+                    });
                 setLoading(false);
             })
             .catch((error) => {
@@ -61,10 +128,6 @@ export default function ContainersInfo({
                 setLoading(false);
                 router.push("/services/containers");
             });
-    }, [router, projectId]);
-
-    const handleClick = (tab: "namespaces") => {
-        setActiveTab(tab);
     };
 
     return (
@@ -85,39 +148,21 @@ export default function ContainersInfo({
                                 setActiveTab(tab);
                             }}
                         />
-                        <ContainersNamespaces
-                            session={session}
-                            project={project!}
-                            namespaces={namespaces}
-                            reloadNamespaces={() => {
-                                getProject(projectId)
-                                    .then((foundProject) => {
-                                        setProject(foundProject);
-                                        console.log(
-                                            "Project found",
-                                            foundProject,
-                                        );
-                                        setNamespaces(
-                                            foundProject.containerNamespaces,
-                                        );
-                                        setLoading(false);
-                                    })
-                                    .catch((error) => {
-                                        toastEventEmitter.emit("pop", {
-                                            type: "danger",
-                                            message:
-                                                "error when try to get project in containers list page",
-                                            duration: 2000,
-                                        });
-                                        console.error(
-                                            "error when try to get project in containers list page",
-                                            error,
-                                        );
-                                        setLoading(false);
-                                        router.push("/services/containers");
-                                    });
-                            }}
-                        />
+
+                        {!loading &&
+                            activeTab === "namespaces" &&
+                            namespaces &&
+                            namespacesInAPI && (
+                                <ContainersNamespaces
+                                    session={session}
+                                    project={project!}
+                                    namespaces={namespaces}
+                                    namespacesInAPI={namespacesInAPI}
+                                    reloadNamespaces={() => {
+                                        reloadNamespaces();
+                                    }}
+                                />
+                            )}
                     </>
                 )}
             </div>

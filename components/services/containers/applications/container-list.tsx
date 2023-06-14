@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { ContainerApplication } from "@/lib/models/containers/container-application";
 import { toastEventEmitter } from "@/lib/event-emitter/toast-event-emitter";
 import { LoadingSpinner } from "@/components/shared/icons";
-import { ContainerNamespace } from "@/lib/models/containers/container-namespace";
+import { ContainerApplicationNamespace } from "@/lib/models/containers/container-application-namespace";
 import Image from "next/image";
 import ContainerCard from "@/components/services/containers/applications/container-card";
 import axios from "axios";
@@ -21,7 +21,8 @@ export default function ContainerList({
     const user = session?.user;
     const router = useRouter();
     const [project, setProject] = useState<Project | null>(null);
-    const [namespace, setNamespace] = useState<ContainerNamespace | null>(null);
+    const [namespace, setNamespace] =
+        useState<ContainerApplicationNamespace | null>(null);
     const [containers, setContainers] = useState<ContainerApplication[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);

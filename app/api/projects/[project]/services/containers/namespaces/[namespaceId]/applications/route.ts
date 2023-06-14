@@ -4,14 +4,13 @@ import prisma from "@/lib/prisma";
 import { NextRequest } from "next/server";
 import { isConnected } from "@/lib/utils";
 import ResponseService from "@/lib/next-response";
-import { UpsertContainerNamespace } from "@/lib/services/containers/namespaces/create-container-namespace";
 import { CreateContainerApplication } from "@/lib/services/containers/create-container-application";
 import { CreateContainerApplicationBody } from "@/lib/services/containers/create-container-application.body";
 import { PrismaClientKnownRequestError } from "prisma/prisma-client/runtime";
 
 export async function POST(
     req: NextRequest,
-    { params }: { params: { project: string } },
+    { params }: { params: { project: string; namespaceId: string } },
 ) {
     const session = await getServerSession(authOptions);
 
@@ -38,6 +37,7 @@ export async function POST(
 
     const {
         name,
+        description,
         image,
         port,
         containerSpecifications,
@@ -49,33 +49,23 @@ export async function POST(
     }: CreateContainerApplicationBody = await req.json();
 
     try {
-        const newContainer = await prisma.container.create({
-            data: {
-                name,
-                projectId: params.project,
-            },
+        const namespaceId = params.namespaceId;
+        const namespace = await prisma.containerNamespace.findUnique({
+            where: { id: namespaceId },
         });
-        console.log("new container:", newContainer);
-
-        // TODO CHANGE THIS TO USE EXISTING NAMESPACE
-        const namespace = await UpsertContainerNamespace(
-            project.name,
-            "",
-            user.id,
-        );
         if (!namespace) {
-            console.log("Error creating namespace :", namespace);
-            return ResponseService.internalServerError();
+            return ResponseService.notFound(
+                `Namespace ${namespaceId} not found`,
+            );
         }
-        console.log("new namespace:", namespace);
 
         const application = await CreateContainerApplication({
             name: name,
-            namespaceId: namespace.id,
-            description: "",
+            namespaceId: namespace.idInAPI,
+            description: description,
             image: image,
             port: port,
-            zone: "europe-west1-b",
+            zone: "europe-west-1",
             containerSpecifications,
             scalabilitySpecifications,
             applicationType,
@@ -89,6 +79,16 @@ export async function POST(
             return ResponseService.internalServerError();
         }
         console.log("new application:", application);
+
+        const newContainer = await prisma.container.create({
+            data: {
+                name,
+                namespaceId: namespaceId,
+                idInAPI: application.id,
+            },
+        });
+        console.log("new container:", newContainer);
+
         return ResponseService.created(newContainer);
     } catch (error) {
         console.error("Error creating container:", error);
@@ -101,9 +101,10 @@ export async function POST(
     }
 }
 
+// TODO , not used yet I think
 export async function GET(
     _req: NextRequest,
-    { params }: { params: { project: string } },
+    { params }: { params: { project: string; namespaceId: string } },
 ) {
     const session = await getServerSession(authOptions);
 
@@ -111,8 +112,11 @@ export async function GET(
         return ResponseService.unauthorized();
     }
     try {
+        const namespaceId = params.namespaceId;
         const containers = await prisma.container.findMany({
-            where: { projectId: params.project },
+            where: {
+                namespaceId: namespaceId,
+            },
         });
 
         console.log("containers:", containers);

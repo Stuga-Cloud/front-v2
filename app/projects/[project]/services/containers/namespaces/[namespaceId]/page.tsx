@@ -22,11 +22,7 @@ export default async function NamespaceDetailsPage({
             slug: `/projects/${projectId}/services/containers/`,
         },
         {
-            text: "namespaces",
-            slug: `/projects/${projectId}/services/containers/namespaces/`,
-        },
-        {
-            text: "details",
+            text: "namespace",
             slug: `/projects/${projectId}/services/containers/namespaces/${namespaceId}`,
         },
     ];

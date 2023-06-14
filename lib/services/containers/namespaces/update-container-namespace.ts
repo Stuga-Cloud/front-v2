@@ -2,22 +2,22 @@ import { ContainerApplicationNamespace } from "@/lib/models/containers/container
 import axios from "axios";
 import { UpsertContainerNamespaceError } from "@/lib/services/containers/errors/upsert-container-namespace.error";
 import { GetContainersAPIInfo } from "@/lib/services/containers/get-containers-api-info";
-import { ContainerNamespaceAlreadyExistError } from "@/lib/services/containers/errors/container-namespace-already-exist";
+import { ContainerNamespaceNotFoundError } from "@/lib/services/containers/errors/container-namespace-not-found";
 
-export const CreateContainerNamespace = async (
-    name: string,
+export const UpdateContainerNamespace = async (
+    namespaceId: string,
+    description: string = "",
     userId: string,
-    description?: string,
+    userIdWhoUpdates: string,
 ): Promise<ContainerApplicationNamespace | null> => {
     const containerAPIInfo = GetContainersAPIInfo();
 
     try {
-        const namespace = axios.post<{
+        const namespace = axios.put<{
             namespace: ContainerApplicationNamespace | null;
         }>(
-            `${containerAPIInfo.url}/namespaces`,
+            `${containerAPIInfo.url}/namespaces/${namespaceId}?userId=${userIdWhoUpdates}`,
             {
-                name: name,
                 description: description,
                 userId: userId,
             },
@@ -30,14 +30,14 @@ export const CreateContainerNamespace = async (
         );
         return (await namespace).data.namespace;
     } catch (e: any) {
-        if (e.response.status === 409) {
-            throw new ContainerNamespaceAlreadyExistError(
-                `Namespace with name '${name}' already exists`,
+        console.log("Error updating namespace:", e);
+        if (e.response.status === 404) {
+            throw new ContainerNamespaceNotFoundError(
+                `Namespace not found with id ${namespaceId}`,
             );
         }
-        console.log("Error creating namespace:", e);
         throw new UpsertContainerNamespaceError(
-            `Error creating namespace '${name}' : ${e}`,
+            `Error updating namespace '${name}' : ${e}`,
         );
     }
 };

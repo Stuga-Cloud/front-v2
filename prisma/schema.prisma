@@ -74,11 +74,6 @@ model Project {
   @@index([createdBy])
 }
 
-enum Role {
-  ADMIN @map("ADMIN")
-  MEMBER @map("MEMBER")
-}
-
 model ProjectMembership {
   projectId   String
   userId      String
@@ -122,19 +117,19 @@ model Container {
   modifiedAt  DateTime           @default(now())
   createdAt   DateTime           @default(now())
   namespaceId String
+  idInAPI     String
   namespace   ContainerNamespace @relation(fields: [namespaceId], references: [id])
 }
 
 model ContainerNamespace {
-  id          String      @id @default(cuid())
-  name        String
-  modifiedAt  DateTime    @default(now())
-  createdAt   DateTime    @default(now())
-  projectId   String
-  description String?
-  containers  Container[]
-  project     Project     @relation("ProjectContainerNamespaces", fields: [projectId], references: [id])
-  idInAPI     String
+  id         String      @id @default(cuid())
+  name       String
+  modifiedAt DateTime    @default(now())
+  createdAt  DateTime    @default(now())
+  projectId  String
+  idInAPI    String
+  containers Container[]
+  project    Project     @relation("ProjectContainerNamespaces", fields: [projectId], references: [id])
 
   @@index([projectId])
 }
@@ -161,4 +156,9 @@ model Lambda {
 
   @@index([projectId])
   @@index([createdBy])
+}
+
+enum Role {
+  ADMIN  @map("ADMIN")
+  MEMBER @map("MEMBER")
 }

@@ -51,6 +51,7 @@ export async function GET(request: Request, { params }: NextRequest) {
         },
         include: {
             containerNamespaces: true,
+            members: true,
         },
     });
 
@@ -69,6 +70,9 @@ export async function GET(request: Request, { params }: NextRequest) {
         email: user.email,
         emailVerified: user.emailVerified,
         image: user.image,
+        role: projectMemberships.find(
+            (membership) => membership.userId === user.id,
+        )!.role,
     }));
 
     const projectResponse: Project = {

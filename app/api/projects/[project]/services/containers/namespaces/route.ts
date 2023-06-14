@@ -4,10 +4,10 @@ import prisma from "@/lib/prisma";
 import { NextRequest } from "next/server";
 import { isConnected } from "@/lib/utils";
 import ResponseService from "@/lib/next-response";
-import { GetContainerNamespaceByName } from "@/lib/services/containers/namespaces/get-container-namespace";
-import { UpsertContainerNamespace } from "@/lib/services/containers/namespaces/create-container-namespace";
+import { CreateContainerNamespace } from "@/lib/services/containers/namespaces/create-container-namespace";
 import { CreateContainerNamespaceBody } from "@/lib/services/containers/namespaces/create-container-namespace.body";
 import { ContainerNamespaceAlreadyExistError } from "@/lib/services/containers/errors/container-namespace-already-exist";
+import { GetContainerNamespaceByID } from "@/lib/services/containers/namespaces/get-container-namespace-by-id";
 
 export async function GET(
     _req: NextRequest,
@@ -20,26 +20,37 @@ export async function GET(
     }
     try {
         const projectId = params.project;
-        const container = await prisma.project.findFirst({
+        const project = await prisma.project.findFirst({
             where: { id: projectId },
+            include: {
+                containerNamespaces: true,
+            },
         });
-        if (!container) {
+        if (!project) {
             return ResponseService.notFound(
                 `Container not found with id ${projectId}`,
             );
         }
 
-        const namespace = await GetContainerNamespaceByName(
-            container.name,
-            (session!.user! as any).id,
+        const namespaces = await Promise.all(
+            project.containerNamespaces.map(async (ns) => {
+                const namespace = await GetContainerNamespaceByID(
+                    ns.idInAPI,
+                    (session!.user! as any).id,
+                );
+                if (!namespace) {
+                    return null;
+                }
+                return namespace;
+            }),
         );
-        if (!namespace) {
+        if (!namespaces) {
             return ResponseService.notFound(
-                `Namespace not found with name ${container.name}`,
+                `No namespaces found for project ${projectId}`,
             );
         }
 
-        return ResponseService.success(namespace);
+        return ResponseService.success(namespaces);
     } catch (error) {
         console.error("Error fetching namespace:", error);
         return ResponseService.internalServerError();
@@ -89,7 +100,7 @@ export async function POST(
         const description = body.description;
         const userId = (session!.user! as any).id;
 
-        const namespace = await UpsertContainerNamespace(
+        const namespace = await CreateContainerNamespace(
             name,
             userId,
             description,
@@ -102,7 +113,6 @@ export async function POST(
         const containerNamespace = await prisma.containerNamespace.create({
             data: {
                 name: namespace.name,
-                description: namespace.description,
                 projectId: project.id,
                 idInAPI: namespace.id,
             },
@@ -118,7 +128,7 @@ export async function POST(
         if (error instanceof ContainerNamespaceAlreadyExistError) {
             return ResponseService.conflict(error.message);
         }
-        console.error("Error updating namespace:", error);
+        console.error("Error creating namespace:", error);
         return ResponseService.internalServerError();
     }
 }
