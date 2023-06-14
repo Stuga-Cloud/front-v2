@@ -1,4 +1,5 @@
 import { ContainerApplication } from "@/lib/models/containers/container-application";
+import { ContainerApplicationNamespaceMembership } from "@/lib/models/containers/container-application-namespace-membership";
 
 export interface ContainerApplicationNamespace {
     id: string;
@@ -8,4 +9,5 @@ export interface ContainerApplicationNamespace {
     createdAt: Date;
     updatedAt: Date;
     applications: ContainerApplication[];
+    memberships: ContainerApplicationNamespaceMembership[];
 }

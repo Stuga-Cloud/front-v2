@@ -19,6 +19,7 @@ import { StugaError } from "@/lib/services/error/error";
 import { ContainerApplicationNamespace } from "@/lib/models/containers/container-application-namespace";
 import { DisplayToast } from "@/components/shared/toast/display-toast";
 import { ContainerApplication } from "@/lib/models/containers/container-application";
+import { isEmailValid } from "@/lib/utils";
 
 interface Step {
     name: string;
@@ -380,15 +381,6 @@ export default function NewContainerForm({
 
     const isPortValid = (port: number | undefined) => {
         return port == undefined || (port >= 1 && port <= 65535);
-    };
-
-    const validateEmail = (email: string): boolean => {
-        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return emailPattern.test(email);
-    };
-
-    const isEmailValid = (email: string | undefined) => {
-        return email == undefined || (email.length > 0 && validateEmail(email));
     };
 
     const applicationImageUpdated = (e: any) => {

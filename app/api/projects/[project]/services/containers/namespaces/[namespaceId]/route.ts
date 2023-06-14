@@ -55,7 +55,7 @@ export async function GET(
         );
         if (!namespaceInAPI) {
             return ResponseService.notFound(
-                `Namespace not found with name ${project.name}`,
+                `Namespace not found with id ${namespace.idInAPI}`,
             );
         }
 

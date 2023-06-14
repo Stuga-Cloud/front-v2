@@ -6,6 +6,7 @@ import AddUserToProject from "@/components/project/settings/add-user-to-project"
 import LoadingSpinner from "../../shared/icons/loading-spinner";
 import Image from "next/image";
 import { Member } from "@/lib/models/member";
+import { getUserBadge } from "@/lib/services/containers/member-badge-component";
 
 export default function ProjectMembersSettings({
     project,
@@ -42,38 +43,6 @@ export default function ProjectMembersSettings({
             setLoading(false);
         } catch (error) {
             setLoading(false);
-        }
-    };
-
-    const userRoleInProject = (userId: string) => {
-        const foundMember = members.find((member) => member.id === userId);
-        if (!foundMember)
-            console.log(
-                `User ${userId} is not a member of project ${project.id}`,
-            );
-        console.log(`User ${userId} role in project is ${foundMember?.role}`);
-        return foundMember?.role;
-    };
-
-    const getUserBadge = (member: Member, project: Project) => {
-        if (project.createdBy === member.id) {
-            return (
-                <span className="inline-flex rounded-full bg-green-100 px-2 text-center text-xs font-semibold leading-5 text-green-800">
-                    Creator 💮
-                </span>
-            );
-        } else if (userRoleInProject(member.id) === "ADMIN") {
-            return (
-                <span className="inline-flex rounded-full bg-yellow-100 px-2 text-center text-xs font-semibold leading-5 text-yellow-800">
-                    Admin 🛡️
-                </span>
-            );
-        } else {
-            return (
-                <span className="inline-flex rounded-full bg-blue-100 px-2 text-center text-xs font-semibold leading-5 text-blue-800">
-                    Collaborator 🤝
-                </span>
-            );
         }
     };
 
@@ -152,6 +121,7 @@ export default function ProjectMembersSettings({
                                                 </td>
                                                 <td className="px-6 py-4">
                                                     {getUserBadge(
+                                                        members,
                                                         member,
                                                         project,
                                                     )}
