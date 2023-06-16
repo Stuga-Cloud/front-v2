@@ -2,7 +2,6 @@
 import { Session } from "next-auth";
 import React, { useEffect, useState } from "react";
 import LoadingSpinner from "@/components/shared/icons/loading-spinner";
-import { toastEventEmitter } from "@/lib/event-emitter/toast-event-emitter";
 import { redirect, useRouter } from "next/navigation";
 import { Project } from "@/lib/models/project";
 import * as process from "process";
@@ -20,6 +19,7 @@ import { ContainerApplicationNamespace } from "@/lib/models/containers/container
 import { DisplayToast } from "@/components/shared/toast/display-toast";
 import { ContainerApplication } from "@/lib/models/containers/container-application";
 import { isEmailValid } from "@/lib/utils";
+import { Registry } from "@/lib/models/lambdas/lambda-create";
 
 interface Step {
     name: string;
@@ -27,10 +27,11 @@ interface Step {
     svgPath: any;
 }
 
-type AvailableRegistriesName = "Docker hub" | "Our private registry";
+export type AvailableRegistriesName = "Docker hub" | "Our private registry";
 
 interface AvailableRegistriesInformation {
     name: AvailableRegistriesName;
+    registry: Registry;
     url: string;
 }
 
@@ -39,12 +40,14 @@ const availableRegistries: AvailableRegistriesInformation[] = [
         name: "Docker hub",
         url:
             process.env.NEXT_PUBLIC_DOCKER_HUB_URL || "missing docker hub url!",
+        registry: "dockerhub",
     },
     {
         name: "Our private registry",
         url:
             process.env.NEXT_PUBLIC_PRIVATE_REGISTRY_URL ||
             "missing private registry url!",
+        registry: "pcr",
     },
 ];
 
@@ -54,8 +57,8 @@ const findRegistryByName = (
     if (availableRegistries.find((registry) => registry.name === name)) {
         return availableRegistries.find((registry) => registry.name === name)!;
     }
-    toastEventEmitter.emit("pop", {
-        type: "danger",
+    DisplayToast({
+        type: "error",
         message: `Registry ${name} not found`,
         duration: 5000,
     });
@@ -131,9 +134,11 @@ export default function NewContainerForm({
     const [registry, setRegistry] = useState<AvailableRegistriesInformation>(
         findRegistryByName("Docker hub"),
     );
-    const [applicationImage, setApplicationImage] = useState<string>("");
+    const [applicationImage, setApplicationImage] = useState<
+        string | undefined
+    >(undefined);
     const [applicationPort, setApplicationPort] = useState<number | undefined>(
-        undefined,
+        80,
     );
     const [applicationType, setApplicationType] =
         useState<ContainerApplicationType>("LOAD_BALANCED");
@@ -323,11 +328,10 @@ export default function NewContainerForm({
                 setLoading(false);
             })
             .catch((error) => {
-                toastEventEmitter.emit("pop", {
-                    type: "danger",
-                    message:
-                        "error when try to get project in new containerized application form",
-                    duration: 2000,
+                DisplayToast({
+                    type: "error",
+                    message: `Could not load project ${projectId}, please try again later or contact support`,
+                    duration: 4000,
                 });
                 console.error(
                     "error when try to get project in new containerized application form",
@@ -370,12 +374,12 @@ export default function NewContainerForm({
 
     const isImageValid = (image: string | undefined) => {
         return (
-            image != undefined &&
-            image.length > 0 &&
-            image.includes("/") &&
-            image.includes(":") &&
-            image[image.length - 1] !== ":" &&
-            image[image.length - 1] !== "/"
+            image == undefined ||
+            (image.length > 0 &&
+                image.includes("/") &&
+                image.includes(":") &&
+                image[image.length - 1] !== ":" &&
+                image[image.length - 1] !== "/")
         );
     };
 
@@ -387,11 +391,39 @@ export default function NewContainerForm({
         setApplicationImage(e.target.value);
     };
 
+    const keyVarsMessage =
+        "Invalid environment variable name, please use only letters, numbers and underscores and start with a letter or underscore";
+    const validateEnvironmentVariableOrSecretKey = (key: string) => {
+        if (key.length === 0) {
+            return true;
+        }
+        if (key.includes(" ")) {
+            DisplayToast({
+                type: "error",
+                message: keyVarsMessage,
+            });
+            return false;
+        }
+        if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(key)) {
+            DisplayToast({
+                type: "error",
+                message: keyVarsMessage,
+            });
+            return false;
+        }
+        return true;
+    };
+
     const handleEnvironmentVariableChange = (
         index: number,
         whereToChange: "name" | "value",
         value: string,
     ) => {
+        if (whereToChange === "name") {
+            if (!validateEnvironmentVariableOrSecretKey(value)) {
+                return;
+            }
+        }
         const newEnvironmentVariables = [...applicationEnvironmentVariables];
         newEnvironmentVariables[index][whereToChange] = value;
         setApplicationEnvironmentVariables(newEnvironmentVariables);
@@ -412,6 +444,11 @@ export default function NewContainerForm({
         whereToChange: "name" | "value",
         value: string,
     ) => {
+        if (whereToChange === "name") {
+            if (!validateEnvironmentVariableOrSecretKey(value)) {
+                return;
+            }
+        }
         const newSecrets = [...applicationSecrets];
         newSecrets[index][whereToChange] = value;
         setApplicationSecrets(newSecrets);
@@ -539,6 +576,7 @@ export default function NewContainerForm({
                     description: description!,
                     zone: "europe-west-1",
                     image: applicationImage!,
+                    registry: registry.registry,
                     port: applicationPort!,
                     applicationType: applicationType!,
                     environmentVariables: applicationEnvironmentVariables,
@@ -563,6 +601,10 @@ export default function NewContainerForm({
                     userId: "",
                     namespaceId: "",
                 };
+            console.log(
+                "Environment variables",
+                applicationEnvironmentVariables,
+            );
             const createdContainer = await axios(
                 `/api/projects/${projectId}/services/containers/namespaces/${namespaceId}/applications`,
                 {
@@ -574,34 +616,37 @@ export default function NewContainerForm({
                 },
             );
             console.log("createdContainer", createdContainer);
-            toastEventEmitter.emit("pop", {
-                type: "success",
-                message: "Application created",
-                duration: 4000,
-            });
             DisplayToast({
                 type: "success",
                 message: `Application ${applicationName} created`,
-                duration: 4000,
+                duration: 5000,
             });
             setLoading(false);
             router.push(
                 `/projects/${projectId}/services/containers/namespaces/${namespaceId}/applications/${createdContainer.data.id}`,
             );
-        } catch (error) {
+        } catch (error: any) {
             setLoading(false);
             console.log("Error while creating application", error);
+            if (error.response.data.error == "Image not found in registry") {
+                DisplayToast({
+                    type: "error",
+                    message: `Image not found in registry`,
+                    duration: 4000,
+                });
+                return;
+            }
             if (error instanceof StugaError) {
-                toastEventEmitter.emit("pop", {
-                    type: "danger",
+                DisplayToast({
+                    type: "error",
                     message: error.message,
                     duration: 4000,
                 });
+                return;
             }
-            toastEventEmitter.emit("pop", {
-                type: "danger",
-                message:
-                    "Couldn't create application and namespace, try again or contact support",
+            DisplayToast({
+                type: "error",
+                message: `Couldn't create application ${applicationName}, please try again later or contact support`,
                 duration: 4000,
             });
         }
@@ -737,47 +782,8 @@ export default function NewContainerForm({
                                 </h4>
 
                                 {step === 1 && (
-                                    <div className="mb-10 ms-5 flex h-96 w-full flex-col gap-5">
+                                    <div className="mb-10 ms-5 flex h-full w-full flex-col gap-5">
                                         <div className="mb-2 ms-5 flex flex-col">
-                                            {/*<div className="mb-2 flex flex-col">*/}
-                                            {/*    <label*/}
-                                            {/*        htmlFor="namespace"*/}
-                                            {/*        className={*/}
-                                            {/*            `pb-1 text-sm font-medium text-gray-700 dark:text-white` +*/}
-                                            {/*            (!isNamespaceValid(*/}
-                                            {/*                applicationNamespace,*/}
-                                            {/*            )*/}
-                                            {/*                ? "gray-900 dark:text-white"*/}
-                                            {/*                : "red-700 dark:text-red-500")*/}
-                                            {/*        }*/}
-                                            {/*    >*/}
-                                            {/*        Namespace*/}
-                                            {/*    </label>*/}
-                                            {/*    <input*/}
-                                            {/*        className={`bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500 ${*/}
-                                            {/*            !isNamespaceValid(*/}
-                                            {/*                applicationNamespace,*/}
-                                            {/*            )*/}
-                                            {/*                ? "border-red-500 bg-red-50 p-2.5 text-sm text-red-900 placeholder-red-700 focus:border-red-500 focus:ring-red-500 dark:border-red-500 dark:bg-gray-700 dark:text-red-500 dark:placeholder-red-500"*/}
-                                            {/*                : ""*/}
-                                            {/*        }`}*/}
-                                            {/*        type="text"*/}
-                                            {/*        value={applicationNamespace}*/}
-                                            {/*        onChange={(e) => {*/}
-                                            {/*            namespaceUpdated(e);*/}
-                                            {/*        }}*/}
-                                            {/*        placeholder="my-first-namespace"*/}
-                                            {/*        required*/}
-                                            {/*    />*/}
-                                            {/*    {!isNamespaceValid(*/}
-                                            {/*        applicationNamespace,*/}
-                                            {/*    ) && (*/}
-                                            {/*        <p className="text-sm text-red-500">*/}
-                                            {/*            Please enter a valid*/}
-                                            {/*            namespace.*/}
-                                            {/*        </p>*/}
-                                            {/*    )}*/}
-                                            {/*</div>*/}
                                             <div className="mb-1 flex flex-col">
                                                 <label
                                                     htmlFor="applicationName"
@@ -915,11 +921,9 @@ export default function NewContainerForm({
                                     </div>
                                 )}
                                 {step === 2 && (
-                                    <div className="mb-10 ms-5 flex h-96 w-full flex-col">
-                                        {/*    Remember that step 2 is concerning the docker image (or other registry) */}
+                                    <div className="mb-10 ms-5 flex h-full w-full flex-col">
                                         <div className="mb-2 ms-5 flex flex-col items-start">
                                             {/* Choice between docker and our private registry */}
-                                            {/* Replace by using Flowbite Tailwind CSS */}
                                             <label
                                                 htmlFor="image-registries"
                                                 className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
@@ -969,7 +973,7 @@ export default function NewContainerForm({
                                             <input
                                                 id="image-name"
                                                 name="image-name"
-                                                className={`bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500 ${
+                                                className={`bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 ${
                                                     !isImageValid(
                                                         applicationImage,
                                                     ) && "border-red-500"
@@ -1043,7 +1047,7 @@ export default function NewContainerForm({
                                 )}
 
                                 {step === 3 && (
-                                    <div className="mb-10 ms-5 flex h-96 w-full flex-col">
+                                    <div className="mb-10 ms-5 flex h-full w-full flex-col">
                                         <div>
                                             <p className="font-semi-bold pb-6 dark:text-white">
                                                 We recommend you to define the
@@ -1104,7 +1108,7 @@ export default function NewContainerForm({
                                     </div>
                                 )}
                                 {step === 4 && (
-                                    <div className="mb-10 ms-5 flex h-96 w-full flex-col">
+                                    <div className="mb-10 ms-5 flex h-full w-full flex-col">
                                         <label
                                             htmlFor="application-type"
                                             className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
@@ -1132,7 +1136,7 @@ export default function NewContainerForm({
                                     </div>
                                 )}
                                 {step === 5 && (
-                                    <div className="mb-10 ms-5 flex h-96 w-full flex-col">
+                                    <div className="mb-10 ms-5 flex h-full w-full flex-col">
                                         <label
                                             htmlFor="cpu-limit"
                                             className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
@@ -1140,7 +1144,7 @@ export default function NewContainerForm({
                                             CPU Limit (milliCPU)
                                         </label>
                                         <select
-                                            className="bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500"
+                                            className="bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500"
                                             value={applicationCpuLimit}
                                             onChange={(e) =>
                                                 setApplicationCpuLimit(
@@ -1188,8 +1192,8 @@ export default function NewContainerForm({
                                 )}
                                 {step === 6 &&
                                     applicationType === "LOAD_BALANCED" && (
-                                        <>
-                                            <div className="mb-6 ms-5 flex flex-col">
+                                        <div className="mb-10 ms-5 flex h-full w-full flex-col">
+                                            <div className="flex flex-col">
                                                 <label className="relative inline-flex cursor-pointer items-center">
                                                     <input
                                                         type="checkbox"
@@ -1384,10 +1388,10 @@ export default function NewContainerForm({
                                                     </div>
                                                 </div>
                                             )}
-                                        </>
+                                        </div>
                                     )}
                                 {step === 7 && (
-                                    <div className="mb-10 ms-5 flex min-h-96 w-full flex-col">
+                                    <div className="mb-10 ms-5 flex h-full w-full flex-col">
                                         <label
                                             htmlFor="environment-variables"
                                             className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
@@ -1464,7 +1468,7 @@ export default function NewContainerForm({
                                     </div>
                                 )}
                                 {step === 8 && (
-                                    <div className="mb-10 ms-5 flex h-96 w-full flex-col">
+                                    <div className="mb-10 ms-5 flex h-full w-full flex-col">
                                         <label
                                             htmlFor="application-secrets"
                                             className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
@@ -1539,7 +1543,7 @@ export default function NewContainerForm({
                                     </div>
                                 )}
                                 {step === 9 && (
-                                    <div className="mb-10 ms-5 flex h-96 w-full flex-col">
+                                    <div className="mb-10 ms-5 flex h-full w-full flex-col">
                                         <label
                                             htmlFor="admin-email"
                                             className={

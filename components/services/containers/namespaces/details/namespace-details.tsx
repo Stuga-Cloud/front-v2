@@ -74,14 +74,13 @@ export default function NamespaceDetails({
     }, [projectId]);
 
     const loadNamespace = async () => {
-        setLoading(true);
         try {
             const res = await axios.get(
                 `/api/projects/${projectId}/services/containers/namespaces/${namespaceId}`,
             );
             setNamespace(res.data.namespace);
             setNamespaceInAPI(res.data.namespaceInAPI);
-            setContainers(res.data.namespaceInAPI.applications);
+            setContainers(res.data.namespaceInAPI.applications || []);
         } catch (error) {
             console.log(error);
             DisplayToast({
@@ -95,8 +94,17 @@ export default function NamespaceDetails({
         }
     };
 
+    // Reload namespace every 30 seconds
+    useEffect(() => {
+        const interval = setInterval(async () => {
+            await loadNamespace();
+        }, 30000);
+        return () => clearInterval(interval);
+    }, []);
+
     useEffect(() => {
         if (!projectId || !namespaceId) return;
+        setLoading(true);
         loadNamespace()
             .then(() => {
                 setLoading(false);
@@ -140,6 +148,7 @@ export default function NamespaceDetails({
                                     namespaceInAPI={namespaceInAPI!}
                                     containers={containers}
                                     reloadContainers={async () => {
+                                        setLoading(true);
                                         await loadNamespace();
                                     }}
                                 />
@@ -151,6 +160,7 @@ export default function NamespaceDetails({
                                 namespace={namespace}
                                 namespaceInAPI={namespaceInAPI!}
                                 reloadNamespace={async () => {
+                                    setLoading(true);
                                     await loadNamespace();
                                 }}
                             />

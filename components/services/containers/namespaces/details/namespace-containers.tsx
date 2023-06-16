@@ -1,15 +1,14 @@
 "use client";
 import { Session } from "next-auth";
 import { redirect, useRouter } from "next/navigation";
-import { useState } from "react";
+import React, { useState } from "react";
 import { Project } from "@/lib/models/project";
 import { LoadingSpinner } from "@/components/shared/icons";
 import { ContainerApplication } from "@/lib/models/containers/container-application";
-import axios from "axios";
-import { DisplayToast } from "@/components/shared/toast/display-toast";
 import { ContainerNamespace } from "@/lib/models/containers/prisma/container-namespace";
 import { ContainerApplicationNamespace } from "@/lib/models/containers/container-application-namespace";
 import { applicationStatusToComponent } from "@/lib/services/containers/application-status-to-component";
+import Image from "next/image";
 
 export default function NamespaceContainers({
     session,
@@ -36,36 +35,14 @@ export default function NamespaceContainers({
     const [loading, setLoading] = useState(false);
 
     const clickOnContainer = (container: ContainerApplication) => {
-        router.push(
-            `/projects/${project.id}/services/containers/namespaces/${namespace.id}/applications/${container.id}`,
+        const correspondingContainerInPrisma = namespace.containers.find(
+            (c) => c.idInAPI === container.id,
         );
-    };
-
-    const deleteContainer = async (container: ContainerApplication) => {
-        setLoading(true);
-        try {
-            const res = await axios.delete(`/api/containers/${container.id}`);
-            if (res.status !== 200) {
-                DisplayToast({
-                    type: "error",
-                    message:
-                        "Could not delete container, please try again later or contact support",
-                    duration: 3000,
-                });
-                setLoading(false);
-                return;
-            }
-            reloadContainers();
-            setLoading(false);
-        } catch (error) {
-            DisplayToast({
-                type: "error",
-                message:
-                    "Could not delete container, please try again later or contact support",
-                duration: 3000,
-            });
-            setLoading(false);
-        }
+        router.push(
+            `/projects/${project.id}/services/containers/namespaces/${
+                namespace.id
+            }/applications/${correspondingContainerInPrisma!.id}`,
+        );
     };
 
     return (
@@ -101,16 +78,28 @@ export default function NamespaceContainers({
                 </div>
                 {loading && <LoadingSpinner />}
 
-                {containers && containers.length === 0 && (
-                    <div className="flex h-[50vh] items-center justify-center">
-                        <p className="text-gray-500">
-                            No container found, start by creating one ! 🚀
-                        </p>
+                {containers.length == 0 && (
+                    <div className="flex h-[50vh] w-full items-center justify-center gap-2 border-2  border-dashed">
+                        <Image
+                            src="/stuga-logo.png"
+                            alt="Description de l'image"
+                            width="60"
+                            height="60"
+                        ></Image>
+                        <div className="flex h-16 flex-col justify-center overflow-hidden text-sm">
+                            <h5 className="text-2xl font-bold text-gray-500 md:text-2xl">
+                                No container found, start by creating one ! 🚀
+                            </h5>
+                            <p className="text-gray-500">
+                                Deploy API, web apps, and databases and more
+                            </p>
+                        </div>
                     </div>
                 )}
+
                 {containers && containers.length > 0 && (
                     <div className="flex w-4/5 justify-center">
-                        <div className="w-full text-gray-500 shadow-md dark:text-gray-400 sm:rounded-lg">
+                        <div className="relative w-full overflow-x-auto text-gray-500 shadow-md sm:rounded-lg">
                             <table className="w-full text-left text-sm text-gray-500">
                                 <thead className="bg-gray-50 text-xs uppercase text-gray-700">
                                     <tr>
@@ -132,67 +121,56 @@ export default function NamespaceContainers({
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {containers &&
-                                        containers.map((container) => (
-                                            <tr
-                                                key={container.id}
-                                                className="cursor-pointer border-b bg-gray-100 hover:bg-green-50"
+                                    {containers.map((container) => (
+                                        <tr
+                                            key={container.id}
+                                            className="cursor-pointer border-b bg-gray-100 hover:bg-green-50"
+                                        >
+                                            <th
+                                                scope="row"
+                                                className="whitespace-nowrap px-6 py-4 font-medium"
+                                                onClick={() => {
+                                                    clickOnContainer(container);
+                                                }}
                                             >
-                                                <th
-                                                    scope="row"
-                                                    className="whitespace-nowrap px-6 py-4 font-medium"
-                                                    onClick={() => {
-                                                        clickOnContainer(
-                                                            container,
-                                                        );
-                                                    }}
-                                                >
-                                                    {container.name}
-                                                </th>
-                                                <td
-                                                    className="px-6 py-4"
-                                                    onClick={() => {
-                                                        clickOnContainer(
-                                                            container,
-                                                        );
-                                                    }}
-                                                >
-                                                    {container.description}
-                                                </td>
-                                                <td
-                                                    className="px-6 py-4"
-                                                    onClick={() => {
-                                                        clickOnContainer(
-                                                            container,
-                                                        );
-                                                    }}
-                                                >
-                                                    {container.image}
-                                                </td>
-                                                <td
-                                                    className="px-6 py-4"
-                                                    onClick={() => {
-                                                        clickOnContainer(
-                                                            container,
-                                                        );
-                                                    }}
-                                                >
-                                                    {applicationStatusToComponent(
-                                                        container.status,
-                                                    )}
-                                                </td>
-                                                <td
-                                                    className="px-6 py-4"
-                                                    onClick={() => {
-                                                        clickOnContainer(
-                                                            container,
-                                                        );
-                                                    }}
-                                                >
-                                                    {container.createdAt.toLocaleString()}
-                                                </td>
-                                            </tr>
-                                        ))}
+                                                {container.name}
+                                            </th>
+                                            <td
+                                                className="px-6 py-4"
+                                                onClick={() => {
+                                                    clickOnContainer(container);
+                                                }}
+                                            >
+                                                {container.description}
+                                            </td>
+                                            <td
+                                                className="px-6 py-4"
+                                                onClick={() => {
+                                                    clickOnContainer(container);
+                                                }}
+                                            >
+                                                {container.image}
+                                            </td>
+                                            <td
+                                                className="px-6 py-4"
+                                                onClick={() => {
+                                                    clickOnContainer(container);
+                                                }}
+                                            >
+                                                {applicationStatusToComponent(
+                                                    container.status,
+                                                )}
+                                            </td>
+                                            <td
+                                                className="px-6 py-4"
+                                                onClick={() => {
+                                                    clickOnContainer(container);
+                                                }}
+                                            >
+                                                {container.createdAt.toLocaleString()}
+                                            </td>
+                                        </tr>
+                                    ))}
                                 </tbody>
                             </table>
                         </div>

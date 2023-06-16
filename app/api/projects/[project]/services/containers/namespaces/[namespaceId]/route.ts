@@ -42,6 +42,9 @@ export async function GET(
         const namespaceId = params.namespaceId;
         const namespace = await prisma.containerNamespace.findFirst({
             where: { id: namespaceId },
+            include: {
+                containers: true,
+            },
         });
         if (!namespace) {
             return ResponseService.notFound(
@@ -128,6 +131,21 @@ export async function DELETE(
             return ResponseService.internalServerError(
                 `Error deleting namespace with id ${namespaceId}`,
             );
+        }
+
+        // Delete also the containers in the namespace
+        const containers = await prisma.container.findMany({
+            where: { namespaceId: namespaceId },
+        });
+        if (containers.length > 0) {
+            const deletedContainers = await prisma.container.deleteMany({
+                where: { namespaceId: namespaceId },
+            });
+            if (!deletedContainers) {
+                return ResponseService.internalServerError(
+                    `Error deleting containers in namespace with id ${namespaceId}`,
+                );
+            }
         }
 
         return ResponseService.success(namespace);

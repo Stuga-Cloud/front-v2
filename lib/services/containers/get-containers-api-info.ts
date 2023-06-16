@@ -1,4 +1,4 @@
-import { FindContainerNamespaceError } from "@/lib/services/containers/errors/get-container-namespace.error";
+import { FindContainerNamespaceError } from "@/lib/services/containers/errors/find-container-namespace.error";
 
 export const GetContainersAPIInfo = (): {
     url: string;

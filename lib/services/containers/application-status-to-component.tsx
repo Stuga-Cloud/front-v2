@@ -1,5 +1,7 @@
+import { ContainerApplicationStatus } from "@/lib/models/containers/container-application";
+
 export const applicationStatusToComponent = (
-    status: string,
+    status: ContainerApplicationStatus,
 ): string | JSX.Element => {
     switch (status) {
         case "AVAILABLE":

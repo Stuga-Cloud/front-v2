@@ -1,3 +1,5 @@
+import { Container } from "@/lib/models/containers/prisma/container";
+
 export interface ContainerNamespace {
     id: string;
     name: string;
@@ -5,4 +7,5 @@ export interface ContainerNamespace {
     createdAt: Date;
     projectId: string;
     idInAPI: string;
+    containers: Container[];
 }

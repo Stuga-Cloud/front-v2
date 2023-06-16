@@ -39,7 +39,6 @@ export default function ContainersInfo({
     const getProject = async (projectId: string) => {
         try {
             const res = await axios.get(`/api/projects/${projectId}`);
-            console.log("Retrieved project from API", res.data);
             return res.data;
         } catch (error) {
             console.log(error);
@@ -92,7 +91,6 @@ export default function ContainersInfo({
         const res = await axios.get(
             `/api/projects/${projectID}/services/containers/namespaces`,
         );
-        console.log("Retrieved namespaces from API", res.data);
         return res.data;
     };
     const reloadNamespaces = async () => {

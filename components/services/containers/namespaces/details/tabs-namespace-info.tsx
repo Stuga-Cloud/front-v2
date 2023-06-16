@@ -24,7 +24,7 @@ export default function TabsNamespaceInfo({
                         href="#"
                         className={`group inline-flex rounded-t-lg p-4 ${
                             activeTab === "containers"
-                                ? "border-b-2 border-blue-600 text-blue-600"
+                                ? "border-b-2 border-green-400 text-green-400"
                                 : "border-transparent hover:border-gray-300 hover:text-gray-600"
                         }`}
                         aria-current="page"
@@ -34,7 +34,7 @@ export default function TabsNamespaceInfo({
                             aria-hidden="true"
                             className={`mr-2 h-5 w-5 ${
                                 activeTab === "containers"
-                                    ? "text-blue-600"
+                                    ? "text-green-400"
                                     : "text-gray-400 group-hover:text-gray-500"
                             }`}
                             fill="currentColor"
@@ -51,7 +51,7 @@ export default function TabsNamespaceInfo({
                         href="#"
                         className={`group inline-flex rounded-t-lg p-4 ${
                             activeTab === "settings"
-                                ? "border-b-2 border-blue-600 text-blue-600"
+                                ? "border-b-2 border-green-400 text-green-400"
                                 : "border-transparent hover:border-gray-300 hover:text-gray-600"
                         }`}
                         aria-current="page"
@@ -61,7 +61,7 @@ export default function TabsNamespaceInfo({
                             aria-hidden="true"
                             className={`mr-2 h-5 w-5 ${
                                 activeTab === "settings"
-                                    ? "text-blue-600"
+                                    ? "text-green-400"
                                     : "text-gray-400 group-hover:text-gray-500"
                             }`}
                             fill="currentColor"

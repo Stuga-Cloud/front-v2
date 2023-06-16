@@ -1,7 +1,7 @@
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { BreadcrumbItem } from "@/components/shared/breadcrumb";
-import ContainerDetails from "@/components/services/containers/applications/container-details";
+import ContainerDetails from "@/components/services/containers/applications/details/container-details";
 import { Suspense } from "react";
 import Nav from "@/components/layout/nav";
 import UnAuthentified from "@/components/home/un-authentified";
@@ -17,13 +17,13 @@ export default async function ContainerDetailsPage({
     const namespaceId = params.namespaceId;
 
     const breadcrumbItems: BreadcrumbItem[] = [
-        { text: "...", slug: `/projects/${projectId}/services/containers/` },
+        { text: "...", slug: `/projects/${projectId}/services/containers` },
         {
-            text: "applications",
+            text: "namespace",
             slug: `/projects/${projectId}/services/containers/namespaces/${namespaceId}`,
         },
         {
-            text: "details",
+            text: "application",
             slug: `/projects/${projectId}/services/containers/namespaces/${namespaceId}/applications/${applicationId}`,
         },
     ];

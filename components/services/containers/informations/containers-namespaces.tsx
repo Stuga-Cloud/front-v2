@@ -1,7 +1,7 @@
 "use client";
 import { Session } from "next-auth";
 import { redirect, useRouter } from "next/navigation";
-import { useState } from "react";
+import React, { useState } from "react";
 import { Project } from "@/lib/models/project";
 import { ContainerApplicationNamespace } from "@/lib/models/containers/container-application-namespace";
 import { LoadingSpinner } from "@/components/shared/icons";
@@ -9,6 +9,7 @@ import axios from "axios";
 import { DisplayToast } from "@/components/shared/toast/display-toast";
 import { ContainerNamespaceDropdownAction } from "@/components/services/containers/informations/container-namespace-dropdown-action";
 import { ContainerNamespace } from "@/lib/models/containers/prisma/container-namespace";
+import Image from "next/image";
 
 export default function ContainersNamespaces({
     session,
@@ -117,15 +118,28 @@ export default function ContainersNamespaces({
                 {loading && <LoadingSpinner />}
 
                 {namespacesInAPI && namespacesInAPI.length === 0 && (
-                    <div className="flex h-[50vh] items-center justify-center">
-                        <p className="text-gray-500">
-                            No namespace found, start by creating one ! 🚀
-                        </p>
+                    <div className="flex h-[50vh] w-full items-center justify-center gap-2 border-2  border-dashed">
+                        <Image
+                            src="/stuga-logo.png"
+                            alt="Description de l'image"
+                            width="60"
+                            height="60"
+                        ></Image>
+                        <div className="flex h-16 flex-col justify-center overflow-hidden text-sm">
+                            <h5 className="text-2xl font-bold text-gray-500 md:text-2xl">
+                                No namespace found, start by creating one ! 🚀
+                            </h5>
+                            <p className="text-gray-500">
+                                A namespace is a way to organize your
+                                containers. You can create as many namespaces as
+                                you want.
+                            </p>
+                        </div>
                     </div>
                 )}
                 {namespacesInAPI && namespacesInAPI.length > 0 && (
                     <div className="flex w-4/5 justify-center">
-                        <div className="w-full text-gray-500 shadow-md dark:text-gray-400 sm:rounded-lg">
+                        <div className="relative w-full overflow-x-auto text-gray-500 shadow-md sm:rounded-lg">
                             <table className="w-full text-left text-sm text-gray-500">
                                 <thead className="bg-gray-50 text-xs uppercase text-gray-700">
                                     <tr>

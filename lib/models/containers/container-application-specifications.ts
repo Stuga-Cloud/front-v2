@@ -4,7 +4,7 @@ export enum ContainerLimitUnit {
     GB = "GB",
 }
 
-export interface ContainerLimit {
+export interface MemoryContainerLimit {
     value: number;
     unit: ContainerLimitUnit;
 }
@@ -16,6 +16,6 @@ export interface CPUContainerLimit {
 
 export interface ContainerApplicationContainerSpecifications {
     cpuLimit: CPUContainerLimit;
-    memoryLimit: ContainerLimit;
+    memoryLimit: MemoryContainerLimit;
     // ephemeralStorageLimit: ContainerLimit;
 }

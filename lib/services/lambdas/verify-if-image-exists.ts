@@ -1,5 +1,5 @@
 import { Registry } from "@/lib/models/lambdas/lambda-create";
-import { getLambdaImageInProject } from '@/lib/services/lambdas/get-lambda-image-in-user-namespaces';
+import { getLambdaImageInProject } from "@/lib/services/lambdas/get-lambda-image-in-user-namespaces";
 import { getProjectNamespaces } from "../registry/namespace/get-project-namespaces";
 import { StugaError } from "../error/error";
 import { StugaErrorToNextResponse } from "../error/stuga-error-to-next-response";
@@ -10,6 +10,7 @@ export const verifyIfImageExists = async (
     imageName: string,
     projectId: string,
     registry: Registry,
+    repository: string = "library",
 ) => {
     if (registry === "pcr") {
         try {
@@ -33,6 +34,7 @@ export const verifyIfImageExists = async (
         try {
             const imageNameSplit = imageName.split(":");
             const imageExist = await checkIfDockerHubImageExists(
+                repository,
                 imageNameSplit[0],
                 imageNameSplit[1],
             );

@@ -1,6 +1,6 @@
 import { ContainerApplicationNamespace } from "@/lib/models/containers/container-application-namespace";
 import axios from "axios";
-import { FindContainerNamespaceError } from "@/lib/services/containers/errors/get-container-namespace.error";
+import { FindContainerNamespaceError } from "@/lib/services/containers/errors/find-container-namespace.error";
 import { GetContainersAPIInfo } from "@/lib/services/containers/get-containers-api-info";
 
 export const GetContainerNamespaceByID = async (
