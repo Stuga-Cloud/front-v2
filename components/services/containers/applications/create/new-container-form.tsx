@@ -393,9 +393,19 @@ export default function NewContainerForm({
 
     const keyVarsMessage =
         "Invalid environment variable name, please use only letters, numbers and underscores and start with a letter or underscore";
-    const validateEnvironmentVariableOrSecretKey = (key: string) => {
+    const validateEnvironmentVariableOrSecretKey = (
+        key: string,
+        vars: ContainerEnvironmentVariable[] | ContainerApplicationSecret[],
+        type: "environment variable" | "secret",
+    ) => {
         if (key.length === 0) {
             return true;
+        }
+        if (vars.some((envVar) => envVar.name === key)) {
+            DisplayToast({
+                type: "error",
+                message: `Duplicate ${type} name '${key}'`,
+            });
         }
         if (key.includes(" ")) {
             DisplayToast({
@@ -420,7 +430,13 @@ export default function NewContainerForm({
         value: string,
     ) => {
         if (whereToChange === "name") {
-            if (!validateEnvironmentVariableOrSecretKey(value)) {
+            if (
+                !validateEnvironmentVariableOrSecretKey(
+                    value,
+                    applicationEnvironmentVariables,
+                    "environment variable",
+                )
+            ) {
                 return;
             }
         }
@@ -445,7 +461,13 @@ export default function NewContainerForm({
         value: string,
     ) => {
         if (whereToChange === "name") {
-            if (!validateEnvironmentVariableOrSecretKey(value)) {
+            if (
+                !validateEnvironmentVariableOrSecretKey(
+                    value,
+                    applicationSecrets,
+                    "secret",
+                )
+            ) {
                 return;
             }
         }

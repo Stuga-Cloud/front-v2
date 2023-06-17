@@ -88,7 +88,6 @@ export default function ContainerDetails({
             const res = await axios.get(
                 `/api/projects/${projectId}/services/containers/namespaces/${namespaceId}/applications/${containerId}`,
             );
-            console.log("Container details", res.data);
             return res.data;
         } catch (error) {
             console.log(error);

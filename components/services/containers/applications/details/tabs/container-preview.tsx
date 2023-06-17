@@ -78,115 +78,131 @@ export default function ContainerPreview({
             {loading && <LoadingSpinner />}
             <div className="mt-10 w-4/5">
                 <div className="w-full rounded-lg border border-2 border-dashed border-green-300 p-3">
-                    <div className="mb-5 ms-5 mt-5 flex flex w-full flex-col gap-1">
-                        <h2 className="text-xl font-bold">Status</h2>
-                        <span>
-                            {applicationStatusToComponent(
-                                container.containerInAPI.status,
-                            )}
-                        </span>
+                    <div className="flex flex-row items-start justify-between gap-3 pb-5 ps-5 pt-5">
+                        <div className="flex w-1/2 flex-col gap-1">
+                            <h2 className="text-xl font-bold">Status</h2>
+                            <span>
+                                {applicationStatusToComponent(
+                                    container.containerInAPI.status,
+                                )}
+                            </span>
+                        </div>
+                        <div className="flex w-1/2 flex-col gap-1">
+                            <h2 className="text-xl font-bold">End point</h2>
+                            <a
+                                href={`https://${getURLOfContainer(container)}`}
+                                target="_blank"
+                                className="text-blue-500 hover:text-blue-700"
+                                rel="noreferrer"
+                            >
+                                {getURLOfContainer(container)}
+                                {/* AppName.NamespaceName.hive.williamquach.fr */}
+                                {/* use NEXT_PUBLIC_BASE_CONTAINER_DOMAIN env to get hive.williamquach.fr */}
+                            </a>
+                        </div>
+                    </div>
+                    <div className="flex flex-row items-start gap-3 pb-5 ps-5 pt-5">
+                        <div className="flex w-1/2 flex-col gap-1">
+                            <h2 className="text-xl font-bold">
+                                Configured resources
+                            </h2>
+                            <span>
+                                {container.containerInAPI
+                                    .containerSpecifications.cpuLimit
+                                    ? humanizeContainerCPULimitSpecifications(
+                                          container.containerInAPI
+                                              .containerSpecifications.cpuLimit,
+                                      )
+                                    : "No CPU limit"}
+                            </span>
+                            <span>
+                                {container.containerInAPI
+                                    .containerSpecifications.memoryLimit
+                                    ? humanizeContainerMemoryLimitSpecifications(
+                                          container.containerInAPI
+                                              .containerSpecifications
+                                              .memoryLimit,
+                                      )
+                                    : "No memory limit"}
+                            </span>
+                        </div>
+                        <div className="flex w-1/2 flex-col gap-1">
+                            <h2 className="text-xl font-bold">
+                                Scalability specifications
+                            </h2>
+                            <div className="flex flex-row gap-1">
+                                <div>
+                                    <span className="italic">Replicas: </span>
+                                </div>
+                                <div>
+                                    <span>
+                                        {container.containerInAPI
+                                            .scalabilitySpecifications?.replicas
+                                            ? `${container.containerInAPI.scalabilitySpecifications.replicas}`
+                                            : "none"}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div className="flex flex-row gap-1">
+                                <div>
+                                    <span className="italic">
+                                        CPU usage percentage threshold:{" "}
+                                    </span>
+                                </div>
+                                <div>
+                                    <span>
+                                        {container.containerInAPI
+                                            .scalabilitySpecifications
+                                            ?.cpuUsagePercentageThreshold
+                                            ? `${container.containerInAPI.scalabilitySpecifications.cpuUsagePercentageThreshold}%`
+                                            : "none"}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div className="flex flex-row gap-1">
+                                <div>
+                                    <span className="italic">
+                                        Memory usage percentage threshold:{" "}
+                                    </span>
+                                </div>
+                                <div>
+                                    <span>
+                                        {container.containerInAPI
+                                            .scalabilitySpecifications
+                                            ?.memoryUsagePercentageThreshold
+                                            ? `${container.containerInAPI.scalabilitySpecifications.memoryUsagePercentageThreshold}%`
+                                            : "none"}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div className="flex flex-row gap-1">
+                                <div>
+                                    <span className="italic">
+                                        Scaling mode:{" "}
+                                    </span>
+                                </div>
+                                <div>
+                                    <span>
+                                        {container.containerInAPI
+                                            .scalabilitySpecifications
+                                            ?.isAutoScaled
+                                            ? "Auto scaled"
+                                            : "Manually scaled"}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div className="mb-5 ms-5 mt-5 flex flex w-full flex-col gap-1">
-                        <h2 className="text-xl font-bold">End point</h2>
-                        <a
-                            href={`https://${getURLOfContainer(container)}`}
-                            target="_blank"
-                            className="text-blue-500 hover:text-blue-700"
-                            rel="noreferrer"
-                        >
-                            {getURLOfContainer(container)}
-                            {/* AppName.NamespaceName.hive.williamquach.fr */}
-                            {/* use NEXT_PUBLIC_BASE_CONTAINER_DOMAIN env to get hive.williamquach.fr */}
-                        </a>
-                    </div>
-                    <div className="mb-5 ms-5 mt-5 flex flex w-full flex-col gap-1">
-                        <h2 className="text-xl font-bold">
-                            Configured resources
-                        </h2>
+                        <h2 className="text-xl font-bold">Description</h2>
                         <span>
-                            {container.containerInAPI.containerSpecifications
-                                .cpuLimit
-                                ? humanizeContainerCPULimitSpecifications(
-                                      container.containerInAPI
-                                          .containerSpecifications.cpuLimit,
-                                  )
-                                : "No CPU limit"}
+                            {container.containerInAPI.description
+                                ? container.containerInAPI.description
+                                : "No description"}
                         </span>
-                        <span>
-                            {container.containerInAPI.containerSpecifications
-                                .memoryLimit
-                                ? humanizeContainerMemoryLimitSpecifications(
-                                      container.containerInAPI
-                                          .containerSpecifications.memoryLimit,
-                                  )
-                                : "No memory limit"}
-                        </span>
-                    </div>
-                    <div className="mb-5 ms-5 mt-5 flex flex w-4/5 flex-col gap-1">
-                        <h2 className="text-xl font-bold">
-                            Scalability specifications
-                        </h2>
-                        <div className="flex w-4/5 flex-row gap-1">
-                            <div className="w-1/2">
-                                <span className="italic">Replicas: </span>
-                            </div>
-                            <div>
-                                <span>
-                                    {container.containerInAPI
-                                        .scalabilitySpecifications?.replicas
-                                        ? `${container.containerInAPI.scalabilitySpecifications.replicas}`
-                                        : "none"}
-                                </span>
-                            </div>
-                        </div>
-
-                        <div className="flex w-4/5 flex-row gap-1">
-                            <div className="w-1/2">
-                                <span className="italic">
-                                    CPU usage percentage threshold:{" "}
-                                </span>
-                            </div>
-                            <div>
-                                <span>
-                                    {container.containerInAPI
-                                        .scalabilitySpecifications
-                                        ?.cpuUsagePercentageThreshold
-                                        ? `${container.containerInAPI.scalabilitySpecifications.cpuUsagePercentageThreshold}%`
-                                        : "none"}
-                                </span>
-                            </div>
-                        </div>
-
-                        <div className="flex w-4/5 flex-row gap-1">
-                            <div className="w-1/2">
-                                <span className="italic">
-                                    Memory usage percentage threshold:{" "}
-                                </span>
-                            </div>
-                            <div>
-                                <span>
-                                    {container.containerInAPI
-                                        .scalabilitySpecifications
-                                        ?.memoryUsagePercentageThreshold
-                                        ? `${container.containerInAPI.scalabilitySpecifications.memoryUsagePercentageThreshold}%`
-                                        : "none"}
-                                </span>
-                            </div>
-                        </div>
-
-                        <div className="flex w-4/5 flex-row gap-1">
-                            <div className="w-1/2">
-                                <span className="italic">Scaling mode: </span>
-                            </div>
-                            <div>
-                                <span>
-                                    {container.containerInAPI
-                                        .scalabilitySpecifications?.isAutoScaled
-                                        ? "Auto scaled"
-                                        : "Manually scaled"}
-                                </span>
-                            </div>
-                        </div>
                     </div>
                 </div>
 
