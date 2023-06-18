@@ -182,7 +182,9 @@ export default function ContainerDetails({
                                 session={session}
                                 project={project}
                                 container={container}
-                                namespace={container.containerInAPI.namespace}
+                                namespaceInAPI={
+                                    container.containerInAPI.namespace
+                                }
                                 reloadContainer={async () => {
                                     setLoading(true);
                                     await loadContainer();

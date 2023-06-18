@@ -34,7 +34,6 @@ export default function ProjectGlobalSettings({
                 }),
             });
             const updateProject = await response.json();
-            console.log("Updated project", updateProject);
             setProject(updateProject);
             setLoading(false);
             toastEventEmitter.emit("pop", {

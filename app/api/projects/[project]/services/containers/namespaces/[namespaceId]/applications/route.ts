@@ -61,10 +61,6 @@ export async function POST(
                 registry,
                 repository,
             );
-            console.log(
-                "Image verification result: ",
-                verifyIfImageExistsResponse,
-            );
             if (verifyIfImageExistsResponse instanceof NextResponse) {
                 return ResponseService.notFound("Image not found in registry", {
                     error: "image_not_found_in_registry",
@@ -105,7 +101,6 @@ export async function POST(
             console.log("Error creating application :", application);
             return ResponseService.internalServerError();
         }
-        console.log("new application:", application);
 
         const newContainer = await prisma.container.create({
             data: {
@@ -114,7 +109,6 @@ export async function POST(
                 idInAPI: application.id,
             },
         });
-        console.log("new container:", newContainer);
 
         return ResponseService.created(newContainer);
     } catch (error) {

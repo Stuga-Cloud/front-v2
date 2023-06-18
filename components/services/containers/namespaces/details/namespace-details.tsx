@@ -89,6 +89,7 @@ export default function NamespaceDetails({
                     "Could not retrieve namespace information, please try again later or contact support",
                 duration: 3000,
             });
+            router.push("/");
         } finally {
             setLoading(false);
         }

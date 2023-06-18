@@ -79,7 +79,7 @@ export default function ContainerPreview({
             <div className="mt-10 w-4/5">
                 <div className="w-full rounded-lg border border-2 border-dashed border-green-300 p-3">
                     <div className="flex flex-row items-start justify-between gap-3 pb-5 ps-5 pt-5">
-                        <div className="flex w-1/2 flex-col gap-1">
+                        <div className="flex flex-col gap-1">
                             <h2 className="text-xl font-bold">Status</h2>
                             <span>
                                 {applicationStatusToComponent(
@@ -87,7 +87,9 @@ export default function ContainerPreview({
                                 )}
                             </span>
                         </div>
-                        <div className="flex w-1/2 flex-col gap-1">
+                    </div>
+                    <div className="flex flex-row items-start justify-between gap-3 pb-5 ps-5 pt-5">
+                        <div className="flex flex-col gap-1">
                             <h2 className="text-xl font-bold">End point</h2>
                             <a
                                 href={`https://${getURLOfContainer(container)}`}
@@ -126,7 +128,9 @@ export default function ContainerPreview({
                                     : "No memory limit"}
                             </span>
                         </div>
-                        <div className="flex w-1/2 flex-col gap-1">
+                    </div>
+                    <div className="flex flex-row items-start gap-3 pb-5 ps-5 pt-5">
+                        <div className="flex flex-col gap-1">
                             <h2 className="text-xl font-bold">
                                 Scalability specifications
                             </h2>
@@ -135,12 +139,12 @@ export default function ContainerPreview({
                                     <span className="italic">Replicas: </span>
                                 </div>
                                 <div>
-                                    <span>
+                                    <strong>
                                         {container.containerInAPI
                                             .scalabilitySpecifications?.replicas
                                             ? `${container.containerInAPI.scalabilitySpecifications.replicas}`
                                             : "none"}
-                                    </span>
+                                    </strong>
                                 </div>
                             </div>
 
@@ -151,13 +155,13 @@ export default function ContainerPreview({
                                     </span>
                                 </div>
                                 <div>
-                                    <span>
+                                    <strong>
                                         {container.containerInAPI
                                             .scalabilitySpecifications
                                             ?.cpuUsagePercentageThreshold
                                             ? `${container.containerInAPI.scalabilitySpecifications.cpuUsagePercentageThreshold}%`
                                             : "none"}
-                                    </span>
+                                    </strong>
                                 </div>
                             </div>
 
@@ -168,13 +172,13 @@ export default function ContainerPreview({
                                     </span>
                                 </div>
                                 <div>
-                                    <span>
+                                    <strong>
                                         {container.containerInAPI
                                             .scalabilitySpecifications
                                             ?.memoryUsagePercentageThreshold
                                             ? `${container.containerInAPI.scalabilitySpecifications.memoryUsagePercentageThreshold}%`
                                             : "none"}
-                                    </span>
+                                    </strong>
                                 </div>
                             </div>
 
@@ -185,13 +189,13 @@ export default function ContainerPreview({
                                     </span>
                                 </div>
                                 <div>
-                                    <span>
+                                    <strong>
                                         {container.containerInAPI
                                             .scalabilitySpecifications
                                             ?.isAutoScaled
                                             ? "Auto scaled"
                                             : "Manually scaled"}
-                                    </span>
+                                    </strong>
                                 </div>
                             </div>
                         </div>
@@ -212,13 +216,19 @@ export default function ContainerPreview({
                     */}
                     <div className="flex flex w-full flex-col gap-1 p-5">
                         <h2 className="text-xl font-bold">Operations</h2>
-                        <button
-                            type="submit"
-                            className="Button stuga-red-color mt-10"
-                            onClick={deleteContainer}
-                        >
-                            Delete container
-                        </button>
+                        <div className="flex flex-row items-center gap-1 pt-10">
+                            <span className="w-4/5 font-semibold text-red-500">
+                                This will permanently delete this container and
+                                all associated data.
+                            </span>
+                            <button
+                                type="submit"
+                                className="Button stuga-red-color"
+                                onClick={deleteContainer}
+                            >
+                                Delete container
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>

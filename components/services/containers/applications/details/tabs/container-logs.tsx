@@ -53,7 +53,6 @@ export default function ContainerLogs({
     const loadLogs = async () => {
         getLogs(container.container.id, userId)
             .then((logs) => {
-                console.log("Loaded logs", logs);
                 setLogs(logs);
                 setCurrentPod(logs[0].podName);
                 setCurrentLogs(logs[0].logs);
@@ -88,7 +87,7 @@ export default function ContainerLogs({
     return (
         <>
             {loading && <LoadingSpinner />}
-            {logs && (
+            {!loading && logs && (
                 <div className="z-10 flex w-full flex-col items-center justify-center">
                     {/* Logs is an array with objects { podName: string, logs: string } */}
                     {/* We want to display pods as a select, and then display the logs of the selected pod */}

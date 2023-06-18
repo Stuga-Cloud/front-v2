@@ -155,7 +155,6 @@ export default function NamespaceSettings({
                 <EditableText
                     text={namespaceInAPI.description}
                     onSave={(newValue) => {
-                        console.log("On save new description", newValue);
                         updateNamespaceDescription(newValue);
                     }}
                 />

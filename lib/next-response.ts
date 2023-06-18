@@ -14,6 +14,10 @@ class ResponseService {
         return NextResponse.json(json, { ...init, status: 201 });
     }
 
+    static updated(json: Record<string, any>, init?: ResponseInit) {
+        return NextResponse.json(json, { ...init, status: 200 });
+    }
+
     static badRequest(
         message = "Bad Request",
         errorContext?: any,

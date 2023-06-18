@@ -21,7 +21,6 @@ export default function ProjectMembersSettings({
             setLoading(true);
             const response = await fetch(`/api/projects/${project.id}`);
             const projectResponse = await response.json();
-            console.log("projectResponse", projectResponse);
             setMembers(projectResponse.members);
             setLoading(false);
         } catch (error) {

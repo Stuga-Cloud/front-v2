@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
 import { Session } from "next-auth";
-import { toastEventEmitter } from "@/lib/event-emitter/toast-event-emitter";
 import { LoadingSpinner } from "@/components/shared/icons";
 import { useRouter } from "next/navigation";
 import { Namespace } from "@/lib/models/registry/namespace";
@@ -9,6 +8,8 @@ import DetailDashboard from "./detail-dashboard";
 import Settings from "./settings";
 import TabsImages from "./tabs-images";
 import Access from "./access/access";
+import axios from "axios";
+import { DisplayToast } from "@/components/shared/toast/display-toast";
 
 export interface Image {
     digest: string;
@@ -28,14 +29,13 @@ export interface NamespaceWithImageInformationsResponse {
 const getNamespace = async (
     namespaceId: string,
 ): Promise<NamespaceWithImageInformationsResponse> => {
-    const res = await fetch(`/api/registry/namespace/${namespaceId}`, {
-        method: "GET",
+    const res = await axios.get(`/api/registry/namespace/${namespaceId}`, {
         headers: {
             "Content-Type": "application/json",
         },
     });
     const namespaceWithInfos: NamespaceWithImageInformationsResponse =
-        await res.json();
+        await res.data;
     return namespaceWithInfos;
 };
 
@@ -62,12 +62,18 @@ export default function NamespaceDetail({
         setLoading(true);
         getNamespace(namespaceId)
             .then((namespaces) => {
+                console.log("Found namespace in registry detail", namespaces);
                 setNamespaceWithInfo(namespaces);
             })
             .catch((error) => {
-                toastEventEmitter.emit("pop", {
-                    type: "danger",
-                    message: "error when try to get namespaces",
+                console.log(
+                    "Could not get namespace in registry detail",
+                    error,
+                );
+                DisplayToast({
+                    type: "error",
+                    message:
+                        "Could not get namespace, please try again later or contact support",
                     duration: 5000,
                 });
             })
@@ -109,10 +115,10 @@ export default function NamespaceDetail({
                                 );
                                 setNamespaceWithInfo(namespaceWithInfo);
                             } catch (error) {
-                                toastEventEmitter.emit("pop", {
-                                    type: "danger",
+                                DisplayToast({
+                                    type: "error",
                                     message:
-                                        "error when try to get namespace with info",
+                                        "Could not get namespace, please try again later or contact support",
                                     duration: 5000,
                                 });
                             }

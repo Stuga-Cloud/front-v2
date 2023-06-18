@@ -8,7 +8,6 @@ import * as process from "process";
 import { ContainerApplicationType } from "@/lib/models/containers/container-application-type";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
-import { ScalingOptions } from "@/lib/models/containers/scaling-specifications";
 import axios from "axios";
 import { CreateContainerApplicationBody } from "@/lib/services/containers/create-container-application.body";
 import { ContainerEnvironmentVariable } from "@/lib/models/containers/container-application-environment-variables";
@@ -19,60 +18,19 @@ import { ContainerApplicationNamespace } from "@/lib/models/containers/container
 import { DisplayToast } from "@/components/shared/toast/display-toast";
 import { ContainerApplication } from "@/lib/models/containers/container-application";
 import { isEmailValid } from "@/lib/utils";
-import { Registry } from "@/lib/models/lambdas/lambda-create";
+import {
+    ApplicationCPULimit,
+    ApplicationMemoryLimit,
+    availableContainerRegistries,
+    AvailableContainerRegistriesInformation,
+    AvailableContainerRegistriesName,
+    findRegistryByName,
+} from "@/components/services/containers/applications/create/container-creation";
 
 interface Step {
     name: string;
     description: string;
     svgPath: any;
-}
-
-export type AvailableRegistriesName = "Docker hub" | "Our private registry";
-
-interface AvailableRegistriesInformation {
-    name: AvailableRegistriesName;
-    registry: Registry;
-    url: string;
-}
-
-const availableRegistries: AvailableRegistriesInformation[] = [
-    {
-        name: "Docker hub",
-        url:
-            process.env.NEXT_PUBLIC_DOCKER_HUB_URL || "missing docker hub url!",
-        registry: "dockerhub",
-    },
-    {
-        name: "Our private registry",
-        url:
-            process.env.NEXT_PUBLIC_PRIVATE_REGISTRY_URL ||
-            "missing private registry url!",
-        registry: "pcr",
-    },
-];
-
-const findRegistryByName = (
-    name: AvailableRegistriesName,
-): AvailableRegistriesInformation => {
-    if (availableRegistries.find((registry) => registry.name === name)) {
-        return availableRegistries.find((registry) => registry.name === name)!;
-    }
-    DisplayToast({
-        type: "error",
-        message: `Registry ${name} not found`,
-        duration: 5000,
-    });
-    return availableRegistries[0];
-};
-
-interface ApplicationCPULimit {
-    value: number;
-    unit: "mCPU" | "CPU";
-}
-
-interface ApplicationMemoryLimit {
-    value: number;
-    unit: "MB" | "GB";
 }
 
 export default function NewContainerForm({
@@ -131,9 +89,10 @@ export default function NewContainerForm({
     const [description, setDescription] = useState<string | undefined>(
         undefined,
     );
-    const [registry, setRegistry] = useState<AvailableRegistriesInformation>(
-        findRegistryByName("Docker hub"),
-    );
+    const [registry, setRegistry] =
+        useState<AvailableContainerRegistriesInformation>(
+            findRegistryByName("Docker hub"),
+        );
     const [applicationImage, setApplicationImage] = useState<
         string | undefined
     >(undefined);
@@ -178,8 +137,6 @@ export default function NewContainerForm({
 
     const [isAutoscalingEnabled, setIsAutoscalingEnabled] =
         useState<boolean>(false);
-    const [scalingSpecifications, setScalingSpecifications] =
-        useState<ScalingOptions>("Manual");
     const [cpuUsageThreshold, setCpuUsageThreshold] = useState<number>(80);
     const [memoryUsageThreshold, setMemoryUsageThreshold] =
         useState<number>(80);
@@ -623,10 +580,6 @@ export default function NewContainerForm({
                     userId: "",
                     namespaceId: "",
                 };
-            console.log(
-                "Environment variables",
-                applicationEnvironmentVariables,
-            );
             const createdContainer = await axios(
                 `/api/projects/${projectId}/services/containers/namespaces/${namespaceId}/applications`,
                 {
@@ -637,7 +590,6 @@ export default function NewContainerForm({
                     data: createContainerApplicationBody,
                 },
             );
-            console.log("createdContainer", createdContainer);
             DisplayToast({
                 type: "success",
                 message: `Application ${applicationName} created`,
@@ -959,12 +911,12 @@ export default function NewContainerForm({
                                                     setRegistry(
                                                         findRegistryByName(
                                                             e.target
-                                                                .value as AvailableRegistriesName,
+                                                                .value as AvailableContainerRegistriesName,
                                                         ),
                                                     );
                                                 }}
                                             >
-                                                {availableRegistries.map(
+                                                {availableContainerRegistries.map(
                                                     (registry) => {
                                                         return (
                                                             <option
@@ -1256,7 +1208,7 @@ export default function NewContainerForm({
                                                     </p>
                                                 )}
                                             </div>
-                                            {scalingSpecifications && (
+                                            {
                                                 <div className="mb-10 ms-5 flex flex-col">
                                                     <div className="mb-2 flex flex-col">
                                                         <label
@@ -1409,7 +1361,7 @@ export default function NewContainerForm({
                                                         ) : null}
                                                     </div>
                                                 </div>
-                                            )}
+                                            }
                                         </div>
                                     )}
                                 {step === 7 && (

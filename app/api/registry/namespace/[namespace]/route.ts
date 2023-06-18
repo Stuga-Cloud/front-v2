@@ -126,6 +126,7 @@ export async function GET(request: Request, { params }: NextRequest) {
             { status: 200 },
         );
     } catch (error) {
+        console.log(`Error while fetching registry namespace: `, error);
         return NextResponse.json(
             {
                 error: "internal server error",
