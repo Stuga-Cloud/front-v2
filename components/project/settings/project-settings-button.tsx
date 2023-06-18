@@ -19,12 +19,12 @@ export default function ProjectSettingsButton({
             <button
                 onClick={openSettings}
                 type="button"
-                className="dark:orange-500 dark:focus:ring-gray-400:ring-offset-1 mr-2 inline-flex items-center rounded-full
+                className="mr-2 inline-flex items-center rounded-full
             p-2.5 text-center text-sm font-medium text-white hover:bg-gray-100 focus:outline-none focus:ring-4
-            focus:ring-gray-200 dark:hover:bg-orange-700"
+            focus:ring-gray-200"
             >
                 <svg
-                    className="h-6 w-6 dark:text-orange-400"
+                    className="h-6 w-6"
                     fill="none"
                     stroke="gray"
                     enableBackground={"new 0 0 24 24"}

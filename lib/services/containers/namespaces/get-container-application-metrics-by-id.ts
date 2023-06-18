@@ -1,16 +1,16 @@
 import axios from "axios";
 import { GetContainersAPIInfo } from "@/lib/services/containers/get-containers-api-info";
 import { FindContainerApplicationError } from "@/lib/services/containers/errors/find-container-application.error";
-import { ContainerApplicationLogs } from "@/lib/models/containers/container-application-logs";
+import { ContainerApplicationMetrics } from "@/lib/models/containers/container-application-metrics";
 
-export const GetContainerApplicationLogsByID = async (
+export const GetContainerApplicationMetricsByID = async (
     applicationId: string,
     userId: string,
-): Promise<ContainerApplicationLogs[] | null> => {
+): Promise<ContainerApplicationMetrics[]> => {
     const containerAPIInfo = GetContainersAPIInfo();
     try {
         const namespace = await axios.get(
-            `${containerAPIInfo.url}/applications/${applicationId}/logs?userId=${userId}`,
+            `${containerAPIInfo.url}/applications/${applicationId}/metrics?userId=${userId}`,
             {
                 headers: {
                     "Content-Type": "application/json",
@@ -18,7 +18,7 @@ export const GetContainerApplicationLogsByID = async (
                 },
             },
         );
-        return namespace.data.logs;
+        return namespace.data.metrics;
     } catch (e: any) {
         console.log(`Error getting application logs '${applicationId}' : ${e}`);
         if (e.response.status === 404) {

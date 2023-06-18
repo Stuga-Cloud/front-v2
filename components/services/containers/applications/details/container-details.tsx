@@ -11,7 +11,6 @@ import TabsContainerDetails from "@/components/services/containers/applications/
 import { ContainerApplication } from "@/lib/models/containers/container-application";
 import ContainerPreview from "@/components/services/containers/applications/details/tabs/container-preview";
 import ContainerDeployment from "@/components/services/containers/applications/details/tabs/container-deployment";
-import ContainerSettings from "@/components/services/containers/applications/details/tabs/container-settings";
 import ContainerMetrics from "@/components/services/containers/applications/details/tabs/container-metrics";
 import ContainerLogs from "@/components/services/containers/applications/details/tabs/container-logs";
 import { Container } from "@/lib/models/containers/prisma/container";
@@ -215,18 +214,18 @@ export default function ContainerDetails({
                                 }}
                             />
                         )}
-                        {activeTab === "settings" && (
-                            <ContainerSettings
-                                session={session}
-                                project={project}
-                                container={container}
-                                namespace={container.containerInAPI.namespace}
-                                reloadContainer={async () => {
-                                    setLoading(true);
-                                    await loadContainer();
-                                }}
-                            />
-                        )}
+                        {/*{activeTab === "settings" && (*/}
+                        {/*    <ContainerSettings*/}
+                        {/*        session={session}*/}
+                        {/*        project={project}*/}
+                        {/*        container={container}*/}
+                        {/*        namespace={container.containerInAPI.namespace}*/}
+                        {/*        reloadContainer={async () => {*/}
+                        {/*            setLoading(true);*/}
+                        {/*            await loadContainer();*/}
+                        {/*        }}*/}
+                        {/*    />*/}
+                        {/*)}*/}
                     </>
                 )}
             </div>

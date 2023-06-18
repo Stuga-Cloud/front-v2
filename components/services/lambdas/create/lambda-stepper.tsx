@@ -1,5 +1,4 @@
 import { Step } from "@/lib/models/lambdas/lambda-create";
-import { useState } from "react";
 
 export default function LambdaStepper({
     steps,
@@ -50,7 +49,7 @@ export default function LambdaStepper({
                                     {/*{step === index + 1 ? (*/}
                                     {/*    <svg*/}
                                     {/*        aria-hidden="true"*/}
-                                    {/*        className="h-5 w-5 text-green-500 dark:text-green-400"*/}
+                                    {/*        className="h-5 w-5 text-green-500"*/}
                                     {/*        fill="currentColor"*/}
                                     {/*        viewBox="0 0 20 20"*/}
                                     {/*        xmlns="http://www.w3.org/2000/svg"*/}

@@ -49,10 +49,22 @@ export default function ContainersNamespaces({
     const deleteContainerNamespace = async (
         namespace: ContainerApplicationNamespace,
     ) => {
+        const correspondingNamespaceInPrisma = namespaces.find(
+            (namespaceInPrisma) => namespaceInPrisma.idInAPI === namespace.id,
+        );
+        if (!correspondingNamespaceInPrisma) {
+            DisplayToast({
+                type: "error",
+                message:
+                    "Could not delete namespace, please try again later or contact support",
+                duration: 5000,
+            });
+            return;
+        }
         setLoading(true);
         try {
             const res = await axios.delete(
-                `/api/projects/${project.id}/services/containers/namespaces/${namespace.id}`,
+                `/api/projects/${project.id}/services/containers/namespaces/${correspondingNamespaceInPrisma.id}`,
             );
             if (res.status === 200) {
                 DisplayToast({
@@ -200,7 +212,7 @@ export default function ContainersNamespaces({
                                                 <td className="px-6 py-4 text-right">
                                                     {/*<a*/}
                                                     {/*    href="#"*/}
-                                                    {/*    className="font-medium text-blue-600 hover:underline dark:text-blue-500"*/}
+                                                    {/*    className="font-medium text-blue-600 hover:underline"*/}
                                                     {/*    onClick={(e) => {*/}
                                                     {/*        e.preventDefault();*/}
                                                     {/*        console.log(*/}

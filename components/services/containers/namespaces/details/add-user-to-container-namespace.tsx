@@ -151,8 +151,8 @@ export default function AddUserToContainerNamespace({
                                                     className={
                                                         "mb-2 block text-sm font-medium" +
                                                         (isEmailValid(email)
-                                                            ? "gray-900 dark:text-white"
-                                                            : "red-700 dark:text-red-500")
+                                                            ? "gray-900"
+                                                            : "red-700")
                                                     }
                                                 >
                                                     Email
@@ -161,9 +161,9 @@ export default function AddUserToContainerNamespace({
                                                     type="email"
                                                     id="admin-email"
                                                     name="admin-email"
-                                                    className={`bg-gray-40 mb-1 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500 ${
+                                                    className={`bg-gray-40 mb-1 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 ${
                                                         !isEmailValid(email)
-                                                            ? "border-red-500 bg-red-50 p-2.5 text-sm text-red-900 placeholder-red-700 focus:border-red-500 focus:ring-red-500 dark:border-red-500 dark:bg-gray-700 dark:text-red-500 dark:placeholder-red-500"
+                                                            ? "border-red-500 bg-red-50 p-2.5 text-sm text-red-900 placeholder-red-700 focus:border-red-500 focus:ring-red-500 "
                                                             : ""
                                                     }`}
                                                     value={email || ""}
@@ -175,7 +175,7 @@ export default function AddUserToContainerNamespace({
                                                 />
 
                                                 {!isEmailValid(email) ? (
-                                                    <p className="mt-2 text-sm text-red-600 dark:text-red-500">
+                                                    <p className="mt-2 text-sm text-red-600 ">
                                                         Please enter a valid
                                                         email address.
                                                     </p>

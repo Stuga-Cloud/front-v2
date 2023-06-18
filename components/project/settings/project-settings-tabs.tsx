@@ -13,15 +13,15 @@ export default function ProjectSettingsTabs({
     };
 
     return (
-        <div className="mb-3 w-4/5 border-b border-gray-200 dark:border-gray-700">
-            <ul className="-mb-px flex flex-wrap text-center text-sm font-medium text-gray-500 dark:text-gray-400">
+        <div className="mb-3 w-4/5 border-b border-gray-200">
+            <ul className="-mb-px flex flex-wrap text-center text-sm font-medium text-gray-500">
                 <li className="mr-2">
                     <a
                         href="#"
                         className={`group inline-flex rounded-t-lg p-4 ${
                             activeTab === "global"
-                                ? "border-b-2 border-green-500 text-green-500 dark:border-green-400 dark:text-green-400"
-                                : "border-transparent hover:border-gray-300 hover:text-gray-600 dark:hover:text-gray-300"
+                                ? "border-b-2 border-green-500 text-green-500"
+                                : "border-transparent hover:border-gray-300 hover:text-gray-600"
                         }`}
                         aria-current="page"
                         onClick={() => handleClick("global")}
@@ -30,8 +30,8 @@ export default function ProjectSettingsTabs({
                             aria-hidden="true"
                             className={`mr-2 h-5 w-5 ${
                                 activeTab === "global"
-                                    ? "text-green-500 dark:text-green-400"
-                                    : "text-gray-400 group-hover:text-gray-500 dark:text-gray-500 dark:group-hover:text-gray-300"
+                                    ? "text-green-500"
+                                    : "text-gray-400 group-hover:text-gray-500"
                             }`}
                             fill="currentColor"
                             viewBox="0 0 20 20"
@@ -47,8 +47,8 @@ export default function ProjectSettingsTabs({
                         href="#"
                         className={`group inline-flex rounded-t-lg p-4 ${
                             activeTab === "members"
-                                ? "border-b-2 border-green-500 text-green-500 dark:border-green-400 dark:text-green-400"
-                                : "border-transparent hover:border-gray-300 hover:text-gray-600 dark:hover:text-gray-300"
+                                ? "border-b-2 border-green-500 text-green-500"
+                                : "border-transparent hover:border-gray-300 hover:text-gray-600"
                         }`}
                         onClick={() => handleClick("members")}
                     >
@@ -56,8 +56,8 @@ export default function ProjectSettingsTabs({
                             aria-hidden="true"
                             className={`mr-2 h-5 w-5 ${
                                 activeTab === "members"
-                                    ? "text-green-500 dark:text-green-400"
-                                    : "text-gray-400 group-hover:text-gray-500 dark:text-gray-500 dark:group-hover:text-gray-300"
+                                    ? "text-green-500"
+                                    : "text-gray-400 group-hover:text-gray-500"
                             }`}
                             fill="currentColor"
                             viewBox="0 0 20 20"

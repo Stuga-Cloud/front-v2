@@ -280,13 +280,13 @@ export default function ContainerDeployment({
                                         {/* Choice between docker and our private registry */}
                                         <label
                                             htmlFor="image-registries"
-                                            className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+                                            className="mb-2 block text-sm font-medium text-gray-900"
                                         >
                                             Select a registry
                                         </label>
                                         <select
                                             id="image-registries"
-                                            className="bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500"
+                                            className="bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 "
                                             onChange={(e) => {
                                                 containerUpdate.updateRegistry(
                                                     findRegistryByName(
@@ -322,7 +322,7 @@ export default function ContainerDeployment({
                                     <div className="mb-2 flex flex-col gap-1">
                                         <label
                                             htmlFor="image-name"
-                                            className={`mb-2 block text-sm font-medium text-gray-900 dark:text-white ${!containerUpdate.isImageValid()}`}
+                                            className={`mb-2 block text-sm font-medium text-gray-900 ${!containerUpdate.isImageValid()}`}
                                         >
                                             Image from{" "}
                                             {containerUpdate.registry.name}
@@ -364,11 +364,11 @@ export default function ContainerDeployment({
                                         {containerUpdate.image &&
                                             containerUpdate.isImageValid() && (
                                                 <>
-                                                    <h4 className="pt-8 text-2xl font-bold dark:text-white">
+                                                    <h4 className="pt-8 text-2xl font-bold ">
                                                         The used image is stored
                                                         at:
                                                     </h4>
-                                                    <p className="text-1xl font-semibold leading-normal text-blue-800 dark:text-white">
+                                                    <p className="text-1xl font-semibold leading-normal text-blue-800 ">
                                                         <Link
                                                             href={
                                                                 containerUpdate
@@ -419,12 +419,12 @@ export default function ContainerDeployment({
 
                                         <label
                                             htmlFor="port"
-                                            // className="mb-2 block text-sm font-medium text-red-700 dark:text-red-500"
+                                            // className="mb-2 block text-sm font-medium text-red-700 "
                                             className={
                                                 "mb-2 block text-sm font-medium" +
                                                 (containerUpdate.isPortValid()
-                                                    ? "gray-900 dark:text-white"
-                                                    : "red-700 dark:text-red-500")
+                                                    ? "gray-900 "
+                                                    : "red-700 ")
                                             }
                                         >
                                             Port
@@ -433,9 +433,9 @@ export default function ContainerDeployment({
                                             id="port"
                                             name="port"
                                             type="number"
-                                            className={`bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500 ${
+                                            className={`bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500  ${
                                                 !containerUpdate.isPortValid()
-                                                    ? "border-red-500 bg-red-50 p-2.5 text-sm text-red-900 placeholder-red-700 focus:border-red-500 focus:ring-red-500 dark:border-red-500 dark:bg-gray-700 dark:text-red-500 dark:placeholder-red-500"
+                                                    ? "border-red-500 bg-red-50 p-2.5 text-sm text-red-900 placeholder-red-700 focus:border-red-500 focus:ring-red-500 "
                                                     : ""
                                             }`}
                                             value={containerUpdate.port || ""}
@@ -457,7 +457,7 @@ export default function ContainerDeployment({
                                             required // Mark the field as required
                                         />
                                         {!containerUpdate.isPortValid() ? (
-                                            <p className="mt-2 text-sm text-red-600 dark:text-red-500">
+                                            <p className="mt-2 text-sm text-red-600 ">
                                                 Please enter a valid port number
                                                 between 1 and 65535.
                                             </p>
@@ -471,13 +471,13 @@ export default function ContainerDeployment({
                                     </h4>
                                     <label
                                         htmlFor="application-type"
-                                        className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+                                        className="mb-2 block text-sm font-medium text-gray-900 "
                                     >
                                         Application Type
                                     </label>
                                     <select
                                         id="application-type"
-                                        className="bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500"
+                                        className="bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 "
                                         value={containerUpdate.applicationType}
                                         onChange={(e) => {
                                             containerUpdate.updateApplicationType(
@@ -504,7 +504,7 @@ export default function ContainerDeployment({
                                     </h4>
                                     <label
                                         htmlFor="cpu-limit"
-                                        className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+                                        className="mb-2 block text-sm font-medium text-gray-900 "
                                     >
                                         CPU Limit (milliCPU)
                                     </label>
@@ -533,12 +533,12 @@ export default function ContainerDeployment({
                                     </select>
                                     <label
                                         htmlFor="memory-limit"
-                                        className="mb-2 mt-3 block text-sm font-medium text-gray-900 dark:text-white"
+                                        className="mb-2 mt-3 block text-sm font-medium text-gray-900 "
                                     >
                                         Memory Limit (MB)
                                     </label>
                                     <select
-                                        className="bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500"
+                                        className="bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 "
                                         value={
                                             containerUpdate.applicationMemoryLimit
                                         }
@@ -581,14 +581,14 @@ export default function ContainerDeployment({
                                                     }}
                                                     className="peer sr-only"
                                                 />
-                                                <div className="peer-focus:ring-3 peer h-7 w-14 rounded-full bg-gray-200 after:absolute after:left-[4px] after:top-0.5 after:h-6 after:w-6 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-green-400 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-green-200 dark:border-gray-600 dark:bg-gray-700 dark:peer-focus:ring-green-500"></div>
-                                                <span className="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">
+                                                <div className="peer-focus:ring-3 peer h-7 w-14 rounded-full bg-gray-200 after:absolute after:left-[4px] after:top-0.5 after:h-6 after:w-6 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-green-400 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-green-200 "></div>
+                                                <span className="ml-3 text-sm font-medium text-gray-900 ">
                                                     Enable autoscaling
                                                 </span>
                                             </label>
                                             {/* Display a message that explains the autoscaling feature */}
                                             {containerUpdate.isAutoscalingEnabled && (
-                                                <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                                                <p className="mt-2 text-sm text-gray-500 ">
                                                     Your application will
                                                     automatically scale up or
                                                     down based on the CPU and
@@ -617,8 +617,8 @@ export default function ContainerDeployment({
                                                         className={
                                                             "mb-2 block text-sm font-medium" +
                                                             (containerUpdate.isReplicasValid()
-                                                                ? "gray-900 dark:text-white"
-                                                                : "red-700 dark:text-red-500")
+                                                                ? "gray-900 "
+                                                                : "red-700 ")
                                                         }
                                                     >
                                                         Number of Replicas
@@ -626,9 +626,9 @@ export default function ContainerDeployment({
                                                     <input
                                                         id="replicas"
                                                         type="number"
-                                                        className={`bg-gray-40 mb-1 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500 ${
+                                                        className={`bg-gray-40 mb-1 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500  ${
                                                             !containerUpdate.isReplicasValid()
-                                                                ? "border-red-500 bg-red-50 p-2.5 text-sm text-red-900 placeholder-red-700 focus:border-red-500 focus:ring-red-500 dark:border-red-500 dark:bg-gray-700 dark:text-red-500 dark:placeholder-red-500"
+                                                                ? "border-red-500 bg-red-50 p-2.5 text-sm text-red-900 placeholder-red-700 focus:border-red-500 focus:ring-red-500 "
                                                                 : ""
                                                         }`}
                                                         value={
@@ -649,7 +649,7 @@ export default function ContainerDeployment({
                                                         required
                                                     />
                                                     {!containerUpdate.isReplicasValid() ? (
-                                                        <p className="mt-2 text-sm text-red-600 dark:text-red-500">
+                                                        <p className="mt-2 text-sm text-red-600 ">
                                                             Please enter a valid
                                                             number between 0 and
                                                             10.
@@ -663,8 +663,8 @@ export default function ContainerDeployment({
                                                         className={
                                                             "mb-2 block text-sm font-medium" +
                                                             (containerUpdate.isCpuUsageThresholdValid()
-                                                                ? "gray-900 dark:text-white"
-                                                                : "red-700 dark:text-red-500")
+                                                                ? "gray-900 "
+                                                                : "red-700 ")
                                                         }
                                                     >
                                                         CPU Usage Threshold (%)
@@ -672,9 +672,9 @@ export default function ContainerDeployment({
                                                     <input
                                                         id="cpuUsage"
                                                         type="number"
-                                                        className={`bg-gray-40 mb-1 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500 ${
+                                                        className={`bg-gray-40 mb-1 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500  ${
                                                             !containerUpdate.isCpuUsageThresholdValid()
-                                                                ? "border-red-500 bg-red-50 p-2.5 text-sm text-red-900 placeholder-red-700 focus:border-red-500 focus:ring-red-500 dark:border-red-500 dark:bg-gray-700 dark:text-red-500 dark:placeholder-red-500"
+                                                                ? "border-red-500 bg-red-50 p-2.5 text-sm text-red-900 placeholder-red-700 focus:border-red-500 focus:ring-red-500 "
                                                                 : ""
                                                         }`}
                                                         value={
@@ -695,7 +695,7 @@ export default function ContainerDeployment({
                                                         required
                                                     />
                                                     {!containerUpdate.isCpuUsageThresholdValid() ? (
-                                                        <p className="mt-2 text-sm text-red-600 dark:text-red-500">
+                                                        <p className="mt-2 text-sm text-red-600 ">
                                                             Please enter a valid
                                                             number between 0 and
                                                             100.
@@ -709,8 +709,8 @@ export default function ContainerDeployment({
                                                         className={
                                                             "mb-2 block text-sm font-medium" +
                                                             (containerUpdate.isMemoryUsageThresholdValid()
-                                                                ? "gray-900 dark:text-white"
-                                                                : "red-700 dark:text-red-500")
+                                                                ? "gray-900 "
+                                                                : "red-700 ")
                                                         }
                                                     >
                                                         Memory Usage Threshold
@@ -719,9 +719,9 @@ export default function ContainerDeployment({
                                                     <input
                                                         id="memoryUsage"
                                                         type="number"
-                                                        className={`bg-gray-40 mb-1 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500 ${
+                                                        className={`bg-gray-40 mb-1 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500  ${
                                                             !containerUpdate.isMemoryUsageThresholdValid()
-                                                                ? "border-red-500 bg-red-50 p-2.5 text-sm text-red-900 placeholder-red-700 focus:border-red-500 focus:ring-red-500 dark:border-red-500 dark:bg-gray-700 dark:text-red-500 dark:placeholder-red-500"
+                                                                ? "border-red-500 bg-red-50 p-2.5 text-sm text-red-900 placeholder-red-700 focus:border-red-500 focus:ring-red-500 "
                                                                 : ""
                                                         }`}
                                                         value={
@@ -742,7 +742,7 @@ export default function ContainerDeployment({
                                                         required
                                                     />
                                                     {!containerUpdate.isMemoryUsageThresholdValid() ? (
-                                                        <p className="mt-2 text-sm text-red-600 dark:text-red-500">
+                                                        <p className="mt-2 text-sm text-red-600 ">
                                                             Please enter a valid
                                                             number between 0 and
                                                             100.
@@ -759,7 +759,7 @@ export default function ContainerDeployment({
                                     </h4>
                                     <label
                                         htmlFor="environment-variables"
-                                        className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+                                        className="mb-2 block text-sm font-medium text-gray-900 "
                                     >
                                         Environment Variables :
                                     </label>
@@ -772,7 +772,7 @@ export default function ContainerDeployment({
                                                 >
                                                     <input
                                                         type="text"
-                                                        className="bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500"
+                                                        className="bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 "
                                                         placeholder="Key"
                                                         value={
                                                             variable.name || ""
@@ -793,7 +793,7 @@ export default function ContainerDeployment({
                                                     </span>
                                                     <input
                                                         type="text"
-                                                        className="bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500"
+                                                        className="bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 "
                                                         placeholder="Value"
                                                         value={
                                                             variable.value || ""
@@ -845,7 +845,7 @@ export default function ContainerDeployment({
                                     </h4>
                                     <label
                                         htmlFor="application-secrets"
-                                        className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+                                        className="mb-2 block text-sm font-medium text-gray-900 "
                                     >
                                         Application Secrets
                                     </label>
@@ -858,7 +858,7 @@ export default function ContainerDeployment({
                                                 >
                                                     <input
                                                         type="text"
-                                                        className="bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500"
+                                                        className="bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 "
                                                         placeholder="Key"
                                                         value={
                                                             secret.name || ""
@@ -879,7 +879,7 @@ export default function ContainerDeployment({
                                                     </span>
                                                     <input
                                                         type="text"
-                                                        className="bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500"
+                                                        className="bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 "
                                                         placeholder="Value"
                                                         value={
                                                             secret.value || ""
@@ -948,8 +948,8 @@ export default function ContainerDeployment({
                                             (isEmailValid(
                                                 containerUpdate.administratorEmail,
                                             )
-                                                ? "gray-900 dark:text-white"
-                                                : "red-700 dark:text-red-500")
+                                                ? "gray-900 "
+                                                : "red-700 ")
                                         }
                                     >
                                         Administrator Email
@@ -958,11 +958,11 @@ export default function ContainerDeployment({
                                         type="email"
                                         id="admin-email"
                                         name="admin-email"
-                                        className={`bg-gray-40 mb-1 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500 ${
+                                        className={`bg-gray-40 mb-1 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500  ${
                                             !isEmailValid(
                                                 containerUpdate.administratorEmail,
                                             )
-                                                ? "border-red-500 bg-red-50 p-2.5 text-sm text-red-900 placeholder-red-700 focus:border-red-500 focus:ring-red-500 dark:border-red-500 dark:bg-gray-700 dark:text-red-500 dark:placeholder-red-500"
+                                                ? "border-red-500 bg-red-50 p-2.5 text-sm text-red-900 placeholder-red-700 focus:border-red-500 focus:ring-red-500 "
                                                 : ""
                                         }`}
                                         value={
@@ -984,7 +984,7 @@ export default function ContainerDeployment({
                                     {!isEmailValid(
                                         containerUpdate.administratorEmail,
                                     ) ? (
-                                        <p className="mt-2 text-sm text-red-600 dark:text-red-500">
+                                        <p className="mt-2 text-sm text-red-600 ">
                                             Please enter a valid email address.
                                         </p>
                                     ) : null}

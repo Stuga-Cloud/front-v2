@@ -13,7 +13,7 @@ export default function ConfirmDeleteModal({
         <>
             {/* <button
                 onClick={handleToggle}
-                className="block rounded-lg bg-blue-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                className="block rounded-lg bg-blue-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300"
                 type="button"
             >
                 Toggle modal
@@ -24,10 +24,10 @@ export default function ConfirmDeleteModal({
                 // >
                 <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden outline-none focus:outline-none">
                     <div className="relative max-h-full w-full max-w-md">
-                        <div className="relative rounded-lg bg-white shadow dark:bg-gray-700">
+                        <div className="relative rounded-lg bg-white shadow ">
                             <button
                                 type="button"
-                                className="absolute right-2.5 top-3 ml-auto inline-flex items-center rounded-lg bg-transparent p-1.5 text-sm text-gray-400 hover:bg-gray-200 hover:text-gray-900 dark:hover:bg-gray-800 dark:hover:text-white"
+                                className="absolute right-2.5 top-3 ml-auto inline-flex items-center rounded-lg bg-transparent p-1.5 text-sm text-gray-400 hover:bg-gray-200 hover:text-gray-900"
                                 data-modal-hide="popup-modal"
                                 onClick={onClose}
                             >
@@ -49,7 +49,7 @@ export default function ConfirmDeleteModal({
                             <div className="p-6 text-center">
                                 <svg
                                     aria-hidden="true"
-                                    className="mx-auto mb-4 h-14 w-14 text-gray-400 dark:text-gray-200"
+                                    className="mx-auto mb-4 h-14 w-14 text-gray-400 "
                                     fill="none"
                                     stroke="currentColor"
                                     viewBox="0 0 24 24"
@@ -62,14 +62,14 @@ export default function ConfirmDeleteModal({
                                         d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                                     ></path>
                                 </svg>
-                                <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
+                                <h3 className="mb-5 text-lg font-normal text-gray-500">
                                     {text}
                                 </h3>
                                 <button
                                     data-modal-hide="popup-modal"
                                     type="button"
                                     onClick={deleteAction}
-                                    className="mr-2 inline-flex items-center rounded-lg bg-red-600 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 dark:focus:ring-red-800"
+                                    className="mr-2 inline-flex items-center rounded-lg bg-red-600 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 "
                                 >
                                     Yes, I&apos;m sure
                                 </button>
@@ -77,7 +77,7 @@ export default function ConfirmDeleteModal({
                                     data-modal-hide="popup-modal"
                                     type="button"
                                     onClick={onClose}
-                                    className="rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-900 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:border-gray-500 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-600"
+                                    className="rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-900 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-200"
                                 >
                                     No, cancel
                                 </button>

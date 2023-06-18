@@ -89,8 +89,6 @@ export default function ContainerLogs({
             {loading && <LoadingSpinner />}
             {!loading && logs && (
                 <div className="z-10 flex w-full flex-col items-center justify-center">
-                    {/* Logs is an array with objects { podName: string, logs: string } */}
-                    {/* We want to display pods as a select, and then display the logs of the selected pod */}
                     <div className="mb-2 flex w-4/5 flex-col">
                         <label
                             htmlFor="pod-name"

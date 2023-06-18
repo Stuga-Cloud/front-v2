@@ -56,7 +56,7 @@ export default function RegistryForm({
                         namespace
                     </mark>
                 </h1>
-                <p className="pb-10 text-lg font-normal text-gray-500 dark:text-gray-400 lg:text-xl">
+                <p className="pb-10 text-lg font-normal text-gray-500 lg:text-xl">
                     Store your images in our registry organized by namespaces.
                 </p>
 

@@ -1,13 +1,12 @@
-import InfoCircledIcon from "@radix-ui/react-icons/dist/InfoCircledIcon";
 import { Session } from "next-auth";
 import { useEffect, useState } from "react";
 import PasswordForm from "./password-form";
 import LoadingSpinner from "@/components/shared/icons/loading-spinner";
-import axios from "axios";
 import { toastEventEmitter } from "@/lib/event-emitter/toast-event-emitter";
-import { CreateUserInRegistry } from '../../../../lib/services/registry/namespace/create-user';
-import { GetAccountInRegistry } from '../../../../lib/services/registry/namespace/get-account-in-registry';
-import { ModifyPassword } from '../../../../lib/services/registry/namespace/modify-pasword';
+import { CreateUserInRegistry } from "../../../../lib/services/registry/namespace/create-user";
+import { GetAccountInRegistry } from "../../../../lib/services/registry/namespace/get-account-in-registry";
+import { ModifyPassword } from "../../../../lib/services/registry/namespace/modify-pasword";
+
 export default function Profile({
     session,
     projectId,
@@ -98,7 +97,7 @@ export default function Profile({
         <div className="flex w-4/5 flex-col justify-start">
             {!loading && !user ? (
                 <div
-                    className="mb-4 flex rounded-lg border border-blue-300 bg-blue-50 p-4 text-sm text-blue-800 dark:border-blue-800 dark:bg-gray-800 dark:text-blue-400"
+                    className="mb-4 flex rounded-lg border border-blue-300 bg-blue-50 p-4 text-sm text-blue-800"
                     role="alert"
                 >
                     <svg

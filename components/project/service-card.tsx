@@ -23,13 +23,11 @@ export default function ServiceCard({
                 className="ms-5"
             ></Image>
             <a href="#">
-                <h5 className="mb-2 ms-5 text-2xl font-semibold tracking-tight text-gray-600 dark:text-gray-400">
+                <h5 className="mb-2 ms-5 text-2xl font-semibold tracking-tight text-gray-600">
                     {title}
                 </h5>
             </a>
-            <p className="mb-3 ms-5 font-normal text-gray-500 dark:text-gray-400">
-                {description}
-            </p>
+            <p className="mb-3 ms-5 font-normal text-gray-500">{description}</p>
             <a
                 href="#"
                 className="ms-5 inline-flex items-center text-blue-600 hover:underline"
