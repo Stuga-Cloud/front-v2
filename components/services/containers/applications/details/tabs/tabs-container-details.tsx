@@ -75,20 +75,20 @@ export default function TabsContainerDetails({
                         Metrics
                     </a>
                 </li>
-                <li className="mr-2">
-                    <a
-                        href="#"
-                        className={`group inline-flex rounded-t-lg p-4 ${
-                            activeTab === "settings"
-                                ? "border-b-2 border-green-400 text-green-400"
-                                : "border-transparent hover:border-gray-300 hover:text-gray-600"
-                        }`}
-                        aria-current="page"
-                        onClick={() => handleClick("settings")}
-                    >
-                        Settings
-                    </a>
-                </li>
+                {/*<li className="mr-2">*/}
+                {/*    <a*/}
+                {/*        href="#"*/}
+                {/*        className={`group inline-flex rounded-t-lg p-4 ${*/}
+                {/*            activeTab === "settings"*/}
+                {/*                ? "border-b-2 border-green-400 text-green-400"*/}
+                {/*                : "border-transparent hover:border-gray-300 hover:text-gray-600"*/}
+                {/*        }`}*/}
+                {/*        aria-current="page"*/}
+                {/*        onClick={() => handleClick("settings")}*/}
+                {/*    >*/}
+                {/*        Settings*/}
+                {/*    </a>*/}
+                {/*</li>*/}
             </ul>
         </div>
     );

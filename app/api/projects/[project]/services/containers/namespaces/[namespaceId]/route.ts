@@ -124,6 +124,16 @@ export async function DELETE(
             );
         }
 
+        // Delete containers of namespace before
+        const deletedContainers = await prisma.container.deleteMany({
+            where: { namespaceId: namespaceId },
+        });
+        if (!deletedContainers) {
+            return ResponseService.internalServerError(
+                `Error deleting containers in namespace with id ${namespaceId}`,
+            );
+        }
+
         const containerNamespace = await prisma.containerNamespace.delete({
             where: { id: namespaceId },
         });
