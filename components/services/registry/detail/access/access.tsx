@@ -1,15 +1,13 @@
 import { Session } from "next-auth";
 import { useEffect, useState } from "react";
 import LoadingSpinner from "@/components/shared/icons/loading-spinner";
-import axios from "axios";
 import { toastEventEmitter } from "@/lib/event-emitter/toast-event-emitter";
 import { Namespace } from "@/lib/models/registry/namespace";
-import { CodeBlock, nord } from "react-code-blocks";
-import CopyToClipboard from "react-copy-to-clipboard";
 import DockerLoginCode from "../docker-login-code";
 import { AddAccountInNamespace } from "../../../../../lib/services/registry/namespace/add-account-in-namespace";
 import { StugaError } from "@/lib/services/error/error";
-import { GetAccountInNamespace } from '../../../../../lib/services/registry/namespace/get-account-in-namespace';
+import { GetAccountInNamespace } from "../../../../../lib/services/registry/namespace/get-account-in-namespace";
+
 export default function Access({
     session,
     namespace,
@@ -139,7 +137,7 @@ export default function Access({
             {!loading && user ? (
                 <>
                     <div
-                        className="mb-4 flex rounded-lg border border-blue-300 bg-blue-50 p-4 text-sm text-blue-800 dark:border-blue-800 dark:bg-gray-800 dark:text-blue-400"
+                        className="mb-4 flex rounded-lg border border-blue-300 bg-blue-50 p-4 text-sm text-blue-800 "
                         role="alert"
                     >
                         <svg
@@ -216,7 +214,7 @@ export default function Access({
                         Initialize your access to the namespace
                     </h2>
                     <div
-                        className="mb-4 flex rounded-lg border border-blue-300 bg-blue-50 p-4 text-sm text-blue-800 dark:border-blue-800 dark:bg-gray-800 dark:text-blue-400"
+                        className="mb-4 flex rounded-lg border border-blue-300 bg-blue-50 p-4 text-sm text-blue-800 "
                         role="alert"
                     >
                         <svg

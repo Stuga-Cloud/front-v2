@@ -78,9 +78,9 @@ function Inner({ session, params }: { session: Session; params: Params }) {
                     ]}
                 />
             </Suspense>
-            <h1 className="mb-2 text-center text-3xl font-extrabold leading-relaxed tracking-tight text-gray-900 dark:text-white md:text-4xl lg:text-5xl">
+            <h1 className="mb-2 text-center text-3xl font-extrabold leading-relaxed tracking-tight text-gray-900 md:text-4xl lg:text-5xl">
                 Deploy your{" "}
-                <mark className="rounded bg-rose-400 px-2 leading-relaxed text-white dark:bg-green-300">
+                <mark className="rounded bg-rose-400 px-2 leading-relaxed text-white">
                     Zero Knowledge Database
                 </mark>
             </h1>
@@ -89,8 +89,8 @@ function Inner({ session, params }: { session: Session; params: Params }) {
             {status === "loading" && <LoadingSpinner />}
             {data && (
                 <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-                    <table className="w-full text-left text-sm text-gray-500 dark:text-gray-400">
-                        <thead className="bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">
+                    <table className="w-full text-left text-sm text-gray-500">
+                        <thead className="bg-gray-50 text-xs uppercase text-gray-700">
                             <tr>
                                 <th scope="col" className="px-6 py-3">
                                     Database name
@@ -102,13 +102,10 @@ function Inner({ session, params }: { session: Session; params: Params }) {
                         </thead>
                         <tbody>
                             {data.map((database, index) => (
-                                <tr
-                                    key={index}
-                                    className="border-b bg-white dark:border-gray-700 dark:bg-gray-900"
-                                >
+                                <tr key={index} className="border-b bg-white">
                                     <th
                                         scope="row"
-                                        className="whitespace-nowrap px-6 py-4 font-medium text-gray-900 dark:text-white"
+                                        className="whitespace-nowrap px-6 py-4 font-medium text-gray-900"
                                     >
                                         {database.name}
                                     </th>
@@ -140,7 +137,7 @@ const CreateDatabaseButton: React.FC<CreateDatabaseButtonProps> = ({
         <button
             type="button"
             onClick={handleClick}
-            className="m-1 mb-2 rounded-lg bg-purple-700 px-3 py-2.5 text-sm font-medium text-white hover:bg-purple-800 focus:outline-none focus:ring-4 focus:ring-purple-300 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900"
+            className="m-1 mb-2 rounded-lg bg-purple-700 px-3 py-2.5 text-sm font-medium text-white hover:bg-purple-800 focus:outline-none focus:ring-4 focus:ring-purple-300"
         >
             Create Database
         </button>

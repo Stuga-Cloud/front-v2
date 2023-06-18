@@ -704,7 +704,7 @@ export default function NewContainerForm({
                                                             {/*{step === index + 1 ? (*/}
                                                             {/*    <svg*/}
                                                             {/*        aria-hidden="true"*/}
-                                                            {/*        className="h-5 w-5 text-green-500 dark:text-green-400"*/}
+                                                            {/*        className="h-5 w-5 text-green-500 "*/}
                                                             {/*        fill="currentColor"*/}
                                                             {/*        viewBox="0 0 20 20"*/}
                                                             {/*        xmlns="http://www.w3.org/2000/svg"*/}
@@ -721,7 +721,7 @@ export default function NewContainerForm({
                                                                 fill="white"
                                                                 viewBox="0 0 24 24"
                                                                 stroke="currentColor"
-                                                                className="h-6 w-6 text-gray-500 dark:text-gray-400"
+                                                                className="h-6 w-6 text-gray-500"
                                                             >
                                                                 {
                                                                     stepItem.svgPath
@@ -733,7 +733,7 @@ export default function NewContainerForm({
                                                             {index + 1} -{" "}
                                                             {stepItem.name}
                                                         </h3>
-                                                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                                                        <p className="text-sm text-gray-500 ">
                                                             {
                                                                 stepItem.description
                                                             }
@@ -746,7 +746,7 @@ export default function NewContainerForm({
                             </div>
                             {/* Form */}
                             <div className="flex w-full flex-col px-5">
-                                <h4 className="py-4 text-2xl font-bold dark:text-white">
+                                <h4 className="py-4 text-2xl font-bold ">
                                     <label
                                         htmlFor="name"
                                         className="mb-7 text-lg text-gray-700 md:text-3xl"
@@ -762,22 +762,22 @@ export default function NewContainerForm({
                                                 <label
                                                     htmlFor="applicationName"
                                                     className={
-                                                        `pb-1 text-sm font-medium text-gray-700 dark:text-white` +
+                                                        `pb-1 text-sm font-medium text-gray-700` +
                                                         (!isApplicationNameValid(
                                                             applicationName,
                                                         )
-                                                            ? "gray-900 dark:text-white"
-                                                            : "red-700 dark:text-red-500")
+                                                            ? "gray-900 "
+                                                            : "red-700 ")
                                                     }
                                                 >
                                                     Application Name
                                                 </label>
                                                 <input
-                                                    className={`bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500 ${
+                                                    className={`bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 ${
                                                         !isApplicationNameValid(
                                                             applicationName,
                                                         )
-                                                            ? "border-red-500 bg-red-50 p-2.5 text-sm text-red-900 placeholder-red-700 focus:border-red-500 focus:ring-red-500 dark:border-red-500 dark:bg-gray-700 dark:text-red-500 dark:placeholder-red-500"
+                                                            ? "border-red-500 bg-red-50 p-2.5 text-sm text-red-900 placeholder-red-700 focus:border-red-500 focus:ring-red-500"
                                                             : ""
                                                     }`}
                                                     id="applicationName"
@@ -831,13 +831,13 @@ export default function NewContainerForm({
                                                     // ) &&
                                                     <div className="flex flex-col items-center gap-2">
                                                         {/* Recap of the final URL where the application will be available */}
-                                                        <h4 className="pt-12 text-2xl font-bold dark:text-white">
+                                                        <h4 className="pt-12 text-2xl font-bold ">
                                                             Your application
                                                             will be available
                                                             at:
                                                         </h4>
                                                         <a
-                                                            className="text-1xl font-semibold leading-normal text-blue-800 dark:text-white"
+                                                            className="text-1xl font-semibold leading-normal text-blue-800 "
                                                             href={`https://${applicationName}.${project.name}.${process.env.NEXT_PUBLIC_BASE_CONTAINER_DOMAIN}`}
                                                             target="_blank"
                                                             rel="noreferrer"
@@ -866,12 +866,12 @@ export default function NewContainerForm({
                                         <div className="mb-2 ms-5 mt-6 flex flex-col items-start">
                                             <label
                                                 htmlFor="applicationDescription"
-                                                className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+                                                className="mb-2 block text-sm font-medium text-gray-900 "
                                             >
                                                 Description
                                             </label>
                                             <textarea
-                                                className="bg-gray-40 mb-2 block max-h-28 w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500"
+                                                className="bg-gray-40 mb-2 block max-h-28 w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 "
                                                 id="applicationDescription"
                                                 name="applicationDescription"
                                                 rows={3}
@@ -900,13 +900,13 @@ export default function NewContainerForm({
                                             {/* Choice between docker and our private registry */}
                                             <label
                                                 htmlFor="image-registries"
-                                                className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+                                                className="mb-2 block text-sm font-medium text-gray-900 "
                                             >
                                                 Select a registry
                                             </label>
                                             <select
                                                 id="image-registries"
-                                                className="bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500"
+                                                className="bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 "
                                                 onChange={(e) => {
                                                     setRegistry(
                                                         findRegistryByName(
@@ -938,7 +938,7 @@ export default function NewContainerForm({
                                         <div className="mb-2 ms-5 flex flex-col gap-1">
                                             <label
                                                 htmlFor="image-name"
-                                                className={`mb-2 block text-sm font-medium text-gray-900 dark:text-white ${!isImageValid(
+                                                className={`mb-2 block text-sm font-medium text-gray-900  ${!isImageValid(
                                                     applicationImage,
                                                 )}`}
                                             >
@@ -984,11 +984,11 @@ export default function NewContainerForm({
                                                     applicationImage,
                                                 ) && (
                                                     <>
-                                                        <h4 className="pt-8 text-2xl font-bold dark:text-white">
+                                                        <h4 className="pt-8 text-2xl font-bold ">
                                                             The used image is
                                                             stored at:
                                                         </h4>
-                                                        <p className="text-1xl font-semibold leading-normal text-blue-800 dark:text-white">
+                                                        <p className="text-1xl font-semibold leading-normal text-blue-800 ">
                                                             <Link
                                                                 href={
                                                                     registry.url +
@@ -1023,7 +1023,7 @@ export default function NewContainerForm({
                                 {step === 3 && (
                                     <div className="mb-10 ms-5 flex h-full w-full flex-col">
                                         <div>
-                                            <p className="font-semi-bold pb-6 dark:text-white">
+                                            <p className="font-semi-bold pb-6 ">
                                                 We recommend you to define the
                                                 port you have defined in the{" "}
                                                 <code>$PORT</code> environment
@@ -1032,14 +1032,14 @@ export default function NewContainerForm({
 
                                             <label
                                                 htmlFor="port"
-                                                // className="mb-2 block text-sm font-medium text-red-700 dark:text-red-500"
+                                                // className="mb-2 block text-sm font-medium text-red-700 "
                                                 className={
                                                     "mb-2 block text-sm font-medium" +
                                                     (isPortValid(
                                                         applicationPort,
                                                     )
-                                                        ? "gray-900 dark:text-white"
-                                                        : "red-700 dark:text-red-500")
+                                                        ? "gray-900 "
+                                                        : "red-700 ")
                                                 }
                                             >
                                                 Port
@@ -1048,11 +1048,11 @@ export default function NewContainerForm({
                                                 id="port"
                                                 name="port"
                                                 type="number"
-                                                className={`bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500 ${
+                                                className={`bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500  ${
                                                     !isPortValid(
                                                         applicationPort,
                                                     )
-                                                        ? "border-red-500 bg-red-50 p-2.5 text-sm text-red-900 placeholder-red-700 focus:border-red-500 focus:ring-red-500 dark:border-red-500 dark:bg-gray-700 dark:text-red-500 dark:placeholder-red-500"
+                                                        ? "border-red-500 bg-red-50 p-2.5 text-sm text-red-900 placeholder-red-700 focus:border-red-500 focus:ring-red-500 "
                                                         : ""
                                                 }`}
                                                 value={applicationPort || ""}
@@ -1073,7 +1073,7 @@ export default function NewContainerForm({
                                                 required // Mark the field as required
                                             />
                                             {!isPortValid(applicationPort) ? (
-                                                <p className="mt-2 text-sm text-red-600 dark:text-red-500">
+                                                <p className="mt-2 text-sm text-red-600 ">
                                                     Please enter a valid port
                                                     number between 1 and 65535.
                                                 </p>
@@ -1085,13 +1085,13 @@ export default function NewContainerForm({
                                     <div className="mb-10 ms-5 flex h-full w-full flex-col">
                                         <label
                                             htmlFor="application-type"
-                                            className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+                                            className="mb-2 block text-sm font-medium text-gray-900 "
                                         >
                                             Application Type
                                         </label>
                                         <select
                                             id="application-type"
-                                            className="bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500"
+                                            className="bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 "
                                             value={applicationType}
                                             onChange={(e) =>
                                                 setApplicationType(
@@ -1113,7 +1113,7 @@ export default function NewContainerForm({
                                     <div className="mb-10 ms-5 flex h-full w-full flex-col">
                                         <label
                                             htmlFor="cpu-limit"
-                                            className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+                                            className="mb-2 block text-sm font-medium text-gray-900 "
                                         >
                                             CPU Limit (milliCPU)
                                         </label>
@@ -1137,12 +1137,12 @@ export default function NewContainerForm({
                                         </select>
                                         <label
                                             htmlFor="memory-limit"
-                                            className="mb-2 mt-3 block text-sm font-medium text-gray-900 dark:text-white"
+                                            className="mb-2 mt-3 block text-sm font-medium text-gray-900 "
                                         >
                                             Memory Limit (MB)
                                         </label>
                                         <select
-                                            className="bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500"
+                                            className="bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 "
                                             value={applicationMemoryLimit}
                                             onChange={(e) =>
                                                 setApplicationMemoryLimit(
@@ -1178,14 +1178,14 @@ export default function NewContainerForm({
                                                         }}
                                                         className="peer sr-only"
                                                     />
-                                                    <div className="peer-focus:ring-3 peer h-7 w-14 rounded-full bg-gray-200 after:absolute after:left-[4px] after:top-0.5 after:h-6 after:w-6 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-green-400 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-green-200 dark:border-gray-600 dark:bg-gray-700 dark:peer-focus:ring-green-500"></div>
-                                                    <span className="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">
+                                                    <div className="peer-focus:ring-3 peer h-7 w-14 rounded-full bg-gray-200 after:absolute after:left-[4px] after:top-0.5 after:h-6 after:w-6 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-green-400 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-green-200 "></div>
+                                                    <span className="ml-3 text-sm font-medium text-gray-900 ">
                                                         Enable autoscaling
                                                     </span>
                                                 </label>
                                                 {/* Display a message that explains the autoscaling feature */}
                                                 {isAutoscalingEnabled && (
-                                                    <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                                                    <p className="mt-2 text-sm text-gray-500 ">
                                                         Your application will
                                                         automatically scale up
                                                         or down based on the CPU
@@ -1195,7 +1195,7 @@ export default function NewContainerForm({
                                                     </p>
                                                 )}
                                                 {!isAutoscalingEnabled && (
-                                                    <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                                                    <p className="mt-2 text-sm text-gray-500 ">
                                                         You will have to
                                                         manually scale your
                                                         application. We will
@@ -1218,8 +1218,8 @@ export default function NewContainerForm({
                                                                 (isReplicasValid(
                                                                     replicas,
                                                                 )
-                                                                    ? "gray-900 dark:text-white"
-                                                                    : "red-700 dark:text-red-500")
+                                                                    ? "gray-900 "
+                                                                    : "red-700 ")
                                                             }
                                                         >
                                                             Number of Replicas
@@ -1227,11 +1227,11 @@ export default function NewContainerForm({
                                                         <input
                                                             id="replicas"
                                                             type="number"
-                                                            className={`bg-gray-40 mb-1 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500 ${
+                                                            className={`bg-gray-40 mb-1 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500  ${
                                                                 !isReplicasValid(
                                                                     replicas,
                                                                 )
-                                                                    ? "border-red-500 bg-red-50 p-2.5 text-sm text-red-900 placeholder-red-700 focus:border-red-500 focus:ring-red-500 dark:border-red-500 dark:bg-gray-700 dark:text-red-500 dark:placeholder-red-500"
+                                                                    ? "border-red-500 bg-red-50 p-2.5 text-sm text-red-900 placeholder-red-700 focus:border-red-500 focus:ring-red-500 "
                                                                     : ""
                                                             }`}
                                                             value={
@@ -1250,7 +1250,7 @@ export default function NewContainerForm({
                                                         {!isReplicasValid(
                                                             replicas,
                                                         ) ? (
-                                                            <p className="mt-2 text-sm text-red-600 dark:text-red-500">
+                                                            <p className="mt-2 text-sm text-red-600 ">
                                                                 Please enter a
                                                                 valid number
                                                                 between 0 and
@@ -1267,8 +1267,8 @@ export default function NewContainerForm({
                                                                 (isCpuUsageThresholdValid(
                                                                     cpuUsageThreshold,
                                                                 )
-                                                                    ? "gray-900 dark:text-white"
-                                                                    : "red-700 dark:text-red-500")
+                                                                    ? "gray-900 "
+                                                                    : "red-700 ")
                                                             }
                                                         >
                                                             CPU Usage Threshold
@@ -1277,11 +1277,11 @@ export default function NewContainerForm({
                                                         <input
                                                             id="cpuUsage"
                                                             type="number"
-                                                            className={`bg-gray-40 mb-1 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500 ${
+                                                            className={`bg-gray-40 mb-1 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500  ${
                                                                 !isCpuUsageThresholdValid(
                                                                     cpuUsageThreshold,
                                                                 )
-                                                                    ? "border-red-500 bg-red-50 p-2.5 text-sm text-red-900 placeholder-red-700 focus:border-red-500 focus:ring-red-500 dark:border-red-500 dark:bg-gray-700 dark:text-red-500 dark:placeholder-red-500"
+                                                                    ? "border-red-500 bg-red-50 p-2.5 text-sm text-red-900 placeholder-red-700 focus:border-red-500 focus:ring-red-500 "
                                                                     : ""
                                                             }`}
                                                             value={
@@ -1301,7 +1301,7 @@ export default function NewContainerForm({
                                                         {!isCpuUsageThresholdValid(
                                                             cpuUsageThreshold,
                                                         ) ? (
-                                                            <p className="mt-2 text-sm text-red-600 dark:text-red-500">
+                                                            <p className="mt-2 text-sm text-red-600 ">
                                                                 Please enter a
                                                                 valid number
                                                                 between 0 and
@@ -1318,8 +1318,8 @@ export default function NewContainerForm({
                                                                 (isMemoryUsageThresholdValid(
                                                                     memoryUsageThreshold,
                                                                 )
-                                                                    ? "gray-900 dark:text-white"
-                                                                    : "red-700 dark:text-red-500")
+                                                                    ? "gray-900 "
+                                                                    : "red-700 ")
                                                             }
                                                         >
                                                             Memory Usage
@@ -1328,11 +1328,11 @@ export default function NewContainerForm({
                                                         <input
                                                             id="memoryUsage"
                                                             type="number"
-                                                            className={`bg-gray-40 mb-1 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500 ${
+                                                            className={`bg-gray-40 mb-1 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500  ${
                                                                 !isMemoryUsageThresholdValid(
                                                                     memoryUsageThreshold,
                                                                 )
-                                                                    ? "border-red-500 bg-red-50 p-2.5 text-sm text-red-900 placeholder-red-700 focus:border-red-500 focus:ring-red-500 dark:border-red-500 dark:bg-gray-700 dark:text-red-500 dark:placeholder-red-500"
+                                                                    ? "border-red-500 bg-red-50 p-2.5 text-sm text-red-900 placeholder-red-700 focus:border-red-500 focus:ring-red-500 "
                                                                     : ""
                                                             }`}
                                                             value={
@@ -1352,7 +1352,7 @@ export default function NewContainerForm({
                                                         {!isMemoryUsageThresholdValid(
                                                             memoryUsageThreshold,
                                                         ) ? (
-                                                            <p className="mt-2 text-sm text-red-600 dark:text-red-500">
+                                                            <p className="mt-2 text-sm text-red-600 ">
                                                                 Please enter a
                                                                 valid number
                                                                 between 0 and
@@ -1368,7 +1368,7 @@ export default function NewContainerForm({
                                     <div className="mb-10 ms-5 flex h-full w-full flex-col">
                                         <label
                                             htmlFor="environment-variables"
-                                            className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+                                            className="mb-2 block text-sm font-medium text-gray-900 "
                                         >
                                             Environment Variables :
                                         </label>
@@ -1381,7 +1381,7 @@ export default function NewContainerForm({
                                                     >
                                                         <input
                                                             type="text"
-                                                            className="bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500"
+                                                            className="bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 "
                                                             placeholder="Key"
                                                             value={
                                                                 variable.name ||
@@ -1401,7 +1401,7 @@ export default function NewContainerForm({
                                                         </span>
                                                         <input
                                                             type="text"
-                                                            className="bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500"
+                                                            className="bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 "
                                                             placeholder="Value"
                                                             value={
                                                                 variable.value ||
@@ -1445,7 +1445,7 @@ export default function NewContainerForm({
                                     <div className="mb-10 ms-5 flex h-full w-full flex-col">
                                         <label
                                             htmlFor="application-secrets"
-                                            className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+                                            className="mb-2 block text-sm font-medium text-gray-900 "
                                         >
                                             Application Secrets
                                         </label>
@@ -1458,7 +1458,7 @@ export default function NewContainerForm({
                                                     >
                                                         <input
                                                             type="text"
-                                                            className="bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500"
+                                                            className="bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 "
                                                             placeholder="Key"
                                                             value={
                                                                 secret.name ||
@@ -1478,7 +1478,7 @@ export default function NewContainerForm({
                                                         </span>
                                                         <input
                                                             type="text"
-                                                            className="bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500"
+                                                            className="bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 "
                                                             placeholder="Value"
                                                             value={
                                                                 secret.value ||
@@ -1525,8 +1525,8 @@ export default function NewContainerForm({
                                                 (isEmailValid(
                                                     administratorEmail,
                                                 )
-                                                    ? "gray-900 dark:text-white"
-                                                    : "red-700 dark:text-red-500")
+                                                    ? "gray-900 "
+                                                    : "red-700 ")
                                             }
                                         >
                                             Administrator Email
@@ -1535,11 +1535,11 @@ export default function NewContainerForm({
                                             type="email"
                                             id="admin-email"
                                             name="admin-email"
-                                            className={`bg-gray-40 mb-1 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500 ${
+                                            className={`bg-gray-40 mb-1 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500  ${
                                                 !isEmailValid(
                                                     administratorEmail,
                                                 )
-                                                    ? "border-red-500 bg-red-50 p-2.5 text-sm text-red-900 placeholder-red-700 focus:border-red-500 focus:ring-red-500 dark:border-red-500 dark:bg-gray-700 dark:text-red-500 dark:placeholder-red-500"
+                                                    ? "border-red-500 bg-red-50 p-2.5 text-sm text-red-900 placeholder-red-700 focus:border-red-500 focus:ring-red-500 "
                                                     : ""
                                             }`}
                                             value={administratorEmail || ""}
@@ -1553,7 +1553,7 @@ export default function NewContainerForm({
                                         />
 
                                         {!isEmailValid(administratorEmail) ? (
-                                            <p className="mt-2 text-sm text-red-600 dark:text-red-500">
+                                            <p className="mt-2 text-sm text-red-600 ">
                                                 Please enter a valid email
                                                 address.
                                             </p>

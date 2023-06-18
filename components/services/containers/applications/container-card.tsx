@@ -24,10 +24,10 @@ export default function ContainerCard({
                         {application.name}
                     </h5>
                 </a>
-                <p className="pb-6 font-normal text-gray-500 dark:text-gray-400">
+                <p className="pb-6 font-normal text-gray-500">
                     {application.description}
                 </p>
-                <strong className="pb-6 font-normal text-gray-500 dark:text-gray-400">
+                <strong className="pb-6 font-normal text-gray-500">
                     {application.applicationType}
                 </strong>
 

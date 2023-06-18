@@ -212,7 +212,7 @@ export default function ContainersNamespaces({
                                                 <td className="px-6 py-4 text-right">
                                                     {/*<a*/}
                                                     {/*    href="#"*/}
-                                                    {/*    className="font-medium text-blue-600 hover:underline dark:text-blue-500"*/}
+                                                    {/*    className="font-medium text-blue-600 hover:underline"*/}
                                                     {/*    onClick={(e) => {*/}
                                                     {/*        e.preventDefault();*/}
                                                     {/*        console.log(*/}
