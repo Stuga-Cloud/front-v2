@@ -22,6 +22,8 @@ export const verifyIfImageExists = async (
                 },
             });
         } catch (e) {
+            console.log(`Failed to get image ${imageName} in project ${projectId} in registry ${registry}`);
+            console.log(e);
             if (e instanceof StugaError) {
                 return StugaErrorToNextResponse(e);
             }
@@ -42,6 +44,8 @@ export const verifyIfImageExists = async (
                 return ResponseService.notFound("image does not exist");
             }
         } catch (e) {
+            console.log(`Failed to get image ${imageName} in project ${projectId} in registry ${registry}`);
+            console.log(e);
             return ResponseService.internalServerError(
                 "internal-server-error",
                 e,

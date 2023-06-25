@@ -171,7 +171,6 @@ export default function ContainerDeployment({
         }
         try {
             setLoading(true);
-            // Query back to verify that the application and namespace are available
             const createContainerApplicationBody: CreateContainerApplicationBody =
                 {
                     name: containerUpdate.applicationName!,
@@ -371,33 +370,23 @@ export default function ContainerDeployment({
                                                     <p className="text-1xl font-semibold leading-normal text-blue-800 ">
                                                         <Link
                                                             href={
-                                                                containerUpdate
-                                                                    .registry
-                                                                    .url +
-                                                                "/r/" +
-                                                                containerUpdate.image.substring(
-                                                                    0,
-                                                                    containerUpdate.image.lastIndexOf(
-                                                                        ":",
-                                                                    ),
-                                                                ) +
-                                                                "/tags"
+                                                                displayImageInRegistryUrl(
+                                                                    containerUpdate
+                                                                        .registry
+                                                                        .url,
+                                                                    containerUpdate.image,
+                                                                    containerUpdate
+                                                                        .registry
+                                                                        .registry,
+                                                                    project.id,
+                                                                )
                                                             }
                                                             target="_blank"
                                                         >
-                                                            {
-                                                                containerUpdate
-                                                                    .registry
-                                                                    .url
-                                                            }
-                                                            /r/
-                                                            {containerUpdate.image.substring(
-                                                                0,
-                                                                containerUpdate.image.lastIndexOf(
-                                                                    ":",
-                                                                ),
-                                                            )}
-                                                            /tags
+                                                            Here, choose the
+                                                            correct namespace
+                                                            according to the
+                                                            image
                                                         </Link>
                                                     </p>
                                                 </>
@@ -1004,3 +993,19 @@ export default function ContainerDeployment({
         </>
     );
 }
+
+export const displayImageInRegistryUrl = (
+    url: string,
+    image: string,
+    registry: string,
+    projectId: string,
+) => {
+    if (registry === "dockerhub") {
+        return `${url}/r/${image.substring(0, image.lastIndexOf(":"))}/tags`;
+    }
+    if (registry === "pcr") {
+        return `/projects/${projectId}/services/registry/`;
+    }
+
+    return "you are hacking us? :)";
+};

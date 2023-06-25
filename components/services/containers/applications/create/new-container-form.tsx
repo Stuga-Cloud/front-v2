@@ -26,6 +26,7 @@ import {
     AvailableContainerRegistriesName,
     findRegistryByName,
 } from "@/components/services/containers/applications/create/container-creation";
+import { displayImageInRegistryUrl } from "../details/tabs/container-deployment";
 
 interface Step {
     name: string;
@@ -301,6 +302,7 @@ export default function NewContainerForm({
 
     const isApplicationNameAvailableInNamespace = () => {
         if (!applicationName || !applicationNamespace) return true;
+        if (!containers || containers.length == 0) return true;
         return !containers.some(
             (application) => application.name === applicationName,
         );
@@ -990,28 +992,19 @@ export default function NewContainerForm({
                                                         </h4>
                                                         <p className="text-1xl font-semibold leading-normal text-blue-800 ">
                                                             <Link
-                                                                href={
-                                                                    registry.url +
-                                                                    "/r/" +
-                                                                    applicationImage.substring(
-                                                                        0,
-                                                                        applicationImage.lastIndexOf(
-                                                                            ":",
-                                                                        ),
-                                                                    ) +
-                                                                    "/tags"
-                                                                }
+                                                                href={displayImageInRegistryUrl(
+                                                                    registry.url,
+                                                                    applicationImage,
+                                                                    registry.registry,
+                                                                    projectId,
+                                                                )}
                                                                 target="_blank"
                                                             >
-                                                                {registry.url}
-                                                                /r/
-                                                                {applicationImage.substring(
-                                                                    0,
-                                                                    applicationImage.lastIndexOf(
-                                                                        ":",
-                                                                    ),
-                                                                )}
-                                                                /tags
+                                                                Here, choose the
+                                                                correct
+                                                                namespace
+                                                                according to the
+                                                                image
                                                             </Link>
                                                         </p>
                                                     </>
@@ -1518,6 +1511,19 @@ export default function NewContainerForm({
                                 )}
                                 {step === 9 && (
                                     <div className="mb-10 ms-5 flex h-full w-full flex-col">
+                                        <p className="mb-4 mt-2 text-sm text-gray-500">
+                                            The administrator email is used to
+                                            receive notifications about the
+                                            application scalability. In manual
+                                            scaling mode, the administrator
+                                            email will receive notifications
+                                            when the application should be
+                                            scaled up or down. In automatic
+                                            scaling mode, the administrator
+                                            email will receive notifications
+                                            when the application is scaled up or
+                                            down automatically.
+                                        </p>
                                         <label
                                             htmlFor="admin-email"
                                             className={
