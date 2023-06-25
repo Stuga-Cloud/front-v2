@@ -17,9 +17,13 @@ import { StugaErrorToNextResponse } from "@/lib/services/error/stuga-error-to-ne
 import { getLambdaImageInProject } from "@/lib/services/lambdas/get-lambda-image-in-user-namespaces";
 import { checkIfDockerHubImageExists } from "@/lib/services/utils/check-if-docker-hub-image-exists";
 import { GetLambdaByNameInProject } from "@/lib/services/lambdas/get-image-by-name";
-import { Registry } from '../../../../../../lib/models/lambdas/lambda-create';
+import { Registry } from "../../../../../../lib/models/lambdas/lambda-create";
 import { encrypt } from "@/lib/services/utils/crypt";
 import { verifyIfImageExists } from "@/lib/services/lambdas/verify-if-image-exists";
+import { CreateGateway } from "@/lib/services/lambdas/liserk-api/create-gateway";
+import { Lambda } from "@prisma/client";
+import { InitLambdaImage } from "@/lib/services/lambdas/liserk-api/init-lambda-image";
+import { DeleteGatewayLambda } from "../../../../../../lib/services/lambdas/liserk-api/delete-gateway-lambda";
 
 export interface LambdaCreateResponse {
     name: string;
@@ -39,7 +43,6 @@ export async function POST(request: Request, { params }: NextRequest) {
     const userId = session!.user!.id as string;
 
     console.log(req);
-
 
     const projectGetOrNextResponse = await VerifyIfUserCanAccessProject(
         projectId,
@@ -74,10 +77,14 @@ export async function POST(request: Request, { params }: NextRequest) {
         return ResponseService.internalServerError("internal-server-error", e);
     }
 
+    const repository = req.imageName.split("/")[0];
+    const imageName = req.imageName.split("/")[1];
+
     const verifyIfImageExistsResponse = await verifyIfImageExists(
-        req.imageName,
+        imageName,
         projectId,
         req.registry,
+        repository,
     );
     if (verifyIfImageExistsResponse instanceof NextResponse) {
         return verifyIfImageExistsResponse;
@@ -90,7 +97,6 @@ export async function POST(request: Request, { params }: NextRequest) {
         };
     });
 
-
     var now = new Date();
     var now_utc = new Date(
         now.getUTCFullYear(),
@@ -100,25 +106,72 @@ export async function POST(request: Request, { params }: NextRequest) {
         now.getUTCMinutes(),
         now.getUTCSeconds(),
     );
+    let stateCreated = "init";
+    let lambdaCreated: Lambda;
+    try {
+        lambdaCreated = await prisma.lambda.create({
+            data: {
+                name: req.name,
+                imageName: req.imageName,
+                registry: req.registry,
+                cpuLimitmCPU: req.cpuLimit.value,
+                memoryLimitMB: req.memoryLimit.value,
+                visibility: req.confidentiality.visibility,
+                privateConfig: req.confidentiality.access,
+                minInstances: req.minInstanceNumber,
+                maxInstances: req.maxInstanceNumber,
+                envVars: envVarCrypted,
+                timeoutSeconds: req.timeout,
+                urlAccess: `${process.env.GATEWAY_URL_ACCESS}/${projectGetOrNextResponse.name}/${req.confidentiality.visibility}/${req.name}`,
+                createdAt: now_utc,
+                createdBy: userId,
+                projectId,
+            },
+        });
 
-    await prisma.lambda.create({
-        data: {
-            name: req.name,
-            imageName: req.imageName,
-            registry: req.registry,
-            cpuLimitmCPU: req.cpuLimit.value,
-            memoryLimitMB: req.memoryLimit.value,
-            visibility: req.confidentiality.visibility,
-            privateConfig: req.confidentiality.access,
-            minInstances: req.minInstanceNumber,
-            maxInstances: req.maxInstanceNumber,
-            envVars: envVarCrypted,
-            timeoutSeconds: req.timeout,
-            createdAt: now_utc,
-            createdBy: userId,
-            projectId,
-        },
-    });
+        
+
+        stateCreated = "lambda-created";
+
+        await CreateGateway({
+            projectName: projectGetOrNextResponse.name,
+            lambdaName: req.name,
+            lambdaId: lambdaCreated.id,
+            visibility: req.confidentiality.visibility as "public" | "private",
+        });
+
+        stateCreated = "gateway-created";
+
+        await InitLambdaImage({
+            id: lambdaCreated.id,
+            image_name: req.imageName,
+            ram_mega: req.memoryLimit.value,
+            max_time: req.timeout,
+            cpu: req.cpuLimit.value,
+            storage_mega: 2,
+            minimum_instance_number: req.minInstanceNumber,
+            maximum_instance_number: req.maxInstanceNumber,
+        });
+
+        stateCreated = "all-lambda-created";
+    } catch (e) {
+        console.log("error at " + stateCreated);
+        if (stateCreated === "lambda-created") {
+            await rollbackLambdaCreated(lambdaCreated!.id);
+        } else if (stateCreated === "gateway-created") {
+            await rollbackLambdaCreated(lambdaCreated!.id);
+            await DeleteGatewayLambda({
+                projectName: projectGetOrNextResponse.name,
+                lambdaName: req.name,
+            });
+        }
+
+        if (e instanceof StugaError) {
+            return StugaErrorToNextResponse(e);
+        } else if (e instanceof NextResponse) {
+            return e;
+        }
+    }
 
     return ResponseService.created({
         name: req.name,
@@ -133,7 +186,6 @@ export async function POST(request: Request, { params }: NextRequest) {
 }
 
 export async function GET(request: Request, { params }: NextRequest) {
-
     const session = await getServerSession(authOptions);
     const projectId = params!.project;
 
@@ -158,3 +210,15 @@ export async function GET(request: Request, { params }: NextRequest) {
         return ResponseService.internalServerError("internal-server-error", e);
     }
 }
+
+export const rollbackLambdaCreated = async (lambdaId: string) => {
+    try {
+        await prisma.lambda.delete({
+            where: {
+                id: lambdaId,
+            },
+        });
+    } catch (e) {
+        console.error(e);
+    }
+};

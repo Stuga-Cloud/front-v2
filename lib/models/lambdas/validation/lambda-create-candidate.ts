@@ -11,7 +11,7 @@ export const isLambdaNameValid = (lambdaName: string): boolean => {
 };
 
 export const isLambdaImageNameValid = (imageName: string): boolean => {
-    var regex = /^[a-zA-Z0-9-:]*$/;
+    var regex = /^[a-zA-Z0-9-:/.]*$/;
 
     return imageName.length > 4 && regex.test(imageName);
 };
