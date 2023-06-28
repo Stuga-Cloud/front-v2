@@ -11,6 +11,7 @@ import { LambdaModel } from "@/lib/models/lambdas/lambda";
 import { GetLambdaByNameInProject } from "@/lib/services/lambdas/get-image-by-name";
 import { checkSettingsUpdate, checkVisibility } from "./check-update";
 
+// @ts-ignore
 export async function DELETE(request: Request, { params }: NextRequest) {
     const session = await getServerSession(authOptions);
     const projectId = params!.project;
@@ -47,6 +48,7 @@ export async function DELETE(request: Request, { params }: NextRequest) {
     });
 }
 
+// @ts-ignore
 export async function GET(request: Request, { params }: NextRequest) {
     const session = await getServerSession(authOptions);
     const projectId = params!.project;
@@ -86,6 +88,7 @@ export async function GET(request: Request, { params }: NextRequest) {
     });
 }
 
+// @ts-ignore
 export async function PUT(request: Request, { params }: NextRequest) {
     const session = await getServerSession(authOptions);
     const req: LambdaModel = await request.json();

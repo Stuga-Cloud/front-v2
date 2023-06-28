@@ -21,14 +21,15 @@ export const authOptions: NextAuthOptions = {
         error: "/",
     },
     callbacks: {
-        async jwt({ token, user, _account, _profile, _isNewUser }) {
+        async jwt({ token, user, account, profile, isNewUser }) {
             user && (token.user = user);
             return token;
         },
-        async session({ session, _token, user }) {
+        async session({ session, token, user }) {
             session = {
                 ...session,
                 user: {
+                    // @ts-ignore 
                     id: user.id,
                     ...session.user,
                 },

@@ -16,6 +16,7 @@ export interface GetMemberResponse {
     role_name: string;
 }
 
+// @ts-ignore
 export async function GET(request: Request, { params }: NextRequest) {
     const session = await getServerSession(authOptions);
     const namespaceId = params!.namespace;

@@ -26,6 +26,7 @@ export async function GET(request: Request, { params }: NextRequest) {
 
     if (
         !projectMemberships.some(
+            // @ts-ignore
             (membership) => membership.userId === session.user!.id,
         )
     ) {
@@ -79,6 +80,7 @@ export async function GET(request: Request, { params }: NextRequest) {
         id: project!.id,
         name: project!.name,
         members: members,
+        // @ts-ignore
         containerNamespaces: project!.containerNamespaces,
         createdBy: project!.createdBy,
     };

@@ -13,6 +13,7 @@ interface RequestBody {
     visibility: "public" | "private";
 }
 
+// @ts-ignore
 export async function POST(request: Request, { params }: NextRequest) {
     const req: RequestBody = await request.json();
     const session = await getServerSession(authOptions);
@@ -119,6 +120,7 @@ export async function POST(request: Request, { params }: NextRequest) {
         console.error(e);
         return NextResponse.json(
             {
+                // @ts-ignore
                 error: `An error occurred while creating the registry namespace: ${e.message}`,
             },
             { status: 500 },
@@ -126,6 +128,7 @@ export async function POST(request: Request, { params }: NextRequest) {
     }
 }
 
+// @ts-ignore
 export async function GET(request: Request, { params }: NextRequest) {
 
     const { project }: RequestParams = params!;

@@ -12,7 +12,7 @@ export default function DatabaseList({params}: ProjectParam) {
     <>
       <div className="z-10 flex w-full flex-col items-center justify-center">
           <div className="mt-10 w-4/5">
-              <DatabaseComponent />
+              {/* <DatabaseComponent /> */}
           </div>
       </div>
       </>

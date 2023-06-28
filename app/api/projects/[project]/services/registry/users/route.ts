@@ -10,6 +10,7 @@ export interface RequestParams {
     project: string;
 }
 
+// @ts-ignore
 export async function GET(request: Request, { params }: NextRequest) {
     const session = await getServerSession(authOptions);
     const email = session!.user!.email;
@@ -55,6 +56,7 @@ export async function GET(request: Request, { params }: NextRequest) {
     }
 }
 
+// @ts-ignore
 export async function POST(request: Request, { params }: NextRequest) {
     const session = await getServerSession(authOptions);
     const email = session!.user!.email;

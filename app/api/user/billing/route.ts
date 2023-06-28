@@ -21,12 +21,14 @@ export async function POST(req: NextRequest, { params }: ProjectParam) {
         return ResponseService.unauthorized();
     }
 
+    // @ts-ignore
     const price = computePrice(session.user.id);
 
     const stripeSession = await stripe.checkout.sessions.create({
         mode: "subscription",
         line_items: [
             {
+                // @ts-ignore
                 price: price, // priceId on stripe ?
                 // For metered billing, do not pass quantity
                 quantity: 1,

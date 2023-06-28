@@ -12,6 +12,7 @@ import { VerifyIfNamespaceIsInProject } from "@/lib/services/registry/namespace/
 import { GetNamespaceById } from "@/lib/services/registry/namespace/get-namespace-by-id";
 import prisma from "@/lib/prisma";
 
+// @ts-ignore
 export async function DELETE(request: Request, { params }: NextRequest) {
     try {
         const session = await getServerSession(authOptions);

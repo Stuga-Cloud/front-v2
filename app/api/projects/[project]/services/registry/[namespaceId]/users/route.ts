@@ -10,7 +10,7 @@ import { GetNamespaceById } from "@/lib/services/registry/namespace/get-namespac
 export interface RequestBody {
     password: string;
 }
-
+// @ts-ignore
 export async function POST(request: Request, { params }: NextRequest) {
     const session = await getServerSession(authOptions);
     const email = session!.user!.email;

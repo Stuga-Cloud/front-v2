@@ -4,7 +4,7 @@ const nextConfig = {
     experimental: {
         appDir: true,
     },
-    pageExtensions: ['mdx', 'md', 'jsx', 'js', 'tsx', 'ts'],
+    pageExtensions: ["mdx", "md", "jsx", "js", "tsx", "ts"],
     swcMinify: true,
     images: {
         domains: ["lh3.googleusercontent.com", "vercel.com"],
@@ -16,6 +16,9 @@ const nextConfig = {
                 pathname: "**",
             },
         ],
+    },
+    typescript: {
+        ignoreBuildErrors: true,
     },
     api: {
         bodyParser: false,

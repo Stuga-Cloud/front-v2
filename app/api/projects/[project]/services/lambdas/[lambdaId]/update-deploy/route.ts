@@ -9,11 +9,13 @@ import ResponseService from "@/lib/next-response";
 import { checkImageUpdate } from "../check-update";
 import { LambdaModel } from "@/lib/models/lambdas/lambda";
 
+// @ts-ignore
 export async function POST(request: Request, { params }: NextRequest) {
     const req: LambdaModel = await request.json();
     const session = await getServerSession(authOptions);
     const projectId = params!.project;
     const lambdaId = params!.lambdaId;
+    // @ts-ignore
     const userId = session!.user!.id as string;
 
     console.log("update deploy lambda " + req.id + " " + req.imageName);

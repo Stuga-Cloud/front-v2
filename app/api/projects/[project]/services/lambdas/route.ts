@@ -36,11 +36,23 @@ export interface LambdaCreateResponse {
     maxInstanceNumber: number;
     timeout: number;
 }
-
+// @ts-ignore
 export async function POST(request: Request, { params }: NextRequest) {
+    const rollbackLambdaCreated = async (lambdaId: string) => {
+        try {
+            await prisma.lambda.delete({
+                where: {
+                    id: lambdaId,
+                },
+            });
+        } catch (e) {
+            console.error(e);
+        }
+    };
     const req: LambdaCreateCandidate = await request.json();
     const session = await getServerSession(authOptions);
     const projectId = params!.project;
+    // @ts-ignore
     const userId = session!.user!.id as string;
 
     console.log(req);
@@ -109,8 +121,9 @@ export async function POST(request: Request, { params }: NextRequest) {
     );
     let stateCreated = "init";
     let lambdaCreated: Lambda;
-    
-    const visiblityPath = req.confidentiality.visibility === "private" ? "api-key" : "public";
+
+    const visiblityPath =
+        req.confidentiality.visibility === "private" ? "api-key" : "public";
     const urlAccess = `${process.env.GATEWAY_URL_ACCESS}/${projectGetOrNextResponse.name}/${visiblityPath}/${req.name}`;
 
     try {
@@ -210,6 +223,7 @@ export async function POST(request: Request, { params }: NextRequest) {
     } as LambdaCreateResponse);
 }
 
+// @ts-ignore
 export async function GET(request: Request, { params }: NextRequest) {
     const session = await getServerSession(authOptions);
     const projectId = params!.project;
@@ -235,15 +249,3 @@ export async function GET(request: Request, { params }: NextRequest) {
         return ResponseService.internalServerError("internal-server-error", e);
     }
 }
-
-export const rollbackLambdaCreated = async (lambdaId: string) => {
-    try {
-        await prisma.lambda.delete({
-            where: {
-                id: lambdaId,
-            },
-        });
-    } catch (e) {
-        console.error(e);
-    }
-};

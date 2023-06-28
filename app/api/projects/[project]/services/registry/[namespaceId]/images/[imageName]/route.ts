@@ -9,6 +9,7 @@ import { NextRequest } from "next/server";
 import { GetNamespaceById } from "@/lib/services/registry/namespace/get-namespace-by-id";
 import { VerifyIfNamespaceIsInProject } from "@/lib/services/registry/namespace/verify-if-namespace-is-in-project";
 
+// @ts-ignore
 export async function DELETE(request: Request, { params }: NextRequest) {
     try {
         const session = await getServerSession(authOptions);

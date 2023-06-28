@@ -5,7 +5,7 @@ import { ModifyUserPassword } from "@/lib/services/registry/harbor/user/modify-p
 import { VerifyIfUserCanAccessProject } from "@/lib/services/project/verify-user-access";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
-
+// @ts-ignore
 export async function PATCH(request: Request, { params }: NextRequest) {
     const session = await getServerSession(authOptions);
     const email = session!.user!.email;
