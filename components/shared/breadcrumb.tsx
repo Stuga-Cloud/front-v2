@@ -9,15 +9,13 @@ export interface BreadcrumbItem {
 }
 
 function createUrl(slug: string) {
-    if (!location) return slug;
-    return location.protocol + "//" + location.host + slug;
+    let domain = process.env.NEXT_PUBLIC_DOMAIN!
+
+    return `${domain}/${slug}`
 }
 
 export const Breadcrumb = ({ items }: { items: BreadcrumbItem[] }) => {
-    let localUrl = "";
-    if (location) {
-        localUrl = location.protocol + "//" + location.host;
-    }
+    let domain = process.env.NEXT_PUBLIC_DOMAIN!
     return (
         <nav
             className="fixed left-2 top-2 z-20 flex rounded-lg border border-gray-200 bg-gray-50 px-5 py-3 text-gray-700"
@@ -26,7 +24,7 @@ export const Breadcrumb = ({ items }: { items: BreadcrumbItem[] }) => {
             <ol className="inline-flex items-center space-x-1 md:space-x-3">
                 <li className="inline-flex items-center">
                     <Link
-                        href={localUrl}
+                        href={domain}
                         className="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600"
                     >
                         <Image

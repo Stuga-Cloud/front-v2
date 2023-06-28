@@ -1,23 +1,24 @@
 'use client';
 
 import { Message, ProductDisplay, SuccessDisplay } from "@/components/user/billing";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function Page() {
+    const searchParams = useSearchParams();
   let [message, setMessage] = useState('');
   let [success, setSuccess] = useState(false);
   let [sessionId, setSessionId] = useState('');
 
   useEffect(() => {
     // Check to see if this is a redirect back from Checkout
-    const query = new URLSearchParams(window.location.search);
 
-    if (query.get('success')) {
+    if (searchParams.get('success')) {
       setSuccess(true);
-      setSessionId(query.get('session_id') || '');
+      setSessionId(searchParams.get('session_id') || '');
     }
 
-    if (query.get('canceled')) {
+    if (searchParams.get('canceled')) {
       setSuccess(false);
       setMessage(
         "Order canceled -- continue to shop around and checkout when you're ready."
