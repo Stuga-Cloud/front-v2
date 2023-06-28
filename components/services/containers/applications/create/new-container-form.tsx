@@ -28,6 +28,27 @@ import {
 } from "@/components/services/containers/applications/create/container-creation";
 import { displayImageInRegistryUrl } from "../details/tabs/container-deployment";
 
+export const MAX_REPLICAS = 3;
+
+export const CPU_LIMIT_AVAILABLE_CHOICES: ApplicationCPULimit[] = [
+    { value: 70, unit: "mCPU" },
+    { value: 140, unit: "mCPU" },
+    { value: 280, unit: "mCPU" },
+    { value: 560, unit: "mCPU" },
+    { value: 1120, unit: "mCPU" },
+    // { value: 1680, unit: "mCPU" },
+    // { value: 2240, unit: "mCPU" },
+];
+export const MEMORY_LIMIT_AVAILABLE_CHOICES: ApplicationMemoryLimit[] = [
+    { value: 128, unit: "MB" },
+    { value: 256, unit: "MB" },
+    { value: 512, unit: "MB" },
+    { value: 1024, unit: "MB" },
+    { value: 2048, unit: "MB" },
+    // { value: 4096, unit: "MB" },
+    // { value: 8192, unit: "MB" },
+];
+
 interface Step {
     name: string;
     description: string;
@@ -110,31 +131,12 @@ export default function NewContainerForm({
         ContainerApplicationSecret[]
     >([]);
 
-    const cpuLimitsChoices: ApplicationCPULimit[] = [
-        { value: 70, unit: "mCPU" },
-        { value: 140, unit: "mCPU" },
-        { value: 280, unit: "mCPU" },
-        { value: 560, unit: "mCPU" },
-        { value: 1120, unit: "mCPU" },
-        { value: 1680, unit: "mCPU" },
-        { value: 2240, unit: "mCPU" },
-    ];
-    const memoryLimitsChoices: ApplicationMemoryLimit[] = [
-        { value: 128, unit: "MB" },
-        { value: 256, unit: "MB" },
-        { value: 512, unit: "MB" },
-        { value: 1024, unit: "MB" },
-        { value: 2048, unit: "MB" },
-        { value: 4096, unit: "MB" },
-        { value: 8192, unit: "MB" },
-    ];
-
     const [applicationCpuLimit, setApplicationCpuLimit] = useState<string>(
-        cpuLimitsChoices[0].value.toString(),
+        CPU_LIMIT_AVAILABLE_CHOICES[0].value.toString(),
     );
     useState<string>("");
     const [applicationMemoryLimit, setApplicationMemoryLimit] =
-        useState<string>(memoryLimitsChoices[0].value.toString());
+        useState<string>(MEMORY_LIMIT_AVAILABLE_CHOICES[0].value.toString());
 
     const [isAutoscalingEnabled, setIsAutoscalingEnabled] =
         useState<boolean>(false);
@@ -464,7 +466,31 @@ export default function NewContainerForm({
     };
 
     const isReplicasValid = (replicas: number | undefined) => {
-        return replicas == undefined || (replicas >= 1 && replicas <= 10);
+        return (
+            replicas == undefined || (replicas >= 1 && replicas <= MAX_REPLICAS)
+        );
+    };
+
+    const isCPULimitValid = (cpuLimit: string | undefined) => {
+        return (
+            cpuLimit == undefined ||
+            CPU_LIMIT_AVAILABLE_CHOICES.some(
+                (cpuLimitChoice) =>
+                    `${cpuLimitChoice.value}${cpuLimitChoice.unit}` ===
+                    cpuLimit,
+            )
+        );
+    };
+
+    const isMemoryLimitValid = (memoryLimit: string | undefined) => {
+        return (
+            memoryLimit == undefined ||
+            MEMORY_LIMIT_AVAILABLE_CHOICES.some(
+                (memoryLimitChoice) =>
+                    `${memoryLimitChoice.value}${memoryLimitChoice.unit}` ===
+                    memoryLimit,
+            )
+        );
     };
 
     const isCpuUsageThresholdValid = (
@@ -519,6 +545,16 @@ export default function NewContainerForm({
         if (!isReplicasValid(replicas)) {
             errors.push("Replicas is not valid, it should be between 1 and 10");
         }
+        if (!isCPULimitValid(applicationCpuLimit)) {
+            errors.push(
+                "CPU limit is not valid, please choose a valid value in the available choices",
+            );
+        }
+        if (!isMemoryLimitValid(applicationMemoryLimit)) {
+            errors.push(
+                "Memory limit is not valid, please choose a valid value in the available choices",
+            );
+        }
         if (!isCpuUsageThresholdValid(cpuUsageThreshold)) {
             errors.push(
                 "CPU usage threshold is not valid, it should be >= 0 and <= 100",
@@ -527,6 +563,27 @@ export default function NewContainerForm({
         if (!isMemoryUsageThresholdValid(memoryUsageThreshold)) {
             errors.push(
                 "Memory usage threshold is not valid, it should be >= 0 and <= 100",
+            );
+        }
+        if (
+            !CPU_LIMIT_AVAILABLE_CHOICES.some(
+                (cpuLimit) =>
+                    `${cpuLimit.value}${cpuLimit.unit}` === applicationCpuLimit,
+            )
+        ) {
+            errors.push(
+                "CPU limit is not valid, please choose a valid value in the available choices",
+            );
+        }
+        if (
+            !MEMORY_LIMIT_AVAILABLE_CHOICES.some(
+                (memoryLimit) =>
+                    `${memoryLimit.value}${memoryLimit.unit}` ===
+                    applicationMemoryLimit,
+            )
+        ) {
+            errors.push(
+                "Memory limit is not valid, please choose a valid value in the available choices",
             );
         }
         return errors;
@@ -1119,14 +1176,17 @@ export default function NewContainerForm({
                                                 )
                                             }
                                         >
-                                            {cpuLimitsChoices.map((choice) => (
-                                                <option
-                                                    key={choice.value}
-                                                    value={`${choice.value}${choice.unit}`}
-                                                >
-                                                    {choice.value} {choice.unit}
-                                                </option>
-                                            ))}
+                                            {CPU_LIMIT_AVAILABLE_CHOICES.map(
+                                                (choice) => (
+                                                    <option
+                                                        key={choice.value}
+                                                        value={`${choice.value}${choice.unit}`}
+                                                    >
+                                                        {choice.value}{" "}
+                                                        {choice.unit}
+                                                    </option>
+                                                ),
+                                            )}
                                         </select>
                                         <label
                                             htmlFor="memory-limit"
@@ -1143,7 +1203,7 @@ export default function NewContainerForm({
                                                 )
                                             }
                                         >
-                                            {memoryLimitsChoices.map(
+                                            {MEMORY_LIMIT_AVAILABLE_CHOICES.map(
                                                 (choice) => (
                                                     <option
                                                         key={choice.value}
@@ -1237,7 +1297,7 @@ export default function NewContainerForm({
                                                             }}
                                                             placeholder="Enter Number of Replicas"
                                                             min="0"
-                                                            max="10"
+                                                            max={MAX_REPLICAS}
                                                             required
                                                         />
                                                         {!isReplicasValid(

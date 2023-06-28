@@ -185,13 +185,11 @@ export default function ContainerDeployment({
                     secrets: containerUpdate.applicationSecrets,
                     containerSpecifications: {
                         cpuLimit: {
-                            value: Number(containerUpdate.applicationCpuLimit),
+                            value: containerUpdate.applicationCpuLimit,
                             unit: "mCPU",
                         },
                         memoryLimit: {
-                            value: Number(
-                                containerUpdate.applicationMemoryLimit,
-                            ),
+                            value: containerUpdate.applicationMemoryLimit,
                             unit: ContainerLimitUnit.MB,
                         },
                     },
@@ -369,18 +367,16 @@ export default function ContainerDeployment({
                                                     </h4>
                                                     <p className="text-1xl font-semibold leading-normal text-blue-800 ">
                                                         <Link
-                                                            href={
-                                                                displayImageInRegistryUrl(
-                                                                    containerUpdate
-                                                                        .registry
-                                                                        .url,
-                                                                    containerUpdate.image,
-                                                                    containerUpdate
-                                                                        .registry
-                                                                        .registry,
-                                                                    project.id,
-                                                                )
-                                                            }
+                                                            href={displayImageInRegistryUrl(
+                                                                containerUpdate
+                                                                    .registry
+                                                                    .url,
+                                                                containerUpdate.image,
+                                                                containerUpdate
+                                                                    .registry
+                                                                    .registry,
+                                                                project.id,
+                                                            )}
                                                             target="_blank"
                                                         >
                                                             Here, choose the
