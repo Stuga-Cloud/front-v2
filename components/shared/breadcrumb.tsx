@@ -8,14 +8,7 @@ export interface BreadcrumbItem {
     slug: string;
 }
 
-function createUrl(slug: string) {
-    let domain = process.env.NEXT_PUBLIC_DOMAIN!
-
-    return `${domain}/${slug}`
-}
-
 export const Breadcrumb = ({ items }: { items: BreadcrumbItem[] }) => {
-    let domain = process.env.NEXT_PUBLIC_DOMAIN!
     return (
         <nav
             className="fixed left-2 top-2 z-20 flex rounded-lg border border-gray-200 bg-gray-50 px-5 py-3 text-gray-700"
@@ -24,7 +17,7 @@ export const Breadcrumb = ({ items }: { items: BreadcrumbItem[] }) => {
             <ol className="inline-flex items-center space-x-1 md:space-x-3">
                 <li className="inline-flex items-center">
                     <Link
-                        href={domain}
+                        href='/'
                         className="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600"
                     >
                         <Image
@@ -42,7 +35,7 @@ export const Breadcrumb = ({ items }: { items: BreadcrumbItem[] }) => {
                     <li aria-current="page" key={index}>
                         <div className="flex items-center">
                             <Link
-                                href={createUrl(item.slug)}
+                                href={item.slug}
                                 className="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600"
                             >
                                 <svg
