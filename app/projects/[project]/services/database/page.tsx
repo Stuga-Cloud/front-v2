@@ -1,6 +1,7 @@
 import { Breadcrumb, BreadcrumbItem } from "@/components/shared/breadcrumb";
 import { CheckIcon, CloudCog } from "lucide-react";
 import type { ProjectParam } from "types/param";
+import Image from 'next/image'
 
 const features = [
   {
@@ -105,8 +106,16 @@ export default function DatabaseList({params}: ProjectParam) {
           <div className="py-24 sm:py-32">
             <div className="mx-auto max-w-7xl px-6 lg:px-8">
               <div className="mx-auto max-w-2xl text-center">
-                <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
-                  Deploy to the cloud with confidence
+                <h1 className="mb-2 text-center text-3xl font-extrabold leading-loose leading-relaxed tracking-tight text-gray-900 md:text-4xl lg:text-5xl">
+                    <mark className="rounded bg-purple-400 px-2 leading-relaxed text-white">
+                    Zero
+                    </mark>{" "}
+                    <mark className="rounded bg-red-500 px-2 leading-relaxed text-white">
+                        Knowledge
+                    </mark>{" "}
+                    <mark className="rounded bg-red-500 px-2 leading-relaxed text-white">
+                      DataBase
+                    </mark>{" "}
                 </h1>
                 <p className="mt-6 text-lg leading-8 text-gray-600">
                   Anim aute id magna aliqua ad ad non deserunt sunt. Qui irure qui lorem cupidatat commodo. Elit sunt
@@ -126,9 +135,9 @@ export default function DatabaseList({params}: ProjectParam) {
               </div>
               <div className="mt-16 flow-root sm:mt-24">
                 <div className="-m-2 rounded-xl bg-gray-900/5 p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4">
-                  <img
-                    src="https://tailwindui.com/img/component-images/project-app-screenshot.png"
-                    alt="App screenshot"
+                  <Image
+                    src="/lock-zkd.png"
+                    alt="lock, image presenting an abstract idea of the product"
                     width={2432}
                     height={1442}
                     className="rounded-md shadow-2xl ring-1 ring-gray-900/10"
