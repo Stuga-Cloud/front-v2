@@ -3,6 +3,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getServerSession } from "next-auth/next";
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { log } from "console";
 
 export interface ImageInformationsHarborResponse {
     artifact_count: number;
@@ -61,7 +62,7 @@ export async function GET(request: Request, { params }: NextRequest) {
                     Authorization: `Basic ${process.env.REGISTRY_AUTH_TOKEN}`,
                 },
             },
-        );
+        );        
 
         const data: ImageInformationsHarborResponse[] = await res.json();
 
