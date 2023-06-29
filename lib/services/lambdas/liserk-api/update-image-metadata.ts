@@ -1,24 +1,15 @@
-import axios, { Axios, AxiosError } from "axios";
+import { AxiosError } from "axios";
 import { InternalServerError } from "../../error/error";
+import { InitLambdaImageDto } from "./init-lambda-image";
+import axios from "axios";
 
-export interface InitLambdaImageDto {
-    id: string;
-    image_name: string;
-    ram_mega: number;
-    max_time: number;
-    cpu: number;
-    storage_mega: number;
-    minimum_instance_number: number;
-    maximum_instance_number: number;
-    environment_variables: {[key: string]: string}[];
-}
-
-export const InitLambdaImage = async (
+export const UpdateImageMetadata = async (
     initLambdaImageDto: InitLambdaImageDto,
 ) => {
+    console.log("update image metadata");
     try {
-        await axios.post(
-            process.env.LISERK_API_ENDPOINT + `/images`,
+        const result = await axios.put(
+            process.env.LISERK_API_ENDPOINT + `/images/metadata`,
             initLambdaImageDto,
             {
                 headers: {
@@ -27,6 +18,7 @@ export const InitLambdaImage = async (
                 },
             },
         );
+        console.log(result.data);
     } catch (e) {
         if (e instanceof AxiosError) {
             console.error(e.response?.data);

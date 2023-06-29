@@ -78,9 +78,8 @@ export default function LambdaDetail({
     const handleUpdateLambda = async (lambdaParam: LambdaModel) => {
         try {
             throwIfLambdaCreationCandidateIsNotValid(lambda!);
-            console.log("zeo problems");
+            
         } catch (error) {
-            console.log("problème dans le throw");
             if (error instanceof Error) {
                 setErrorFormMessage(error.message);
                 return;

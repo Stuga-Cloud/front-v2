@@ -9,7 +9,20 @@ import ResponseService from "@/lib/next-response";
 import { decrypt, encrypt } from "@/lib/services/utils/crypt";
 import { LambdaModel } from "@/lib/models/lambdas/lambda";
 import { GetLambdaByNameInProject } from "@/lib/services/lambdas/get-image-by-name";
-import { checkSettingsUpdate, checkVisibility } from "./check-update";
+import {
+    checkSettingsUpdate,
+    checkVisibility,
+    hasGatewayToUpdate,
+    hasToDeletForRecreate,
+    hasToGenerateApiKey,
+    hasMetadataToUpdate,
+} from "./check-update";
+import { InitLambdaImage } from "@/lib/services/lambdas/liserk-api/init-lambda-image";
+import { InitApiKey } from "@/lib/services/lambdas/liserk-api/init-lambda-api-key-gateway";
+import { CreateGateway } from "@/lib/services/lambdas/liserk-api/create-gateway";
+import { DeleteGatewayLambda } from "@/lib/services/lambdas/liserk-api/delete-gateway-lambda";
+import { UpdateImageMetadata } from "@/lib/services/lambdas/liserk-api/update-image-metadata";
+import { DeleteLambda } from "@/lib/services/lambdas/liserk-api/delete-lambda";
 
 // @ts-ignore
 export async function DELETE(request: Request, { params }: NextRequest) {
@@ -35,6 +48,23 @@ export async function DELETE(request: Request, { params }: NextRequest) {
 
     if (!lambda) {
         return ResponseService.notFound("lambda-not-found");
+    }
+
+    try {
+        await DeleteLambda({
+            lambdaId: lambda.id,
+        });
+    } catch (e) {
+        console.log("problem with delete lambda");
+    }
+
+    try {
+        await DeleteGatewayLambda({
+            lambdaName: lambda.name,
+            projectName: projectGetOrNextResponse.name,
+        });
+    } catch (e) {
+        console.log("problem with delete gateway lambda");
     }
 
     await prisma.lambda.delete({
@@ -94,6 +124,8 @@ export async function PUT(request: Request, { params }: NextRequest) {
     const req: LambdaModel = await request.json();
     const projectId = params!.project;
     const lambdaId = params!.lambdaId;
+    let stepUpdate = "init";
+    console.log(stepUpdate);
 
     const projectGetOrNextResponse = await VerifyIfUserCanAccessProject(
         projectId,
@@ -134,7 +166,8 @@ export async function PUT(request: Request, { params }: NextRequest) {
             );
         }
     }
-
+    stepUpdate = "envVars";
+    console.log(stepUpdate);
     const envVarCrypted = req.environmentVariables.map((envVar) => {
         return {
             key: encrypt(envVar.key),
@@ -142,8 +175,8 @@ export async function PUT(request: Request, { params }: NextRequest) {
         };
     });
 
-    await checkSettingsUpdate(req, lambda);
-    await checkVisibility(req, lambda);
+    // await checkSettingsUpdate(req, lambda);
+    // await checkVisibility(req, lambda);
 
     const envVarDecrypted = lambda.envVars.map((envVar) => {
         const environmentFormat = envVar as { key: string; value: string };
@@ -153,6 +186,91 @@ export async function PUT(request: Request, { params }: NextRequest) {
         };
     });
 
+    stepUpdate = "hasDeleteForRecreate";
+    console.log(stepUpdate);
+    try {
+        if (hasToDeletForRecreate(req, lambda)) {
+            stepUpdate = "enter in delete for recreate";
+            console.log(stepUpdate);
+            await DeleteLambda({
+                lambdaId: lambda.id,
+            });
+            stepUpdate = "Init lambda image";
+            console.log(stepUpdate);
+            await InitLambdaImage({
+                id: lambda.id,
+                image_name: req.imageName,
+                ram_mega: req.memoryLimit.value,
+                max_time: req.timeout,
+                cpu: req.cpuLimit.value,
+                storage_mega: 2,
+                minimum_instance_number: req.minInstanceNumber,
+                maximum_instance_number: req.maxInstanceNumber,
+                environment_variables: req.environmentVariables,
+            });
+        } else {
+            stepUpdate = "hasGatewayToUpdate";
+            console.log(stepUpdate);
+            if (hasGatewayToUpdate(req, lambda)) {
+                stepUpdate = "enter in update gateway";
+                console.log(stepUpdate);
+                await DeleteGatewayLambda({
+                    projectName: projectGetOrNextResponse.name,
+                    lambdaName: lambda.name,
+                });
+                await CreateGateway({
+                    projectName: projectGetOrNextResponse.name,
+                    lambdaName: req.name,
+                    lambdaId: lambda.id,
+                    visibility: req.confidentiality.visibility as
+                        | "public"
+                        | "private",
+                });
+            }
+
+            stepUpdate = "hasMetadataToUpdate";
+            console.log(stepUpdate);
+            if (hasMetadataToUpdate(req, lambda)) {
+                stepUpdate = "enter in update metadata";
+                console.log(stepUpdate);
+                await UpdateImageMetadata({
+                    id: lambda.id,
+                    image_name: req.imageName,
+                    ram_mega: req.memoryLimit.value,
+                    max_time: req.timeout,
+                    cpu: req.cpuLimit.value,
+                    storage_mega: 2,
+                    minimum_instance_number: req.minInstanceNumber,
+                    maximum_instance_number: req.maxInstanceNumber,
+                    environment_variables: req.environmentVariables,
+                });
+            }
+        }
+
+        stepUpdate = "hasToGenerateApiKey";
+        console.log(stepUpdate);
+        if (await hasToGenerateApiKey(req, projectGetOrNextResponse)) {
+            const apikey = await InitApiKey({
+                projectName: projectGetOrNextResponse.name,
+            });
+            // @ts-ignore
+            req.confidentiality.access!.apiKey = apikey.apiKey;
+        }
+    } catch (e) {
+        stepUpdate = "ERRORUPDATE ADD";
+        console.log(stepUpdate);
+        if (e instanceof StugaError) {
+            return StugaErrorToNextResponse(e);
+        }
+        return ResponseService.internalServerError("internal-server-error", e);
+    }
+
+    const visiblityPath =
+        req.confidentiality.visibility === "private" ? "api-key" : "public";
+    const urlAccess = `${process.env.GATEWAY_URL_ACCESS}/${projectGetOrNextResponse.name}/${visiblityPath}/${req.name}`;
+
+    stepUpdate = "BEFORE UPDATE DB";
+    console.log(stepUpdate);
     await prisma.lambda.update({
         where: {
             id: lambdaId,
@@ -170,6 +288,7 @@ export async function PUT(request: Request, { params }: NextRequest) {
             maxInstances: req.maxInstanceNumber,
             cpuLimitmCPU: req.cpuLimit.value,
             memoryLimitMB: req.memoryLimit.value,
+            urlAccess: urlAccess,
         },
     });
 

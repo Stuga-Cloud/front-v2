@@ -63,8 +63,8 @@ export default function LambdaSettingsForm({
             <select
                 className="bg-gray-40 mb-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 "
                 onChange={(e) => {
-                    const valueSplit = e.target.value.split(" ");
-                    const memoryLimit = {value: parseInt(valueSplit[0]), unit: valueSplit[1] }
+                    const valueSplit = e.target.value.split("M");
+                    const memoryLimit = {value: parseInt(valueSplit[0]), unit: "MB" }
                     onChange(cpuConfig, memoryLimit as LambdaMemoryLimit, timeout);
                 }}
                 value={`${memoryConfig.value}${memoryConfig.unit}`}

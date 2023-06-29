@@ -25,7 +25,9 @@ export default function LambdaConfidentialityForm({
     value: LambdaVisibility;
     handleVisibilityChange: (lambdaVisibility: LambdaVisibility) => void;
 }) {
-    const [apiKey, setApiKey] = useState<string | null>(value.access?.apiKey || null);
+    const [apiKey, setApiKey] = useState<string | null>(
+        value.access?.apiKey || null,
+    );
     return (
         <div className="mb-10 ms-5 flex min-h-96 w-full flex-col">
             <RadioButtons
@@ -72,7 +74,20 @@ export default function LambdaConfidentialityForm({
                             You can access you lambda with the following API key
                         </p>
                     </div>
-                    <button
+                    {value.access?.apiKey === undefined ? (
+                        <div className="mt-4 rounded-lg border-2 border-green-500 bg-white p-5">
+                            <p className="text-m font-bold text-gray-500">
+                                We will generate an api key for you at the creation step
+                            </p>
+                        </div>
+                    ) : (
+                        <div className="mt-4 rounded-lg border-2 border-green-500 bg-white p-5">
+                            <p className="text-m font-bold text-gray-500">
+                                {apiKey}
+                            </p>
+                        </div>
+                    )}
+                    {/* <button
                         type="button"
                         className="Button stuga-primary-color w-fit"
                         onClick={async () => {
@@ -97,7 +112,7 @@ export default function LambdaConfidentialityForm({
                                 {apiKey}
                             </p>
                         </div>
-                    )}
+                    )} */}
                 </>
             )}
         </div>

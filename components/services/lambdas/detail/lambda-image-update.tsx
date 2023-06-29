@@ -107,7 +107,7 @@ export default function LambdaImageUpdate({
                     }}
                     placeholder="organization/my-first-application:latest"
                 />
-                <h4 className="pt-8 text-2xl font-bold ">
+                {/* <h4 className="pt-8 text-2xl font-bold ">
                     The used image is at:
                 </h4>
                 <p className="text-1xl font-semibold leading-normal text-blue-800 ">
@@ -118,7 +118,7 @@ export default function LambdaImageUpdate({
                         {registry.url}/r/
                         {imageName}
                     </Link>
-                </p>
+                </p> */}
             </div>
             <div className="mt-10 flex justify-between">
                 <div className="mt-10 w-2/5">

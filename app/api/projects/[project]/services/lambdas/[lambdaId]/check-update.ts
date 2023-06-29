@@ -1,14 +1,8 @@
 import { LambdaModel } from "@/lib/models/lambdas/lambda";
-import { Lambda } from "@prisma/client";
+import { Lambda, Project } from "@prisma/client";
 import { NextResponse } from "next/server";
-import { getLambdaImageInProject } from '@/lib/services/lambdas/get-lambda-image-in-user-namespaces';
-import { Registry } from "@/lib/models/lambdas/lambda-create";
-import { StugaErrorToNextResponse } from "@/lib/services/error/stuga-error-to-next-response";
-import { StugaError } from "@/lib/services/error/error";
-import ResponseService from "@/lib/next-response";
-import { checkIfDockerHubImageExists } from "@/lib/services/utils/check-if-docker-hub-image-exists";
-import { getProjectNamespaces } from "@/lib/services/registry/namespace/get-project-namespaces";
 import { verifyIfImageExists } from "@/lib/services/lambdas/verify-if-image-exists";
+import { GetAPiKey } from "@/lib/services/lambdas/liserk-api/get-api-key";
 
 export const checkImageUpdate = async (
     projectId: string,
@@ -16,7 +10,7 @@ export const checkImageUpdate = async (
     lambdaRegister: Lambda,
 ) => {
     if (lambdaModel.registry !== lambdaRegister.registry) {
-        console.log("registry change redeploy")
+        console.log("registry change redeploy");
         const response = await verifyIfImageExists(
             lambdaModel.imageName,
             projectId,
@@ -27,14 +21,16 @@ export const checkImageUpdate = async (
         }
     }
 
-    if (lambdaModel.imageName !== lambdaRegister.imageName && lambdaModel.registry === lambdaRegister.registry) {
-        console.log("image change but not registry")
+    if (
+        lambdaModel.imageName !== lambdaRegister.imageName &&
+        lambdaModel.registry === lambdaRegister.registry
+    ) {
+        console.log("image change but not registry");
         console.log({
             name: lambdaModel.imageName,
             projectId,
             registry: lambdaModel.registry,
-       
-        })
+        });
         const response = await verifyIfImageExists(
             lambdaModel.imageName,
             projectId,
@@ -45,7 +41,6 @@ export const checkImageUpdate = async (
         }
     }
 };
-
 
 export const checkSettingsUpdate = async (
     lambdaModel: LambdaModel,
@@ -78,6 +73,83 @@ export const checkVisibility = async (
             // delete dans la gateway la visibility qui est public
         }
     }
+};
 
-    
-}
+export const hasToDeletForRecreate = (
+    newLambda: LambdaModel,
+    oldLambda: Lambda,
+): boolean => {
+    return (
+        newLambda.imageName !== oldLambda.imageName ||
+        newLambda.cpuLimit.value !== oldLambda.cpuLimitmCPU ||
+        newLambda.memoryLimit.value !== oldLambda.memoryLimitMB
+    );
+};
+
+export const hasGatewayToUpdate = (
+    newLambda: LambdaModel,
+    oldLambda: Lambda,
+): boolean => {
+    return (
+        newLambda.confidentiality.visibility !== oldLambda.visibility ||
+        newLambda.name !== oldLambda.name
+    );
+};
+
+export const hasToGenerateApiKey = async (
+    newLambda: LambdaModel,
+    project: Project,
+): Promise<boolean> => {
+    try {
+        await GetAPiKey({ projectName: project.name });
+        return false;
+    } catch (e) {
+        console.log("error in api key generate");
+        console.log(newLambda.confidentiality.visibility);
+        return (
+            newLambda.confidentiality.visibility === "private"
+        );
+    }
+};
+
+export const hasMetadataToUpdate = (
+    newLambda: LambdaModel,
+    oldLambda: Lambda,
+): boolean => {
+    const envVarsAreDifferent = !areArraysEqual(
+        newLambda.environmentVariables,
+        oldLambda.envVars as KeyValueArray,
+    );
+    return (
+        newLambda.timeout !== oldLambda.timeoutSeconds ||
+        envVarsAreDifferent ||
+        newLambda.minInstanceNumber !== oldLambda.minInstances ||
+        newLambda.maxInstanceNumber !== oldLambda.maxInstances ||
+        newLambda.imageName !== oldLambda.imageName ||
+        newLambda.cpuLimit.value !== oldLambda.cpuLimitmCPU ||
+        newLambda.memoryLimit.value !== oldLambda.memoryLimitMB
+    );
+};
+
+type KeyValueArray = { key: string; value: string }[];
+
+const areArraysEqual = (a: KeyValueArray, b: KeyValueArray): boolean => {
+    // Si les deux tableaux ne sont pas de la même longueur, ils ne peuvent pas être égaux
+    if (a.length !== b.length) return false;
+
+    // Trie les tableaux par les clés
+    const sortedA = a.sort((x, y) => x.key.localeCompare(y.key));
+    const sortedB = b.sort((x, y) => x.key.localeCompare(y.key));
+
+    // Vérifie que chaque objet dans les tableaux triés est le même
+    for (let i = 0; i < sortedA.length; i++) {
+        if (
+            sortedA[i].key !== sortedB[i].key ||
+            sortedA[i].value !== sortedB[i].value
+        )
+            return false;
+    }
+
+    // Si nous arrivons à ce point, les tableaux doivent être égaux
+    return true;
+};

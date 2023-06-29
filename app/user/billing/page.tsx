@@ -25,12 +25,29 @@ export default function Page() {
       );
     }
   }, [sessionId]);
+  // useEffect(() => {
+  //   // Check to see if this is a redirect back from Checkout
+  //   const query = new URLSearchParams(window.location.search);
 
-  if (!success && message === '') {
-    return <ProductDisplay />;
-  } else if (success && sessionId !== '') {
-    return <SuccessDisplay sessionId={sessionId} />;
-  } else {
-    return <Message message={message} />;
-  }
+  //   if (query.get('success')) {
+  //     setSuccess(true);
+  //     setSessionId(query.get('session_id') || '');
+  //   }
+
+  //   if (query.get('canceled')) {
+  //     setSuccess(false);
+  //     setMessage(
+  //       "Order canceled -- continue to shop around and checkout when you're ready."
+  //     );
+  //   }
+  // }, [sessionId]);
+
+  // if (!success && message === '') {
+  //   return <ProductDisplay />;
+  // } else if (success && sessionId !== '') {
+  //   return <SuccessDisplay sessionId={sessionId} />;
+  // } else {
+  //   return <Message message={message} />;
+  // }
+  return <Message message={message} />;
 };

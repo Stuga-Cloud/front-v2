@@ -3,10 +3,13 @@ import { InfoCircledIcon } from "@radix-ui/react-icons";
 export default function LambdaNameForm({
     isLambdaNameValid,
     name,
+    urlAccess,
     handleChangeName,
 }: {
     isLambdaNameValid: (name: string) => boolean;
+    urlAccess: string;
     name: string;
+    
     handleChangeName: (name: string) => void;
 }) {
     return (
@@ -58,13 +61,10 @@ export default function LambdaNameForm({
                         </h4>
                         <a
                             className="text-1xl font-semibold leading-normal text-blue-800"
-                            href={`https://${name}.pomme.${process.env.NEXT_PUBLIC_BASE_CONTAINER_DOMAIN}`}
-                            target="_blank"
+                            href={`#`}
                             rel="noreferrer"
                         >
-                            https://
-                            {name}.pomme.
-                            {process.env.NEXT_PUBLIC_BASE_CONTAINER_DOMAIN}
+                            {urlAccess}
                         </a>
                         <p className="text-sm font-semibold text-gray-500">
                             (This URL will be available once you have completed

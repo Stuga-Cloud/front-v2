@@ -189,6 +189,7 @@ export async function POST(request: Request, { params }: NextRequest) {
             storage_mega: 2,
             minimum_instance_number: req.minInstanceNumber,
             maximum_instance_number: req.maxInstanceNumber,
+            environment_variables: req.environmentVariables,
         });
 
         stateCreated = "all-lambda-created";
