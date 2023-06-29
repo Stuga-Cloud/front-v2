@@ -1,56 +1,46 @@
 import { Breadcrumb, BreadcrumbItem } from "@/components/shared/breadcrumb";
-import { CheckIcon, CloudCog } from "lucide-react";
+import { Key, Expand, FileDigit, CloudCog } from "lucide-react";
 import type { ProjectParam } from "types/param";
 import Image from 'next/image'
 
 const features = [
   {
-    name: 'Push to deploy',
+    name: 'Data-in-Transit Encryption',
     description:
-      'Morbi viverra dui mi arcu sed. Tellus semper adipiscing suspendisse semper morbi. Odio urna massa nunc massa.',
-    icon: CloudCog,
+'Keep your data safe during transmission. Our database employs strong encryption protocols to secure data as it moves between client and server, providing an additional layer of protection against interception and tampering.',
+    icon: Key,
   },
   {
-    name: 'SSL certificates',
+    name: 'Scalability',
     description:
-      'Sit quis amet rutrum tellus ullamcorper ultricies libero dolor eget. Sem sodales gravida quam turpis enim lacus amet.',
-    icon: CloudCog,
+'Scale your data storage effortlessly. Our database is designed to handle large volumes of data and accommodate growing demands. Benefit from horizontal scalability, allowing you to expand your storage capacity as your needs evolve.',
+    icon: Expand,
   },
   {
-    name: 'Simple queues',
+    name: 'Data-at-Rest Encryption',
     description:
-      'Quisque est vel vulputate cursus. Risus proin diam nunc commodo. Lobortis auctor congue commodo diam neque.',
-    icon: CloudCog,
+'Rest easy knowing that your data is encrypted at rest. Our database implements robust encryption mechanisms that safeguard your sensitive information.',
+    icon: FileDigit,
   },
   {
-    name: 'Advanced security',
+    name: 'Data-in-Use Encryption',
     description:
-      'Arcu egestas dolor vel iaculis in ipsum mauris. Tincidunt mattis aliquet hac quis. Id hac maecenas ac donec pharetra eget.',
+    'Data-in-Use encryption protects data while it is actively being processed or accessed, ensuring its security during active operations.',
     icon: CloudCog,
   },
 ]
+
 const tiers = [
-  {
-    name: 'Freelancer',
-    id: 'tier-freelancer',
-    href: '#',
-    priceMonthly: '$24',
-    description: 'The essentials to provide your best work for clients.',
-    features: ['5 products', 'Up to 1,000 subscribers', 'Basic analytics', '48-hour support response time'],
-    mostPopular: false,
-  },
   {
     name: 'Startup',
     id: 'tier-startup',
     href: '#',
-    priceMonthly: '$32',
+    priceMonthly: '$120',
     description: 'A plan that scales with your rapidly growing business.',
     features: [
-      '25 products',
+      '1Go of storage',
       'Up to 10,000 subscribers',
       'Advanced analytics',
-      '24-hour support response time',
-      'Marketing automations',
     ],
     mostPopular: true,
   },
@@ -58,27 +48,46 @@ const tiers = [
     name: 'Enterprise',
     id: 'tier-enterprise',
     href: '#',
-    priceMonthly: '$48',
+    priceMonthly: '$300',
     description: 'Dedicated support and infrastructure for your company.',
     features: [
       'Unlimited products',
-      'Unlimited subscribers',
+      '24-hour support response time',
       'Advanced analytics',
       '1-hour, dedicated support response time',
-      'Marketing automations',
     ],
     mostPopular: false,
   },
 ]
+
 const faqs = [
   {
     id: 1,
-    question: "What's the best thing about Switzerland?",
-    answer:
-      "I don't know, but the flag is a big plus. Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas cupiditate laboriosam fugiat.",
+    question: "Where are my data stored?",
+    answer: "Your data is securely stored in our state-of-the-art data centers located in France.",
   },
-  // More questions...
+  {
+    id: 2,
+    question: "What encryption methods do you use to protect data?",
+    answer: "We utilize advanced encryption algorithms such as AES-256 to ensure the highest level of data protection.",
+  },
+  {
+    id: 3,
+    question: "Is my data backed up regularly?",
+    answer: "Yes, we have regular backup procedures in place to ensure the safety and availability of your data.",
+  },
+  {
+    id: 4,
+    question: "Can I access and control my data at any time?",
+    answer: "Absolutely! You have full control and access to your data at all times through our secure online portal.",
+  },
+  {
+    id: 5,
+    question: "How do you handle data breaches?",
+    answer: "In the event of a data breach, we have comprehensive incident response protocols in place to minimize the impact and notify affected parties as required by applicable laws and regulations.",
+  }
 ]
+
 export default function DatabaseList({params}: ProjectParam) {
   const { project } = params;
   const breadcrumbItem: BreadcrumbItem[] = [ 
@@ -118,8 +127,7 @@ export default function DatabaseList({params}: ProjectParam) {
                     </mark>{" "}
                 </h1>
                 <p className="mt-6 text-lg leading-8 text-gray-600">
-                  Anim aute id magna aliqua ad ad non deserunt sunt. Qui irure qui lorem cupidatat commodo. Elit sunt
-                  amet fugiat veniam occaecat fugiat aliqua.
+                  Experience Unmatched Data Security with our Zero Knowledge Database
                 </p>
                 <div className="mt-10 flex items-center justify-center gap-x-6">
                   <a
@@ -128,7 +136,7 @@ export default function DatabaseList({params}: ProjectParam) {
                   >
                     Get started
                   </a>
-                  <a href="#" className="text-sm font-semibold leading-6 text-gray-900">
+                  <a href="https://docs.rs/liserk-client/latest/liserk_client/index.html" className="text-sm font-semibold leading-6 text-gray-900">
                     Learn more <span aria-hidden="true">→</span>
                   </a>
                 </div>
@@ -163,37 +171,37 @@ export default function DatabaseList({params}: ProjectParam) {
         {/* Logo cloud */}
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mx-auto grid max-w-lg grid-cols-4 items-center gap-x-8 gap-y-12 sm:max-w-xl sm:grid-cols-6 sm:gap-x-10 sm:gap-y-14 lg:mx-0 lg:max-w-none lg:grid-cols-5">
-            <img
+            <Image
               className="col-span-2 max-h-12 w-full object-contain lg:col-span-1"
-              src="https://tailwindui.com/img/logos/158x48/transistor-logo-gray-900.svg"
-              alt="Transistor"
+              src="/scaleway.webp"
+              alt="scaleway logo"
               width={158}
               height={48}
             />
-            <img
+            <Image
               className="col-span-2 max-h-12 w-full object-contain lg:col-span-1"
-              src="https://tailwindui.com/img/logos/158x48/reform-logo-gray-900.svg"
-              alt="Reform"
+              src="/wizards-ultra-hd.png"
+              alt="wizards technologies logo"
               width={158}
               height={48}
             />
-            <img
+            <Image
               className="col-span-2 max-h-12 w-full object-contain lg:col-span-1"
-              src="https://tailwindui.com/img/logos/158x48/tuple-logo-gray-900.svg"
-              alt="Tuple"
+              src="/wemanity.webp"
+              alt="Wemanity"
               width={158}
               height={48}
             />
-            <img
+            <Image
               className="col-span-2 max-h-12 w-full object-contain sm:col-start-2 lg:col-span-1"
-              src="https://tailwindui.com/img/logos/158x48/savvycal-logo-gray-900.svg"
-              alt="SavvyCal"
+              src="/wedigitalgarden.webp"
+              alt="We digital garden logo"
               width={158}
               height={48}
             />
-            <img
+            <Image
               className="col-span-2 col-start-2 max-h-12 w-full object-contain sm:col-start-auto lg:col-span-1"
-              src="https://tailwindui.com/img/logos/158x48/statamic-logo-gray-900.svg"
+              src="/affluences.webp"
               alt="Statamic"
               width={158}
               height={48}
@@ -202,7 +210,7 @@ export default function DatabaseList({params}: ProjectParam) {
           <div className="mt-16 flex justify-center">
             <p className="relative rounded-full px-4 py-1.5 text-sm leading-6 text-gray-600 ring-1 ring-inset ring-gray-900/10 hover:ring-gray-900/20">
               <span className="hidden md:inline">
-                Transistor saves up to $40,000 per year, per employee by working with us.
+                Stuga Pharmacy has secured their data with our help.
               </span>
               <a href="#" className="font-semibold text-indigo-600">
                 <span className="absolute inset-0" aria-hidden="true" /> Read our case study{' '}
@@ -215,13 +223,12 @@ export default function DatabaseList({params}: ProjectParam) {
         {/* Feature section */}
         <div className="mx-auto mt-32 max-w-7xl px-6 sm:mt-56 lg:px-8">
           <div className="mx-auto max-w-2xl lg:text-center">
-            <h2 className="text-base font-semibold leading-7 text-indigo-600">Deploy faster</h2>
+            <h2 className="text-base font-semibold leading-7 text-indigo-600">Advanced Security</h2>
             <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-              Everything you need to deploy your app
+              Key Features of Our Secure Database Solution
             </p>
             <p className="mt-6 text-lg leading-8 text-gray-600">
-              Quis tellus eget adipiscing convallis sit sit eget aliquet quis. Suspendisse eget egestas a elementum
-              pulvinar et feugiat blandit at. In mi viverra elit nunc.
+              Protect and Secure Your Sensitive Data with State-of-the-Art Technology from stuga cloud
             </p>
           </div>
           <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">
@@ -244,10 +251,12 @@ export default function DatabaseList({params}: ProjectParam) {
         {/* Testimonial section */}
         <div className="mx-auto mt-32 max-w-7xl sm:mt-56 sm:px-6 lg:px-8">
           <div className="relative overflow-hidden bg-gray-900 px-6 py-20 shadow-xl sm:rounded-3xl sm:px-10 sm:py-24 md:px-12 lg:px-20">
-            <img
+            <Image
               className="absolute inset-0 h-full w-full object-cover brightness-150 saturate-0"
-              src="https://images.unsplash.com/photo-1601381718415-a05fb0a261f3?ixid=MXwxMjA3fDB8MHxwcm9maWxlLXBhZ2V8ODl8fHxlbnwwfHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1216&q=80"
-              alt=""
+              src="/Ocean-backgrounds.webp"
+              width={1900}
+              height={1200}
+              alt="ocean with sunrise"
             />
             <div className="absolute inset-0 bg-gray-900/90 mix-blend-multiply" />
             <div className="absolute -left-80 -top-56 transform-gpu blur-3xl" aria-hidden="true">
@@ -271,19 +280,17 @@ export default function DatabaseList({params}: ProjectParam) {
                 }}
               />
             </div>
-            <div className="relative mx-auto max-w-2xl lg:mx-0">
-              <img className="h-12 w-auto" src="https://tailwindui.com/img/logos/workcation-logo-white.svg" alt="" />
+            <div className="relative mx-auto max-w-2xl lg:mx-0 text-base text-white">
               <figure>
                 <blockquote className="mt-6 text-lg font-semibold text-white sm:text-xl sm:leading-8">
                   <p>
-                    “Amet amet eget scelerisque tellus sit neque faucibus non eleifend. Integer eu praesent at a. Ornare
-                    arcu gravida natoque erat et cursus tortor consequat at. Vulputate gravida sociis enim nullam
-                    ultricies habitant malesuada lorem ac.”
+                    &quot;My experience with Stuga Pharmacy has been nothing short of exceptional. Their advanced data security measures have provided me with peace of mind, knowing that my sensitive information is safeguarded.
+                    I highly recommend their services to anyone looking for top-notch data protection.&quot;
                   </p>
                 </blockquote>
                 <figcaption className="mt-6 text-base text-white">
-                  <div className="font-semibold">Judith Black</div>
-                  <div className="mt-1">CEO of Tuple</div>
+                  <div className="font-semibold">Réda Maizate</div>
+                  <div className="mt-1">Data enginner at Affluences</div>
                 </figcaption>
               </figure>
             </div>
@@ -303,7 +310,7 @@ export default function DatabaseList({params}: ProjectParam) {
               Distinctio et nulla eum soluta et neque labore quibusdam. Saepe et quasi iusto modi velit ut non voluptas
               in. Explicabo id ut laborum.
             </p>
-            <div className="isolate mx-auto mt-16 grid max-w-md grid-cols-1 gap-y-8 sm:mt-20 lg:mx-0 lg:max-w-none lg:grid-cols-3">
+            <div className="isolate mx-auto mt-16 grid max-w-md grid-cols-1 gap-y-8 sm:mt-20 lg:mx-0 lg:max-w-none lg:grid-cols-2">
               {tiers.map((tier, tierIdx) => (
                 <div
                   key={tier.id}
@@ -327,7 +334,7 @@ export default function DatabaseList({params}: ProjectParam) {
                       </h3>
                       {tier.mostPopular ? (
                         <p className="rounded-full bg-indigo-600/10 px-2.5 py-1 text-xs font-semibold leading-5 text-indigo-600">
-                          Most popular
+                          comming soon
                         </p>
                       ) : null}
                     </div>
@@ -349,12 +356,12 @@ export default function DatabaseList({params}: ProjectParam) {
                     aria-describedby={tier.id}
                     className={`
                       ${tier.mostPopular
-                        ? 'bg-indigo-600 text-white shadow-sm hover:bg-indigo-500'
+                        ? 'bg-indigo-600 text-white shadow-sm opacity-25 hover:bg-indigo-500'
                         : 'text-indigo-600 ring-1 ring-inset ring-indigo-200 hover:ring-indigo-300'}
                       mt-8 block rounded-md py-2 px-3 text-center text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600`
                     }
                   >
-                    Buy plan
+                    {tier.mostPopular ? "Comming Soon" : "Contact-Us"}
                   </a>
                 </div>
               ))}
@@ -375,56 +382,6 @@ export default function DatabaseList({params}: ProjectParam) {
               </div>
             ))}
           </dl>
-        </div>
-
-        {/* CTA section */}
-        <div className="relative -z-10 mt-32 px-6 lg:px-8">
-          <div
-            className="absolute inset-x-0 top-1/2 -z-10 flex -translate-y-1/2 transform-gpu justify-center overflow-hidden blur-3xl sm:bottom-0 sm:right-[calc(50%-6rem)] sm:top-auto sm:translate-y-0 sm:transform-gpu sm:justify-end"
-            aria-hidden="true"
-          >
-            <div
-              className="aspect-[1108/632] w-[69.25rem] flex-none bg-gradient-to-r from-[#ff80b5] to-[#9089fc] opacity-25"
-              style={{
-                clipPath:
-                  'polygon(73.6% 48.6%, 91.7% 88.5%, 100% 53.9%, 97.4% 18.1%, 92.5% 15.4%, 75.7% 36.3%, 55.3% 52.8%, 46.5% 50.9%, 45% 37.4%, 50.3% 13.1%, 21.3% 36.2%, 0.1% 0.1%, 5.4% 49.1%, 21.4% 36.4%, 58.9% 100%, 73.6% 48.6%)',
-              }}
-            />
-          </div>
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-              Boost your productivity.
-              <br />
-              Start using our app today.
-            </h2>
-            <p className="mx-auto mt-6 max-w-xl text-lg leading-8 text-gray-600">
-              Incididunt sint fugiat pariatur cupidatat consectetur sit cillum anim id veniam aliqua proident excepteur
-              commodo do ea.
-            </p>
-            <div className="mt-10 flex items-center justify-center gap-x-6">
-              <a
-                href="#"
-                className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-              >
-                Get started
-              </a>
-              <a href="#" className="text-sm font-semibold leading-6 text-gray-900">
-                Learn more <span aria-hidden="true">→</span>
-              </a>
-            </div>
-          </div>
-          <div
-            className="absolute left-1/2 right-0 top-full -z-10 hidden -translate-y-1/2 transform-gpu overflow-hidden blur-3xl sm:block"
-            aria-hidden="true"
-          >
-            <div
-              className="aspect-[1155/678] w-[72.1875rem] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30"
-              style={{
-                clipPath:
-                  'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)',
-              }}
-            />
-          </div>
         </div>
       </main>
       </>
