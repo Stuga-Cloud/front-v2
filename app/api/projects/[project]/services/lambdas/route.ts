@@ -260,7 +260,7 @@ export async function GET(request: Request, { params }: NextRequest) {
                 projectId: projectId,
             },
         });
-        console.log(lambdas[0].createdAt);
+        
         return ResponseService.success(lambdas);
     } catch (e) {
         return ResponseService.internalServerError("internal-server-error", e);

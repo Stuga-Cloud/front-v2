@@ -22,12 +22,13 @@ export default function LambdasDashboard({
         setLoading(true);
         try {
             await DeleteLambda({ lambdaId, projectId });
+            console.log("print after delete")
+            await afterDelete();
             toastEventEmitter.emit("pop", {
                 type: "success",
                 mesage: "lambda deleted successfully",
-                duration: 2000,
+                duration: 5000,
             });
-            await afterDelete();
         } catch (error) {
             toastEventEmitter.emit("pop", {
                 type: "danger",
