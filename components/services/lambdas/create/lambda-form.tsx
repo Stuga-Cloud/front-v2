@@ -33,6 +33,7 @@ import {
 } from "@/lib/models/lambdas/validation/lambda-create-candidate";
 import { AvailableRegistriesToRegistry } from "../utils/lambda-registry-mapper";
 import { GetProject } from "@/lib/services/project/get-project";
+import { useRouter } from "next/navigation";
 
 export default function NewLambdaForm({
     session,
@@ -41,6 +42,7 @@ export default function NewLambdaForm({
     session: Session | null;
     projectId: string;
 }) {
+    const router = useRouter();
     const [timeout, setTimeout] = useState(4);
     const [minInstanceNumber, setMinInstanceNumber] = useState(0);
     const [maxInstanceNumber, setMaxInstanceNumber] = useState(2);
@@ -110,12 +112,15 @@ export default function NewLambdaForm({
                 message: "lambda well created",
                 duration: 4000,
             });
+            router.push(`/projects/${projectId}/services/lambdas`);
         } catch (error) {
             if (error instanceof StugaError) {
+                console.log("error stuga");
+                console.log(error);
                 toastEventEmitter.emit("pop", {
                     type: "danger",
                     message: error.message,
-                    duration: 4000,
+                    duration: 8000,
                 });
             }
         } finally {

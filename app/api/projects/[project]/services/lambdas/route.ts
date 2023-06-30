@@ -55,6 +55,22 @@ export async function POST(request: Request, { params }: NextRequest) {
     // @ts-ignore
     const userId = session!.user!.id as string;
 
+    const numOfLambdaForThisUser = await prisma.lambda.count({
+        where: {
+            createdBy: userId,
+        },
+    });
+
+    if (
+        Number(process.env.LIMIT_CREATION_LAMBDA_NUM) <= numOfLambdaForThisUser
+    ) {
+        return ResponseService.unauthorized(
+            "you have reach the max of lambda for an account:  " +
+                Number(process.env.LIMIT_CREATION_LAMBDA_NUM) +
+                ". Contact us if you have a particular need.",
+        );
+    }
+
     console.log(req);
 
     const projectGetOrNextResponse = await VerifyIfUserCanAccessProject(

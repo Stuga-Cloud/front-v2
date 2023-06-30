@@ -25,7 +25,9 @@ export default function LambdaConfidentialityUpdate({
     value: LambdaVisibility;
     handleVisibilityChange: (lambdaVisibility: LambdaVisibility) => void;
 }) {
-    const [apiKey, setApiKey] = useState<string | null>(value.access?.apiKey || null);
+    const [apiKey, setApiKey] = useState<string | null>(
+        value.access?.apiKey || null,
+    );
     return (
         <div className="mb-10 ms-5 flex min-h-96 w-full flex-col">
             <RadioButtons
@@ -64,7 +66,7 @@ export default function LambdaConfidentialityUpdate({
                         </p>
                     </div>
                     <h4 className="mt-20 text-xl font-bold">
-                        Generate an API key
+                        Access with an API key
                     </h4>
                     <div className="mb-10 mt-4 flex flex-row items-center">
                         <InfoCircledIcon />
@@ -72,7 +74,7 @@ export default function LambdaConfidentialityUpdate({
                             You can access you lambda with the following API key
                         </p>
                     </div>
-                    <button
+                    {/* <button
                         type="button"
                         className="Button stuga-primary-color w-fit"
                         onClick={async () => {
@@ -90,14 +92,27 @@ export default function LambdaConfidentialityUpdate({
                         }}
                     >
                         Generate API key
-                    </button>
-                    {apiKey && (
+                    </button> */}
+                    {apiKey === null ? (
+                        <div className="mt-4 rounded-lg border-2 border-green-500 bg-white p-5">
+                            <p className="text-m font-bold text-gray-500">
+                                You will get the api key of the project if you have one or we will generate one
+                            </p>
+                        </div>
+                    ) : (
                         <div className="mt-4 rounded-lg border-2 border-green-500 bg-white p-5">
                             <p className="text-m font-bold text-gray-500">
                                 {apiKey}
                             </p>
                         </div>
                     )}
+                    {/* {apiKey && (
+                        <div className="mt-4 rounded-lg border-2 border-green-500 bg-white p-5">
+                            <p className="text-m font-bold text-gray-500">
+                                {apiKey}
+                            </p>
+                        </div>
+                    )} */}
                 </>
             )}
         </div>

@@ -53,7 +53,7 @@ export default function LambdaNameForm({
                         characters.
                     </p>
                 </div>
-                {name && isLambdaNameValid(name) && (
+                {name && urlAccess && isLambdaNameValid(name) && (
                     <div className="flex flex-col items-center gap-2">
                         {/* Recap of the final URL where the application will be available */}
                         <h4 className="pt-12 text-2xl font-bold">

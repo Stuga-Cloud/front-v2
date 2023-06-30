@@ -115,7 +115,9 @@ export default function LambdasDashboard({
                                             className="px-6 py-4"
                                             onClick={() => onClick(lambda)}
                                         >
-                                            {lambda.createdAt.toString()}
+                                            {new Date(
+                                                lambda.createdAt as unknown as string,
+                                            ).toLocaleString()}
                                         </td>
                                         <td className="px-6 py-4 text-right">
                                             <a

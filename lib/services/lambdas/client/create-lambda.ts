@@ -15,11 +15,10 @@ export const CreateLambda = async (
         return result.data.name;
     } catch (e) {
         if (e instanceof AxiosError) {
-            console.log("error axios");
             throw new StugaError({
-                message: e.response?.data?.message,
+                message: e.response?.data?.error,
                 status: e.response?.status ?? 500,
-                error: e.response?.data?.errors,
+                error: e.response?.data?.error,
             });
         }
         throw InternalServerError(e);

@@ -21,6 +21,7 @@ export interface LambdaModel {
     minInstanceNumber: number;
     maxInstanceNumber: number;
     timeout: number;
+    urlAccess: string;
 }
 
 export class LambdaModelMapper {
@@ -64,6 +65,7 @@ export class LambdaModelMapper {
             minInstanceNumber: lambda.minInstances,
             maxInstanceNumber: lambda.maxInstances,
             timeout: lambda.timeoutSeconds,
+            urlAccess: lambda.urlAccess,
         };
     }
 }

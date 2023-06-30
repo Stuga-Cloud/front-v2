@@ -30,22 +30,25 @@ export default function LambdaInformation({
                     <h2 className="mb-5 ms-5 mt-10 w-4/5 text-xl font-bold">
                         Name
                     </h2>
-                    <LambdaNameForm
-                        name={lambda?.name}
-                        isLambdaNameValid={(name) => isLambdaNameValid(name)}
-                        handleChangeName={(name: string) => {
-                            setLambda({
-                                ...lambda,
-                                name: name,
-                            });
-                        }}
-                    />
+                    {lambda && (
+                        <LambdaNameForm
+                            name={lambda?.name}
+                            isLambdaNameValid={(name) =>
+                                isLambdaNameValid(name)
+                            }
+                            handleChangeName={(name: string) => {
+                                setLambda({
+                                    ...lambda,
+                                    name: name,
+                                });
+                            }}
+                            urlAccess={lambda.urlAccess}
+                        />
+                    )}
                 </div>
 
-                <div className="w-full rounded-lg border border-2 border-dashed border-green-300 p-5 mt-10">
-                    <h2 className="mb-5 w-4/5 text-xl font-bold">
-                        Settings
-                    </h2>
+                <div className="mt-10 w-full rounded-lg border border-2 border-dashed border-green-300 p-5">
+                    <h2 className="mb-5 w-4/5 text-xl font-bold">Settings</h2>
                     <LambdaSettingsForm
                         timeout={lambda.timeout}
                         cpuChoices={cpuLimitsChoices}
@@ -66,7 +69,7 @@ export default function LambdaInformation({
                         }}
                     />
                 </div>
-                <div className="w-full rounded-lg border border-2 border-dashed border-green-300 p-5 mt-10">
+                <div className="mt-10 w-full rounded-lg border border-2 border-dashed border-green-300 p-5">
                     <h2 className="mb-5 w-4/5 text-xl font-bold">
                         Scalability
                     </h2>
@@ -98,10 +101,10 @@ export default function LambdaInformation({
                     />
                 </div>
             </div>
-            <button 
-            type="submit" 
-            className="mt-10 Button stuga-primary-color"
-            onClick={onUpdate}
+            <button
+                type="submit"
+                className="Button stuga-primary-color mt-10"
+                onClick={onUpdate}
             >
                 Update lambda
             </button>

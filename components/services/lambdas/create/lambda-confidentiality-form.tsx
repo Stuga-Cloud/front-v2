@@ -66,7 +66,7 @@ export default function LambdaConfidentialityForm({
                         </p>
                     </div>
                     <h4 className="mt-20 text-xl font-bold">
-                        Generate an API key
+                        Access with an API key
                     </h4>
                     <div className="mb-10 mt-4 flex flex-row items-center">
                         <InfoCircledIcon />
