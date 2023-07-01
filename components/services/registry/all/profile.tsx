@@ -31,6 +31,11 @@ export default function Profile({
         oldPassword?: string,
     ) => {
         event.preventDefault();
+        console.log("---------------------------------")
+        console.log(password)
+        console.log(confirmPassword)
+        console.log(oldPassword)
+        console.log("---------------------------------")
         if (password !== confirmPassword) {
             toastEventEmitter.emit("pop", {
                 type: "danger",
@@ -45,7 +50,7 @@ export default function Profile({
                     toastEventEmitter.emit("pop", {
                         type: "success",
                         message: "User created successfully",
-                        duration: 2000,
+                        duration: 4000,
                     });
                     const user = await GetAccountInRegistry(projectId);
                     setUser(user);
@@ -54,14 +59,14 @@ export default function Profile({
                     toastEventEmitter.emit("pop", {
                         type: "success",
                         message: "Password modify successfully",
-                        duration: 2000,
+                        duration: 4000,
                     });
                 }
             } catch (error) {
                 toastEventEmitter.emit("pop", {
                     type: "danger",
                     message: "Error create user or updating password",
-                    duration: 2000,
+                    duration: 4000,
                 });
             } finally {
                 setLoading(false);

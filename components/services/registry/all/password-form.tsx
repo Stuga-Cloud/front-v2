@@ -33,9 +33,13 @@ export default function PasswordForm({
     return (
         <div className="ms-5 flex w-4/5 items-center ">
             <form
-                onSubmit={(event) =>
-                    handleSubmit(event, passwordForm, confirmPassword)
-                }
+                onSubmit={(event) => {
+                    if (userHaveAccount) {
+                        handleSubmit(event, passwordForm, confirmPassword, oldPassword);
+                    } else {
+                        handleSubmit(event, passwordForm, confirmPassword);
+                    }
+                }}
                 className="mt-10 flex w-full flex-col"
             >
                 <label

@@ -1,13 +1,18 @@
+import axios from "axios";
+
 export const ModifyPassword = async (
     projectId: string,
     password: string,
     oldPassword: string,
 ) => {
-    await fetch(
-        `/api/projects/${projectId}/services/registry/users/password`,
-        {
-            method: "PATCH",
-            body: JSON.stringify({ password, oldPassword }),
-        },
-    );
+    try {
+        await axios.patch(
+            `/api/projects/${projectId}/services/registry/users/password`,
+            { password, oldPassword },
+        );
+    } catch (e) {
+        console.log("error in modify password")
+        console.log(e);
+        throw e;
+    }
 };

@@ -14,9 +14,8 @@ export const ModifyUserPassword = async (
         await axios.put(
             process.env.BASE_REGISTRY_ENDPOINT +
                 `/api/v2.0/users/${userInHarbor.user_id}/password`,
+            { old_password: oldPassword, new_password: password },
             {
-                old_password: oldPassword,
-                new_password: password,
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Basic ${process.env.REGISTRY_AUTH_TOKEN}`,
@@ -33,7 +32,6 @@ export const ModifyUserPassword = async (
         }
         return user;
     } catch (e) {
-        console.log("error in modify-password");
-        throw InternalServerError;
+        throw InternalServerError(e);
     }
 };
