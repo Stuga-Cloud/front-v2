@@ -379,10 +379,24 @@ export default function ContainerDeployment({
                                                             )}
                                                             target="_blank"
                                                         >
-                                                            Here, choose the
-                                                            correct namespace
-                                                            according to the
-                                                            image
+                                                            {registry.registry ===
+                                                                "dockerhub" &&
+                                                                displayImageInRegistryUrl(
+                                                                    registry.url,
+                                                                    containerUpdate.image,
+                                                                    registry.registry,
+                                                                    project.id,
+                                                                )}
+                                                            {registry.registry ===
+                                                                "pcr" && (
+                                                                <>
+                                                                    Here, choose
+                                                                    the correct
+                                                                    namespace
+                                                                    according to
+                                                                    the image
+                                                                </>
+                                                            )}
                                                         </Link>
                                                     </p>
                                                 </>

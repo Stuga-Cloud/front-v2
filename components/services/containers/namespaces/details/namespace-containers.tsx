@@ -79,7 +79,7 @@ export default function NamespaceContainers({
                 {loading && <LoadingSpinner />}
 
                 {containers.length == 0 && (
-                    <div className="flex h-[50vh] w-full items-center justify-center gap-2 border-2  border-dashed">
+                    <div className="flex h-[50vh] w-4/5 items-center justify-center gap-2 border-2  border-dashed">
                         <Image
                             src="/stuga-logo.png"
                             alt="Description de l'image"

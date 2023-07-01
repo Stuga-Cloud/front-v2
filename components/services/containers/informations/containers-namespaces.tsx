@@ -176,7 +176,7 @@ export default function ContainersNamespaces({
                                         namespacesInAPI.map((namespace) => (
                                             <tr
                                                 key={namespace.id}
-                                                className="cursor-pointer border-b bg-gray-100 hover:bg-green-50"
+                                                className="h-40 cursor-pointer border-b bg-gray-100 hover:bg-green-50"
                                             >
                                                 <th
                                                     scope="row"
@@ -210,16 +210,6 @@ export default function ContainersNamespaces({
                                                     {namespace.createdAt.toLocaleString()}
                                                 </td>
                                                 <td className="px-6 py-4 text-right">
-                                                    {/*<a*/}
-                                                    {/*    href="#"*/}
-                                                    {/*    className="font-medium text-blue-600 hover:underline"*/}
-                                                    {/*    onClick={(e) => {*/}
-                                                    {/*        e.preventDefault();*/}
-                                                    {/*        console.log(*/}
-                                                    {/*            "je déclenche l'action",*/}
-                                                    {/*        );*/}
-                                                    {/*    }}*/}
-                                                    {/*>*/}
                                                     <ContainerNamespaceDropdownAction
                                                         messagePopup="Are you sure you want to delete this namespace?"
                                                         deleteAction={async () =>
@@ -228,7 +218,6 @@ export default function ContainersNamespaces({
                                                             )
                                                         }
                                                     />
-                                                    {/*</a>*/}
                                                 </td>
                                             </tr>
                                         ))}

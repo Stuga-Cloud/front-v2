@@ -475,9 +475,7 @@ export default function NewContainerForm({
         return (
             cpuLimit == undefined ||
             CPU_LIMIT_AVAILABLE_CHOICES.some(
-                (cpuLimitChoice) =>
-                    `${cpuLimitChoice.value}${cpuLimitChoice.unit}` ===
-                    cpuLimit,
+                (cpuLimitChoice) => `${cpuLimitChoice.value}` === cpuLimit,
             )
         );
     };
@@ -487,8 +485,7 @@ export default function NewContainerForm({
             memoryLimit == undefined ||
             MEMORY_LIMIT_AVAILABLE_CHOICES.some(
                 (memoryLimitChoice) =>
-                    `${memoryLimitChoice.value}${memoryLimitChoice.unit}` ===
-                    memoryLimit,
+                    `${memoryLimitChoice.value}` === memoryLimit,
             )
         );
     };
@@ -563,27 +560,6 @@ export default function NewContainerForm({
         if (!isMemoryUsageThresholdValid(memoryUsageThreshold)) {
             errors.push(
                 "Memory usage threshold is not valid, it should be >= 0 and <= 100",
-            );
-        }
-        if (
-            !CPU_LIMIT_AVAILABLE_CHOICES.some(
-                (cpuLimit) =>
-                    `${cpuLimit.value}${cpuLimit.unit}` === applicationCpuLimit,
-            )
-        ) {
-            errors.push(
-                "CPU limit is not valid, please choose a valid value in the available choices",
-            );
-        }
-        if (
-            !MEMORY_LIMIT_AVAILABLE_CHOICES.some(
-                (memoryLimit) =>
-                    `${memoryLimit.value}${memoryLimit.unit}` ===
-                    applicationMemoryLimit,
-            )
-        ) {
-            errors.push(
-                "Memory limit is not valid, please choose a valid value in the available choices",
             );
         }
         return errors;
@@ -1057,11 +1033,27 @@ export default function NewContainerForm({
                                                                 )}
                                                                 target="_blank"
                                                             >
-                                                                Here, choose the
-                                                                correct
-                                                                namespace
-                                                                according to the
-                                                                image
+                                                                {registry.registry ===
+                                                                    "dockerhub" &&
+                                                                    displayImageInRegistryUrl(
+                                                                        registry.url,
+                                                                        applicationImage,
+                                                                        registry.registry,
+                                                                        projectId,
+                                                                    )}
+                                                                {registry.registry ===
+                                                                    "pcr" && (
+                                                                    <>
+                                                                        Here,
+                                                                        choose
+                                                                        the
+                                                                        correct
+                                                                        namespace
+                                                                        according
+                                                                        to the
+                                                                        image
+                                                                    </>
+                                                                )}
                                                             </Link>
                                                         </p>
                                                     </>
@@ -1179,7 +1171,7 @@ export default function NewContainerForm({
                                             {CPU_LIMIT_AVAILABLE_CHOICES.map(
                                                 (choice) => (
                                                     <option
-                                                        key={choice.value}
+                                                        key={`${choice.value}${choice.unit}`}
                                                         value={`${choice.value}${choice.unit}`}
                                                     >
                                                         {choice.value}{" "}
@@ -1206,7 +1198,7 @@ export default function NewContainerForm({
                                             {MEMORY_LIMIT_AVAILABLE_CHOICES.map(
                                                 (choice) => (
                                                     <option
-                                                        key={choice.value}
+                                                        key={`${choice.value}${choice.unit}`}
                                                         value={`${choice.value}${choice.unit}`}
                                                     >
                                                         {choice.value}{" "}
@@ -1262,7 +1254,7 @@ export default function NewContainerForm({
                                                 )}
                                             </div>
                                             {
-                                                <div className="mb-10 ms-5 flex flex-col">
+                                                <div className="mb-10 ms-5 mt-5 flex flex-col">
                                                     <div className="mb-2 flex flex-col">
                                                         <label
                                                             htmlFor="replicas"
@@ -1574,15 +1566,19 @@ export default function NewContainerForm({
                                         <p className="mb-4 mt-2 text-sm text-gray-500">
                                             The administrator email is used to
                                             receive notifications about the
-                                            application scalability. In manual
-                                            scaling mode, the administrator
-                                            email will receive notifications
-                                            when the application should be
-                                            scaled up or down. In automatic
-                                            scaling mode, the administrator
-                                            email will receive notifications
-                                            when the application is scaled up or
-                                            down automatically.
+                                            application scalability.
+                                        </p>
+                                        <p className="mb-4 mt-2 text-sm text-gray-500">
+                                            In manual scaling mode, the
+                                            administrator email will receive
+                                            notifications when the application
+                                            should be scaled up or down.
+                                        </p>
+                                        <p className="mb-4 mt-2 text-sm text-gray-500">
+                                            In automatic scaling mode, the
+                                            administrator email will receive
+                                            notifications when the application
+                                            is scaled up or down automatically.
                                         </p>
                                         <label
                                             htmlFor="admin-email"
