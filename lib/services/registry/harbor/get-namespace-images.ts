@@ -28,7 +28,7 @@ export const GetNamespaceImages = async (
         );
         return res.data.map((image) => ({
             ...image,
-            name: image.name.split("/")[1],
+            name: image.name.split("/").slice(1).join("/"),
         }));
     } catch (e) {
         if (e instanceof AxiosError) {

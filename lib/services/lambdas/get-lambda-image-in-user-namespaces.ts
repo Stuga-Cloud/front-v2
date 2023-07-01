@@ -16,14 +16,24 @@ export const getLambdaImageInProject = async ({
             projectId: string;
         }) => Promise<RegistryNamespace[]>;
     };
-}): Promise<ImageInformationsHarborResponse> => {
+}): Promise<string> => {
     try {
+        const imageSearch = imageName.split(":")[0];
+        console.log("imageSearch")
+        console.log(imageSearch)
         const namespaces = await getProjectNamespaces({ projectId });
         const images = await Promise.all(
-            namespaces.map((namespace) => GetNamespaceImages(namespace.name)),
+            namespaces.map(async (namespace) => ({
+                name: namespace.name,
+                images: await GetNamespaceImages(namespace.name),
+            })),
         );
-        const allImageNames = images.flat().map((image) => image);
-        const image = allImageNames.find((image) => image.name === imageName);
+        
+        const imagesFormat = images.map((imageF) => imageF.images.map((image) => `${imageF.name}/${image.name}`));
+        const allImageNames = imagesFormat.flat().map((image) => image);
+        console.log("allImageNames");
+        console.log(allImageNames);
+        const image = allImageNames.find((image) => image === imageSearch);
         if (!image) {
             throw new StugaError({
                 message: "image not found in all private namespaces",
@@ -31,7 +41,6 @@ export const getLambdaImageInProject = async ({
                 error: "image-not-found-in-all-private-namespaces",
             });
         }
-
         return image;
     } catch (e) {
         if (e instanceof StugaError) {

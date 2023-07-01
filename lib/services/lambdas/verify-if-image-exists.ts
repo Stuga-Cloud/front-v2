@@ -13,6 +13,10 @@ export const verifyIfImageExists = async (
     repository: string = "library",
 ) => {
     if (registry === "pcr") {
+        console.log(registry)
+        console.log(repository)
+        console.log(imageName)
+        console.log("pcr")
         try {
             const image = await getLambdaImageInProject({
                 imageName: imageName,

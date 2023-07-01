@@ -14,7 +14,6 @@ import {
 } from "../../../../../../lib/models/lambdas/lambda-create";
 import { getProjectNamespaces } from "@/lib/services/registry/namespace/get-project-namespaces";
 import { StugaErrorToNextResponse } from "@/lib/services/error/stuga-error-to-next-response";
-import { getLambdaImageInProject } from "@/lib/services/lambdas/get-lambda-image-in-user-namespaces";
 import { checkIfDockerHubImageExists } from "@/lib/services/utils/check-if-docker-hub-image-exists";
 import { GetLambdaByNameInProject } from "@/lib/services/lambdas/get-image-by-name";
 import { Registry } from "../../../../../../lib/models/lambdas/lambda-create";
@@ -107,7 +106,8 @@ export async function POST(request: Request, { params }: NextRequest) {
     }
 
     const repository = req.imageName.split("/")[0];
-    const imageName = req.imageName.split("/")[1];
+    const parts = req.imageName.split("/");
+    const imageName = parts.slice(1).join("/");
 
     const verifyIfImageExistsResponse = await verifyIfImageExists(
         imageName,
@@ -260,7 +260,7 @@ export async function GET(request: Request, { params }: NextRequest) {
                 projectId: projectId,
             },
         });
-        
+
         return ResponseService.success(lambdas);
     } catch (e) {
         return ResponseService.internalServerError("internal-server-error", e);
