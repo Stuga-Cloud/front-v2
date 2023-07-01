@@ -6,15 +6,20 @@ import { Project } from "@/lib/models/project";
 import { LoadingSpinner } from "@/components/shared/icons";
 import { ContainerApplication } from "@/lib/models/containers/container-application";
 import { ContainerNamespace } from "@/lib/models/containers/prisma/container-namespace";
-import { ContainerApplicationNamespace } from "@/lib/models/containers/container-application-namespace";
+import {
+    ContainerApplicationNamespace,
+    ContainerApplicationNamespaceWithLimits,
+} from "@/lib/models/containers/container-application-namespace";
 import { applicationStatusToComponent } from "@/lib/services/containers/application-status-to-component";
 import Image from "next/image";
+import { DisplayToast } from "@/components/shared/toast/display-toast";
 
 export default function NamespaceContainers({
     session,
     project,
     namespace,
     namespaceInAPI,
+    applicationLimitations,
     containers,
     reloadContainers,
 }: {
@@ -22,6 +27,7 @@ export default function NamespaceContainers({
     project: Project;
     namespace: ContainerNamespace;
     namespaceInAPI: ContainerApplicationNamespace;
+    applicationLimitations: ContainerApplicationNamespaceWithLimits;
     containers: ContainerApplication[];
     reloadContainers: () => void;
 }) {
@@ -45,18 +51,64 @@ export default function NamespaceContainers({
         );
     };
 
+    const clickOnNewContainerBtn = () => {
+        if (
+            applicationLimitations.hasReachedMaxApplicationsByUser ||
+            applicationLimitations.hasReachedMaxApplicationsByNamespace
+        ) {
+            if (applicationLimitations.hasReachedMaxApplicationsByUser) {
+                DisplayToast({
+                    type: "error",
+                    message: `You reached the maximum number of applications for your account (max: ${applicationLimitations.maxApplicationsByUser})`,
+                });
+            }
+            if (applicationLimitations.hasReachedMaxApplicationsByNamespace) {
+                DisplayToast({
+                    type: "error",
+                    message: `You reached the maximum number of applications for this namespace (max: ${applicationLimitations.maxApplicationsByNamespace})`,
+                });
+            }
+            return;
+        }
+        router.push(
+            `/projects/${project.id}/services/containers/namespaces/${namespace.id}/applications/new`,
+        );
+    };
+
     return (
         <>
             <div className="z-10 flex w-full flex-col items-center justify-center">
                 <div className="mb-4 flex w-4/5 flex-row items-center justify-between">
-                    <h2 className="mb-5 w-2/5 text-4xl font-bold"></h2>
+                    <h2 className="text-md w-3/5 font-bold">
+                        {/* Display limitation if user has reached the application limit */}
+                        {applicationLimitations.hasReachedMaxApplicationsByUser && (
+                            <span className="text-red-500">
+                                You reached the maximum number of applications
+                                for your account (max:{" "}
+                                {applicationLimitations.maxApplicationsByUser})
+                            </span>
+                        )}
+                        {/* Display limitation if namespace has reached the application limit */}
+                        {applicationLimitations.hasReachedMaxApplicationsByNamespace && (
+                            <span className="text-red-500">
+                                You reached the maximum number of applications
+                                for this namespace (max:{" "}
+                                {
+                                    applicationLimitations.maxApplicationsByNamespace
+                                }
+                                )
+                            </span>
+                        )}
+                    </h2>
                     <button
                         className="Button stuga-primary-color cursor-pointer"
                         onClick={() => {
-                            router.push(
-                                `/projects/${project.id}/services/containers/namespaces/${namespace.id}/applications/new`,
-                            );
+                            clickOnNewContainerBtn();
                         }}
+                        disabled={
+                            applicationLimitations.hasReachedMaxApplicationsByUser ||
+                            applicationLimitations.hasReachedMaxApplicationsByNamespace
+                        }
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"

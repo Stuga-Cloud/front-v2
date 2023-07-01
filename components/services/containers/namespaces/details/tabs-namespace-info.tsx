@@ -17,7 +17,7 @@ export default function TabsNamespaceInfo({
     };
 
     return (
-        <div className=" z-20 mb-3 w-4/5 border-b border-gray-200">
+        <div className=" z-10 mb-3 w-4/5 border-b border-gray-200">
             <ul className="-mb-px flex flex-wrap text-center text-sm font-medium text-gray-500">
                 <li className="mr-2">
                     <a

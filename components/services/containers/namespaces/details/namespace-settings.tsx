@@ -172,6 +172,7 @@ export default function NamespaceSettings({
                         afterAddedMember={async () => {
                             await reloadNamespaceMembers();
                         }}
+                        user={session.user}
                     />
                 </div>
                 {!loading && namespaceMembers && (

@@ -147,7 +147,7 @@ export default function NewContainerForm({
 
     const [administratorEmail, setAdministratorEmail] = useState<
         string | undefined
-    >(undefined);
+    >(user?.email || undefined);
 
     const handleNext = () => {
         setStep((prevStep) => prevStep + 1);

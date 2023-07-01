@@ -8,6 +8,11 @@ import { CreateContainerNamespace } from "@/lib/services/containers/namespaces/c
 import { CreateContainerNamespaceBody } from "@/lib/services/containers/namespaces/create-container-namespace.body";
 import { ContainerNamespaceAlreadyExistError } from "@/lib/services/containers/errors/container-namespace-already-exist";
 import { GetContainerNamespaceByID } from "@/lib/services/containers/namespaces/get-container-namespace-by-id";
+import { FindContainerNamespaceError } from "@/lib/services/containers/errors/find-container-namespace.error";
+import { ContainerApplicationNamespace } from "@/lib/models/containers/container-application-namespace";
+import { log } from "console";
+import { AxiosError } from "axios";
+import { UnauthorizedToAccessNamespaceError } from "@/lib/services/containers/errors/unauthorize-to-access-namespace.error";
 
 export async function GET(
     _req: NextRequest,
@@ -32,24 +37,64 @@ export async function GET(
             );
         }
 
-        const namespaces = await Promise.all(
+        let namespaces = await Promise.all(
             project.containerNamespaces.map(async (ns) => {
-                const namespace = await GetContainerNamespaceByID(
-                    ns.idInAPI,
-                    (session!.user! as any).id,
-                );
-                if (!namespace) {
+                try {
+                    const namespace = await GetContainerNamespaceByID(
+                        ns.idInAPI,
+                        (session!.user! as any).id,
+                    );
+                    if (!namespace.namespace) {
+                        return null;
+                    }
+                    namespace.namespace.isUserAuthorized = true;
+                    return namespace.namespace;
+                } catch (e) {
+                    console.log('error while getting namespaces', e);
+                    if (e instanceof AxiosError) {
+                        console.log('Status while getting namespaces', e.response?.status);
+                        
+                        if (e.response?.status === 404) {
+                            return null;
+                        }
+                        if (e.response?.status === 403) {
+                            return {
+                                id: ns.idInAPI,
+                                name: ns.name,
+                                description: "",
+                                userId: "",
+                                createdAt: new Date(),
+                                updatedAt: new Date(),
+                                applications: [],
+                                memberships: [],
+                                isUserAuthorized: false,
+                            } as ContainerApplicationNamespace;
+                        }
+                    }
+                    if (e instanceof UnauthorizedToAccessNamespaceError) {
+                        console.log('Status while getting namespaces', e.status);
+                        if (e.status === 403) {
+                            return {
+                                id: ns.idInAPI,
+                                name: ns.name,
+                                description: "",
+                                userId: "",
+                                createdAt: new Date(),
+                                updatedAt: new Date(),
+                                applications: [],
+                                memberships: [],
+                                isUserAuthorized: false,
+                            } as ContainerApplicationNamespace;
+                        }
+                    }
                     return null;
                 }
-                return namespace;
             }),
         );
-        if (!namespaces) {
-            return ResponseService.notFound(
-                `No namespaces found for project ${projectId}`,
-            );
-        }
+        namespaces = namespaces.filter((ns) => ns !== null);
 
+        console.log('namespaces', namespaces);
+        
         return ResponseService.success(namespaces);
     } catch (error) {
         console.error("Error fetching namespace:", error);

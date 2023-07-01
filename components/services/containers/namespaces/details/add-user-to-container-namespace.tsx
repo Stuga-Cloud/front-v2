@@ -11,10 +11,12 @@ export default function AddUserToContainerNamespace({
     project,
     namespaceId,
     afterAddedMember,
+    user,
 }: {
     project: Project;
     namespaceId: string;
     afterAddedMember: () => void;
+    user: any;
 }) {
     const [email, setEmail] = useState<string | undefined>(undefined);
     const [role, setRole] =
@@ -35,6 +37,16 @@ export default function AddUserToContainerNamespace({
     };
 
     const handleSubmit = async (e: any) => {
+        console.log("handleSubmit");
+        // Adding user which is current logged user wtf
+        if (email === user.email) {
+            DisplayToast({
+                type: "error",
+                message: "You are already a member of this namespace.",
+            });
+            return;
+        }
+
         if (!email || !isEmailValid(email)) {
             DisplayToast({
                 type: "error",
@@ -124,7 +136,8 @@ export default function AddUserToContainerNamespace({
                     <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden outline-none focus:outline-none">
                         <div className="relative mx-auto my-6 w-4/5">
                             <div className="relative flex w-full flex-col rounded-lg border-0 bg-white shadow-lg outline-none focus:outline-none">
-                                <form onSubmit={handleSubmit}>
+                                {/* Do not reload when submitting the form */}
+                                <form>
                                     {/*header*/}
                                     <div className="flex items-start justify-between rounded-t border-b border-solid border-slate-200 p-5">
                                         <h3 className="text-3xl font-semibold">
@@ -225,7 +238,8 @@ export default function AddUserToContainerNamespace({
                                         </button>
                                         <button
                                             className="Button stuga-primary-color mb-1 mr-1 px-6 py-3"
-                                            type="submit"
+                                            type="button"
+                                            onClick={(e) => handleSubmit(e)}
                                         >
                                             Add member
                                         </button>

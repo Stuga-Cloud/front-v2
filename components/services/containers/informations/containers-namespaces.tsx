@@ -130,14 +130,14 @@ export default function ContainersNamespaces({
                 {loading && <LoadingSpinner />}
 
                 {namespacesInAPI && namespacesInAPI.length === 0 && (
-                    <div className="flex h-[50vh] w-full items-center justify-center gap-2 border-2  border-dashed">
+                    <div className="flex h-[50vh] w-4/5 items-center justify-center gap-2 border-2 border-dashed  p-5">
                         <Image
                             src="/stuga-logo.png"
                             alt="Description de l'image"
                             width="60"
                             height="60"
                         ></Image>
-                        <div className="flex h-16 flex-col justify-center overflow-hidden text-sm">
+                        <div className="flex flex-col justify-center overflow-hidden text-sm">
                             <h5 className="text-2xl font-bold text-gray-500 md:text-2xl">
                                 No namespace found, start by creating one ! 🚀
                             </h5>
@@ -149,83 +149,123 @@ export default function ContainersNamespaces({
                         </div>
                     </div>
                 )}
-                {namespacesInAPI && namespacesInAPI.length > 0 && (
-                    <div className="flex w-4/5 justify-center">
-                        <div className="relative w-full overflow-x-auto text-gray-500 shadow-md sm:rounded-lg">
-                            <table className="w-full text-left text-sm text-gray-500">
-                                <thead className="bg-gray-50 text-xs uppercase text-gray-700">
-                                    <tr>
-                                        <th scope="col" className="px-6 py-3">
-                                            name
-                                        </th>
-                                        <th scope="col" className="px-6 py-3">
-                                            description
-                                        </th>
-                                        <th scope="col" className="px-6 py-3">
-                                            created at (UTC)
-                                        </th>
-                                        <th scope="col" className="px-6 py-3">
-                                            <span className="sr-only">
-                                                Actions
-                                            </span>
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {namespacesInAPI &&
-                                        namespacesInAPI.map((namespace) => (
-                                            <tr
-                                                key={namespace.id}
-                                                className="h-40 cursor-pointer border-b bg-gray-100 hover:bg-green-50"
-                                            >
-                                                <th
-                                                    scope="row"
-                                                    className="whitespace-nowrap px-6 py-4 font-medium"
-                                                    onClick={() => {
-                                                        clickOnNamespace(
-                                                            namespace,
-                                                        );
-                                                    }}
-                                                >
-                                                    {namespace.name}
-                                                </th>
-                                                <td
-                                                    className="px-6 py-4"
-                                                    onClick={() => {
-                                                        clickOnNamespace(
-                                                            namespace,
-                                                        );
-                                                    }}
-                                                >
-                                                    {namespace.description}
-                                                </td>
-                                                <td
-                                                    className="px-6 py-4"
-                                                    onClick={() => {
-                                                        clickOnNamespace(
-                                                            namespace,
-                                                        );
-                                                    }}
-                                                >
-                                                    {namespace.createdAt.toLocaleString()}
-                                                </td>
-                                                <td className="px-6 py-4 text-right">
-                                                    <ContainerNamespaceDropdownAction
-                                                        messagePopup="Are you sure you want to delete this namespace?"
-                                                        deleteAction={async () =>
-                                                            await deleteContainerNamespace(
-                                                                namespace,
-                                                            )
-                                                        }
-                                                    />
-                                                </td>
-                                            </tr>
-                                        ))}
-                                </tbody>
-                            </table>
+                {/* all namespacesInAPI can be accessed by the user */}
+                {namespacesInAPI &&
+                    namespacesInAPI.length > 0 &&
+                    !namespacesInAPI.some(
+                        (namespace) => namespace.isUserAuthorized,
+                    ) && (
+                        <div className="flex h-[50vh] w-4/5 items-center justify-center gap-2 border-2  border-dashed p-5">
+                            <Image
+                                src="/stuga-logo.png"
+                                alt="Description de l'image"
+                                width="60"
+                                height="60"
+                            ></Image>
+                            <div className="flex flex-col justify-center overflow-hidden text-sm">
+                                <h5 className="text-2xl font-bold text-gray-500 md:text-2xl">
+                                    You don&apos;t have access to any namespace
+                                </h5>
+                                <p className="text-gray-500">
+                                    You can ask the owner of the project to give
+                                    you access to a namespace.
+                                </p>
+                            </div>
                         </div>
-                    </div>
-                )}
+                    )}
+                {namespacesInAPI &&
+                    namespacesInAPI.length > 0 &&
+                    namespacesInAPI.some(
+                        (namespace) => namespace.isUserAuthorized,
+                    ) && (
+                        <div className="flex w-4/5 justify-center">
+                            <div className="relative w-full overflow-x-auto text-gray-500 shadow-md sm:rounded-lg">
+                                <table className="w-full text-left text-sm text-gray-500">
+                                    <thead className="bg-gray-50 text-xs uppercase text-gray-700">
+                                        <tr>
+                                            <th
+                                                scope="col"
+                                                className="px-6 py-3"
+                                            >
+                                                name
+                                            </th>
+                                            <th
+                                                scope="col"
+                                                className="px-6 py-3"
+                                            >
+                                                description
+                                            </th>
+                                            <th
+                                                scope="col"
+                                                className="px-6 py-3"
+                                            >
+                                                created at (UTC)
+                                            </th>
+                                            <th
+                                                scope="col"
+                                                className="px-6 py-3"
+                                            >
+                                                <span className="sr-only">
+                                                    Actions
+                                                </span>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {namespacesInAPI &&
+                                            namespacesInAPI.map((namespace) => (
+                                                <tr
+                                                    key={namespace.id}
+                                                    className="h-40 cursor-pointer border-b bg-gray-100 hover:bg-green-50"
+                                                >
+                                                    <th
+                                                        scope="row"
+                                                        className="whitespace-nowrap px-6 py-4 font-medium"
+                                                        onClick={() => {
+                                                            clickOnNamespace(
+                                                                namespace,
+                                                            );
+                                                        }}
+                                                    >
+                                                        {namespace.name}
+                                                    </th>
+                                                    <td
+                                                        className="px-6 py-4"
+                                                        onClick={() => {
+                                                            clickOnNamespace(
+                                                                namespace,
+                                                            );
+                                                        }}
+                                                    >
+                                                        {namespace.description}
+                                                    </td>
+                                                    <td
+                                                        className="px-6 py-4"
+                                                        onClick={() => {
+                                                            clickOnNamespace(
+                                                                namespace,
+                                                            );
+                                                        }}
+                                                    >
+                                                        {namespace.createdAt.toLocaleString()}
+                                                    </td>
+                                                    <td className="px-6 py-4 text-right">
+                                                        <ContainerNamespaceDropdownAction
+                                                            messagePopup="Are you sure you want to delete this namespace?"
+                                                            deleteAction={async () =>
+                                                                await deleteContainerNamespace(
+                                                                    namespace,
+                                                                )
+                                                            }
+                                                        />
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    )}
             </div>
         </>
     );
