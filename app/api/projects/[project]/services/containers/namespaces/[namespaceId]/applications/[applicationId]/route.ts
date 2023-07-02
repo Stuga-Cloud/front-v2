@@ -251,6 +251,10 @@ export async function PUT(
             const repository = image.split("/")[0];
             const parts = image.split("/");
             const imageName = parts.slice(1).join("/");
+            // var imageName = image.split("/")[1]
+            // if (registry === "pcr") {
+            //     imageName = imageName.split(":")[0];
+            // }
 
             const verifyIfImageExistsResponse = await verifyIfImageExists(
                 imageName,

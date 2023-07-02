@@ -508,6 +508,35 @@ export default function NewContainerForm({
         );
     };
 
+    const doesntContainDuplicates = (
+        array: ContainerApplicationSecret[] | ContainerEnvironmentVariable[],
+    ) => {
+        const names = array.map((item) => item.name);
+        return names.every((name, index) => names.indexOf(name) === index);
+    };
+
+    const isEnvironmentVariablesValid = (): boolean => {
+        return (
+            applicationEnvironmentVariables.every(
+                (envVar) =>
+                    envVar.name.length > 0 &&
+                    !envVar.name.includes(" ") &&
+                    /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(envVar.name),
+            ) && doesntContainDuplicates(applicationEnvironmentVariables)
+        );
+    };
+
+    const isSecretsValid = (): boolean => {
+        return (
+            applicationSecrets.every(
+                (secret) =>
+                    secret.name.length > 0 &&
+                    !secret.name.includes(" ") &&
+                    /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(secret.name),
+            ) && doesntContainDuplicates(applicationSecrets)
+        );
+    };
+
     const handleKeyDown = (event: any) => {
         if (event.key === "Enter") {
             event.preventDefault();
@@ -560,6 +589,17 @@ export default function NewContainerForm({
         if (!isMemoryUsageThresholdValid(memoryUsageThreshold)) {
             errors.push(
                 "Memory usage threshold is not valid, it should be >= 0 and <= 100",
+            );
+        }
+
+        if (!isEnvironmentVariablesValid()) {
+            errors.push(
+                "Environment variables are not valid (name should not be empty and contain only letters, numbers and underscores and start with a letter or underscore, also, there should not be duplicates)",
+            );
+        }
+        if (!isSecretsValid()) {
+            errors.push(
+                "Environment variables are not valid (name should not be empty and contain only letters, numbers and underscores and start with a letter or underscore, also, there should not be duplicates)",
             );
         }
         return errors;
@@ -1409,7 +1449,11 @@ export default function NewContainerForm({
                                             }
                                         </div>
                                     )}
-                                {step === 7 && (
+                                {step ===
+                                    7 -
+                                        (applicationType === "LOAD_BALANCED"
+                                            ? 0
+                                            : 1) && (
                                     <div className="mb-10 ms-5 flex h-full w-full flex-col">
                                         <label
                                             htmlFor="environment-variables"
@@ -1486,7 +1530,11 @@ export default function NewContainerForm({
                                         </button>
                                     </div>
                                 )}
-                                {step === 8 && (
+                                {step ===
+                                    8 -
+                                        (applicationType === "LOAD_BALANCED"
+                                            ? 0
+                                            : 1) && (
                                     <div className="mb-10 ms-5 flex h-full w-full flex-col">
                                         <label
                                             htmlFor="application-secrets"
@@ -1561,7 +1609,11 @@ export default function NewContainerForm({
                                         </button>
                                     </div>
                                 )}
-                                {step === 9 && (
+                                {step ===
+                                    9 -
+                                        (applicationType === "LOAD_BALANCED"
+                                            ? 0
+                                            : 1) && (
                                     <div className="mb-10 ms-5 flex h-full w-full flex-col">
                                         <p className="mb-4 mt-2 text-sm text-gray-500">
                                             The administrator email is used to

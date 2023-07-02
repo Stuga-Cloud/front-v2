@@ -40,15 +40,13 @@ export default function NamespaceContainers({
     );
     const [loading, setLoading] = useState(false);
 
-    const clickOnContainer = (container: ContainerApplication) => {
+    const getContainerURL = (container: ContainerApplication) => {
         const correspondingContainerInPrisma = namespace.containers.find(
             (c) => c.idInAPI === container.id,
         );
-        router.push(
-            `/projects/${project.id}/services/containers/namespaces/${
-                namespace.id
-            }/applications/${correspondingContainerInPrisma!.id}`,
-        );
+        return `/projects/${project?.id}/services/containers/namespaces/${
+            namespace.id
+        }/applications/${correspondingContainerInPrisma!.id}`;
     };
 
     const clickOnNewContainerBtn = () => {
@@ -83,16 +81,23 @@ export default function NamespaceContainers({
                         {/* Display limitation if user has reached the application limit */}
                         {applicationLimitations.hasReachedMaxApplicationsByUser && (
                             <span className="text-red-500">
-                                You reached the maximum number of applications
-                                for your account (max:{" "}
+                                You have reached the maximum number of
+                                applications for your account (max:{" "}
                                 {applicationLimitations.maxApplicationsByUser})
                             </span>
                         )}
+                        {applicationLimitations.hasReachedMaxApplicationsByUser &&
+                            applicationLimitations.hasReachedMaxApplicationsByNamespace && (
+                                <br />
+                            )}
                         {/* Display limitation if namespace has reached the application limit */}
                         {applicationLimitations.hasReachedMaxApplicationsByNamespace && (
                             <span className="text-red-500">
-                                You reached the maximum number of applications
-                                for this namespace (max:{" "}
+                                {applicationLimitations.hasReachedMaxApplicationsByUser
+                                    ? "You have also "
+                                    : "You have "}
+                                reached the maximum number of applications for
+                                this namespace (max:{" "}
                                 {
                                     applicationLimitations.maxApplicationsByNamespace
                                 }
@@ -173,56 +178,47 @@ export default function NamespaceContainers({
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {containers.map((container) => (
-                                        <tr
-                                            key={container.id}
-                                            className="cursor-pointer border-b bg-gray-100 hover:bg-green-50"
-                                        >
-                                            <th
-                                                scope="row"
-                                                className="whitespace-nowrap px-6 py-4 font-medium"
-                                                onClick={() => {
-                                                    clickOnContainer(container);
-                                                }}
+                                    {containers.map((container) => {
+                                        const containerUrl =
+                                            getContainerURL(container);
+                                        return (
+                                            <tr
+                                                key={container.id}
+                                                className="cursor-pointer border-b bg-gray-100 hover:bg-green-50"
                                             >
-                                                {container.name}
-                                            </th>
-                                            <td
-                                                className="px-6 py-4"
-                                                onClick={() => {
-                                                    clickOnContainer(container);
-                                                }}
-                                            >
-                                                {container.description}
-                                            </td>
-                                            <td
-                                                className="px-6 py-4"
-                                                onClick={() => {
-                                                    clickOnContainer(container);
-                                                }}
-                                            >
-                                                {container.image}
-                                            </td>
-                                            <td
-                                                className="px-6 py-4"
-                                                onClick={() => {
-                                                    clickOnContainer(container);
-                                                }}
-                                            >
-                                                {applicationStatusToComponent(
-                                                    container.status,
-                                                )}
-                                            </td>
-                                            <td
-                                                className="px-6 py-4"
-                                                onClick={() => {
-                                                    clickOnContainer(container);
-                                                }}
-                                            >
-                                                {container.createdAt.toLocaleString()}
-                                            </td>
-                                        </tr>
-                                    ))}
+                                                <th
+                                                    scope="row"
+                                                    className="whitespace-nowrap px-6 py-4 font-medium"
+                                                >
+                                                    <a href={containerUrl}>
+                                                        {container.name}
+                                                    </a>
+                                                </th>
+                                                <td className="px-6 py-4">
+                                                    <a href={containerUrl}>
+                                                        {container.description}
+                                                    </a>
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    <a href={containerUrl}>
+                                                        {container.image}
+                                                    </a>
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    <a href={containerUrl}>
+                                                        {applicationStatusToComponent(
+                                                            container.status,
+                                                        )}
+                                                    </a>
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    <a href={containerUrl}>
+                                                        {container.createdAt.toLocaleString()}
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
                                 </tbody>
                             </table>
                         </div>
