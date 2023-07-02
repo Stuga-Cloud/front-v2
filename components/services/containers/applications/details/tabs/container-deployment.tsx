@@ -157,7 +157,6 @@ export default function ContainerDeployment({
 
     const handleSubmit = async (event: { preventDefault: () => void }) => {
         event.preventDefault();
-        console.log("Container update : ", containerUpdate);
         const errors = containerUpdate.validateForm("update");
         if (errors.length > 0) {
             const displayTime =
@@ -218,7 +217,7 @@ export default function ContainerDeployment({
                     data: createContainerApplicationBody,
                 },
             );
-            console.log("updatedContainer", updatedContainer);
+
             DisplayToast({
                 type: "success",
                 message: `Application ${containerUpdate.applicationName} updated`,

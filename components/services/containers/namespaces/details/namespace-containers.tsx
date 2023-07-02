@@ -77,7 +77,7 @@ export default function NamespaceContainers({
         <>
             <div className="z-10 flex w-full flex-col items-center justify-center">
                 <div className="mb-4 flex w-4/5 flex-row items-center justify-between">
-                    <h2 className="text-md w-3/5 font-bold">
+                    <h2 className="w-3/5 text-sm font-semibold">
                         {/* Display limitation if user has reached the application limit */}
                         {applicationLimitations.hasReachedMaxApplicationsByUser && (
                             <span className="text-red-500">

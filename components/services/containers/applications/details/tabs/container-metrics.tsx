@@ -39,7 +39,6 @@ export default function ContainerMetrics({
         const metricsResponse = await axios.get(
             `/api/projects/${project.id}/services/containers/namespaces/${container.container.namespace.id}/applications/${applicationId}/metrics`,
         );
-        console.log(metricsResponse);
         return metricsResponse.data.metrics;
     };
 
@@ -78,37 +77,49 @@ export default function ContainerMetrics({
     return (
         <>
             {loading && <LoadingSpinner />}
-            {!loading && metrics && (
+            {!loading && metrics.length === 0 && (
                 <div className="z-10 flex w-full flex-col items-center justify-center">
                     <div className="flex w-4/5 flex-col items-center justify-center">
-                        {/* Remember the user what he configured in scalability specs */}
-                        <div className="flex w-full flex-col items-start justify-start gap-1">
-                            <h1 className="text-xl font-bold">
-                                Reminder of your scalability specifications :{" "}
-                            </h1>
-                            <div className="flex w-full flex-row items-start justify-start gap-1">
-                                <h1 className="font-semibold">
-                                    CPU Usage threshold :{" "}
+                        <h1 className="text-xl font-bold">
+                            No metrics available for this container.
+                        </h1>
+                    </div>
+                </div>
+            )}
+            {!loading && metrics.length > 0 && (
+                <div className="z-10 flex w-full flex-col items-center justify-center">
+                    <div className="flex w-4/5 flex-col items-center justify-center">
+                        {container.containerInAPI.applicationType ===
+                            "LOAD_BALANCED" && (
+                            <div className="flex w-full flex-col items-start justify-start gap-1">
+                                <h1 className="text-xl font-bold">
+                                    Reminder of your scalability specifications
+                                    :{" "}
                                 </h1>
-                                <h2>
-                                    {container.containerInAPI.scalabilitySpecifications?.cpuUsagePercentageThreshold.toPrecision(
-                                        2,
-                                    )}
-                                    %
-                                </h2>
+                                <div className="flex w-full flex-row items-start justify-start gap-1">
+                                    <h1 className="font-semibold">
+                                        CPU Usage threshold :{" "}
+                                    </h1>
+                                    <h2>
+                                        {container.containerInAPI.scalabilitySpecifications?.cpuUsagePercentageThreshold.toPrecision(
+                                            2,
+                                        )}
+                                        %
+                                    </h2>
+                                </div>
+                                <div className="flex w-full flex-row items-start justify-start gap-1">
+                                    <h1 className="font-semibold">
+                                        Memory Usage threshold :{" "}
+                                    </h1>
+                                    <h2>
+                                        {container.containerInAPI.scalabilitySpecifications?.memoryUsagePercentageThreshold.toPrecision(
+                                            2,
+                                        )}
+                                        %
+                                    </h2>
+                                </div>
                             </div>
-                            <div className="flex w-full flex-row items-start justify-start gap-1">
-                                <h1 className="font-semibold">
-                                    Memory Usage threshold :{" "}
-                                </h1>
-                                <h2>
-                                    {container.containerInAPI.scalabilitySpecifications?.memoryUsagePercentageThreshold.toPrecision(
-                                        2,
-                                    )}
-                                    %
-                                </h2>
-                            </div>
-                        </div>
+                        )}
 
                         {metrics.map((metric) => (
                             <div

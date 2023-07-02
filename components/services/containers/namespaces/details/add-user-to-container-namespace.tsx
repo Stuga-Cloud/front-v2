@@ -37,8 +37,6 @@ export default function AddUserToContainerNamespace({
     };
 
     const handleSubmit = async (e: any) => {
-        console.log("handleSubmit");
-        // Adding user which is current logged user wtf
         if (email === user.email) {
             DisplayToast({
                 type: "error",
@@ -83,7 +81,6 @@ export default function AddUserToContainerNamespace({
                     role,
                 },
             );
-            console.log("response", response.data);
             setEmail("");
             setLoading(false);
             closeModal();
