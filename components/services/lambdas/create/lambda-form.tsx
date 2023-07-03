@@ -19,10 +19,21 @@ import {
 import { CreateLambda } from "@/lib/services/lambdas/client/create-lambda";
 import { toastEventEmitter } from "@/lib/event-emitter/toast-event-emitter";
 import { StugaError } from "@/lib/services/error/error";
-import { LambdaCPULimit, LambdaCreateCandidate, LambdaEnvironmentVariable, LambdaMemoryLimit, LambdaVisibility, Registry } from "@/lib/models/lambdas/lambda-create";
-import { isLambdaNameValid, throwIfLambdaCreationCandidateIsNotValid } from "@/lib/models/lambdas/validation/lambda-create-candidate";
+import {
+    LambdaCPULimit,
+    LambdaCreateCandidate,
+    LambdaEnvironmentVariable,
+    LambdaMemoryLimit,
+    LambdaVisibility,
+    Registry,
+} from "@/lib/models/lambdas/lambda-create";
+import {
+    isLambdaNameValid,
+    throwIfLambdaCreationCandidateIsNotValid,
+} from "@/lib/models/lambdas/validation/lambda-create-candidate";
 import { AvailableRegistriesToRegistry } from "../utils/lambda-registry-mapper";
-
+import { GetProject } from "@/lib/services/project/get-project";
+import { useRouter } from "next/navigation";
 
 export default function NewLambdaForm({
     session,
@@ -31,6 +42,7 @@ export default function NewLambdaForm({
     session: Session | null;
     projectId: string;
 }) {
+    const router = useRouter();
     const [timeout, setTimeout] = useState(4);
     const [minInstanceNumber, setMinInstanceNumber] = useState(0);
     const [maxInstanceNumber, setMaxInstanceNumber] = useState(2);
@@ -45,12 +57,23 @@ export default function NewLambdaForm({
         setApplicationEnvironmentVariables,
     ] = useState<LambdaEnvironmentVariable[]>([]);
     const [registry, setRegistry] = useState<Registry>("dockerhub");
+    const [projectName, setProjectName] = useState<string>("");
+    const [urlConfidentiality, setUrlConfidentiality] = useState<string>("public");
     const [cpuConfig, setCpuConfig] = useState(cpuLimitsChoices[0]);
     const [memoryConfig, setMemoryConfig] = useState(memoryLimitsChoices[0]);
     const [loading, setLoading] = useState(false);
     const [errorFromMessage, setErrorFormMessage] = useState<string | null>(
         null,
     );
+
+    useEffect(() => {
+        if (projectId) {
+            GetProject(projectId).then((project) => {
+                console.log(project);
+                setProjectName(project.name);
+            });
+        }
+    }, [session, projectId]);
 
     const handleSubmit = async (event: { preventDefault: () => void }) => {
         event.preventDefault();
@@ -89,12 +112,15 @@ export default function NewLambdaForm({
                 message: "lambda well created",
                 duration: 4000,
             });
+            router.push(`/projects/${projectId}/services/lambdas`);
         } catch (error) {
             if (error instanceof StugaError) {
+                console.log("error stuga");
+                console.log(error);
                 toastEventEmitter.emit("pop", {
                     type: "danger",
                     message: error.message,
-                    duration: 4000,
+                    duration: 8000,
                 });
             }
         } finally {
@@ -172,6 +198,16 @@ export default function NewLambdaForm({
 
                                 {activeStep === 1 && (
                                     <LambdaNameForm
+                                        urlAccess={
+                                            process.env
+                                                .NEXT_PUBLIC_GATEWAY_URL_ACCESS +
+                                            "/" +
+                                            projectName +
+                                            "/" +
+                                            urlConfidentiality +
+                                            "/" +
+                                            lambdaName
+                                        }
                                         name={lambdaName}
                                         isLambdaNameValid={(name) =>
                                             isLambdaNameValid(name)
@@ -192,9 +228,10 @@ export default function NewLambdaForm({
                                         handleRegistryChange={(
                                             registry: AvailableRegistriesInformation,
                                         ) => {
-                                            const registryModel = AvailableRegistriesToRegistry(
-                                                registry,
-                                            );
+                                            const registryModel =
+                                                AvailableRegistriesToRegistry(
+                                                    registry,
+                                                );
                                             setRegistry(registryModel);
                                         }}
                                     />
@@ -257,6 +294,15 @@ export default function NewLambdaForm({
                                             value: LambdaVisibility,
                                         ) => {
                                             setConfidentiality(value);
+                                            if (
+                                                value.visibility === "private"
+                                            ) {
+                                                setUrlConfidentiality(
+                                                    "api-key",
+                                                );
+                                            } else {
+                                                setUrlConfidentiality("public");
+                                            }
                                         }}
                                     />
                                 )}

@@ -80,24 +80,24 @@ export const throwIfLambdaCreationCandidateIsNotValid = (
         errorMessages.push("timeout is not valid");
     }
 
-    if (lambdaCreateCandidate.confidentiality.visibility === "private") {
-        if (lambdaCreateCandidate.confidentiality.access === undefined) {
-            errorMessages.push(
-                "you need to have a valid private key in order to create a private lambda",
-            );
-        } else if (
-            lambdaCreateCandidate.confidentiality.access.mode === "apiKey"
-        ) {
-            if (
-                lambdaCreateCandidate.confidentiality.access.apiKey ===
-                undefined
-            ) {
-                errorMessages.push(
-                    "you need to have a valid private key in order to create a private lambda",
-                );
-            }
-        }
-    }
+    // if (lambdaCreateCandidate.confidentiality.visibility === "private") {
+    //     if (lambdaCreateCandidate.confidentiality.access === undefined) {
+    //         errorMessages.push(
+    //             "you need to have a valid private key in order to create a private lambda",
+    //         );
+    //     } else if (
+    //         lambdaCreateCandidate.confidentiality.access.mode === "apiKey"
+    //     ) {
+    //         if (
+    //             lambdaCreateCandidate.confidentiality.access.apiKey ===
+    //             undefined
+    //         ) {
+    //             errorMessages.push(
+    //                 "you need to have a valid private key in order to create a private lambda",
+    //             );
+    //         }
+    //     }
+    // }
 
     if (lambdaCreateCandidate.environmentVariables.length > 0) {
         lambdaCreateCandidate.environmentVariables.forEach((env) => {

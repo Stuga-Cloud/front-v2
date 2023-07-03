@@ -96,7 +96,7 @@ export default function LambdaImageForm({
                     }}
                     placeholder="organization/my-first-application:latest"
                 />
-                <h4 className="pt-8 text-2xl font-bold ">
+                {/* <h4 className="pt-8 text-2xl font-bold ">
                     The used image is at:
                 </h4>
                 <p className="text-1xl font-semibold leading-normal text-blue-800 ">
@@ -107,7 +107,7 @@ export default function LambdaImageForm({
                         {registry.url}/r/
                         {imageName}
                     </Link>
-                </p>
+                </p> */}
             </div>
         </div>
     );

@@ -11,7 +11,6 @@ export const GetLambdaById = async (
         const result = await axios.get<Lambda>(
             `/api/projects/${projectId}/services/lambdas/${lambdaId}`,
         );
-        console.log(result.data)
         return LambdaModelMapper.fromRepositoryLambda(result.data);
     } catch (e) {
         if (e instanceof AxiosError) {

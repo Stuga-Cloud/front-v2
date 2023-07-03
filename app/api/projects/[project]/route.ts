@@ -9,6 +9,9 @@ import { Project } from "@/lib/models/project";
 export async function GET(request: Request, { params }: NextRequest) {
     const session = await getServerSession(authOptions);
     const projectId = params!.project;
+
+    console.log("get project " + projectId);
+    console.log("session " + session?.user?.email);
     if (!session) {
         return NextResponse.json(
             {
@@ -23,6 +26,8 @@ export async function GET(request: Request, { params }: NextRequest) {
             projectId,
         },
     });
+
+    console.log(projectMemberships)
 
     if (
         !projectMemberships.some(

@@ -100,7 +100,9 @@ export default function LambdaAccueil({
                     }}
                     afterDelete={async () => {
                         try {
+                            console.log("after delete set lambdas")
                             const lambdas = await GetLambdas(projectId);
+                            console.log("lambdas")
                             setLambdas(lambdas);
                         } catch (error) {
                             toastEventEmitter.emit("pop", {

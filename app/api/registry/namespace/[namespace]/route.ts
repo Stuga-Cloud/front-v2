@@ -3,6 +3,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getServerSession } from "next-auth/next";
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import axios from "axios";
 
 export interface ImageInformationsHarborResponse {
     artifact_count: number;
@@ -52,19 +53,18 @@ export async function GET(request: Request, { params }: NextRequest) {
         );
     }
     try {
-        const res = await fetch(
+        const res = await axios.get(
             process.env.BASE_REGISTRY_ENDPOINT +
                 `/api/v2.0/projects/${namespace.name}/repositories?page_size=30&page=1`,
             {
-                method: "GET",
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Basic ${process.env.REGISTRY_AUTH_TOKEN}`,
                 },
             },
-        );
+        );        
 
-        const data: ImageInformationsHarborResponse[] = await res.json();
+        const data: ImageInformationsHarborResponse[] = res.data;
 
         const results = await Promise.all(
             data.map(async (image) => {
@@ -95,19 +95,18 @@ export async function GET(request: Request, { params }: NextRequest) {
         const imageDetailsComplete = await Promise.all(
             results.map(async (result) => {
                 const nameSplit = result.name.split("/");
-                const req = await fetch(
+                const req = await axios.get(
                     process.env.BASE_REGISTRY_ENDPOINT +
                         `/api/v2.0/projects/${nameSplit[0]}/repositories/${nameSplit[1]}/artifacts/${result.digest}/tags?with_signature=true&with_immutable_status=true&page_size=8&page=1`,
 
                     {
-                        method: "GET",
                         headers: {
                             "Content-Type": "application/json",
                             Authorization: `Basic ${process.env.REGISTRY_AUTH_TOKEN}`,
                         },
                     },
                 );
-                const detailImage = await req.json();
+                const detailImage = req.data;
 
                 return {
                     ...result,

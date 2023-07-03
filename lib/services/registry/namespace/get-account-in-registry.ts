@@ -4,10 +4,9 @@ export const GetAccountInRegistry = async (
     projectId: string,
 ): Promise<{ user_id: number; username: string }> => {
     try {
-        const userJson = await axios(
+        const userJson = await axios.get(
             `/api/projects/${projectId}/services/registry/users`,
             {
-                method: "GET",
                 headers: {
                     "Content-Type": "application/json",
                 },
@@ -16,6 +15,7 @@ export const GetAccountInRegistry = async (
         const userFromJson = await userJson.data;
         return userFromJson;
     } catch (error) {
+        console.log(error)
         throw error;
     }
 };

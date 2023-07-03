@@ -1,12 +1,19 @@
 import { InfoCircledIcon } from "@radix-ui/react-icons";
 
 export default function LambdaNameForm({
+    title,
+    subtext,
     isLambdaNameValid,
     name,
+    urlAccess,
     handleChangeName,
 }: {
+    title?: string;
+    subtext?: string;
     isLambdaNameValid: (name: string) => boolean;
+    urlAccess: string;
     name: string;
+
     handleChangeName: (name: string) => void;
 }) {
     return (
@@ -17,9 +24,7 @@ export default function LambdaNameForm({
                         htmlFor="applicationName"
                         className={
                             `pb-1 text-sm font-medium text-gray-700` +
-                            (!isLambdaNameValid(name)
-                                ? "gray-900"
-                                : "red-700")
+                            (!isLambdaNameValid(name) ? "gray-900" : "red-700")
                         }
                     >
                         Lambda Name
@@ -50,25 +55,23 @@ export default function LambdaNameForm({
                         characters.
                     </p>
                 </div>
-                {name && isLambdaNameValid(name) && (
+                {name && urlAccess && isLambdaNameValid(name) && (
                     <div className="flex flex-col items-center gap-2">
                         {/* Recap of the final URL where the application will be available */}
                         <h4 className="pt-12 text-2xl font-bold">
-                            Your lambda will be available at:
+                            {title ? title : "Your lambda will be available at:"}
                         </h4>
                         <a
                             className="text-1xl font-semibold leading-normal text-blue-800"
-                            href={`https://${name}.pomme.${process.env.NEXT_PUBLIC_BASE_CONTAINER_DOMAIN}`}
-                            target="_blank"
+                            href={`#`}
                             rel="noreferrer"
                         >
-                            https://
-                            {name}.pomme.
-                            {process.env.NEXT_PUBLIC_BASE_CONTAINER_DOMAIN}
+                            {urlAccess}
                         </a>
                         <p className="text-sm font-semibold text-gray-500">
-                            (This URL will be available once you have completed
-                            the next steps)
+                            {subtext
+                                ? subtext
+                                : "(This URL will be available once you have completed the next steps)"}
                         </p>
                     </div>
                 )}

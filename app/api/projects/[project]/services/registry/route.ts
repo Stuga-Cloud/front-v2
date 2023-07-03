@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { Registry } from "@prisma/client";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import axios from "axios";
 
 interface RequestParams {
     project: string;
@@ -42,13 +43,11 @@ export async function POST(request: Request, { params }: NextRequest) {
         );
     }
 
-
     const projectFromDb = await prisma.project.findUnique({
         where: {
             id: project,
         },
     });
-
 
     if (!projectFromDb) {
         return NextResponse.json(
@@ -60,21 +59,22 @@ export async function POST(request: Request, { params }: NextRequest) {
     }
 
     try {
-        const result = await fetch(
+        const result = await axios.post(
             process.env.BASE_REGISTRY_ENDPOINT + "/api/v2.0/projects",
             {
-                method: "POST",
+                project_name: req.name,
+                public: req.visibility === "public",
+            },
+            {
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Basic ${process.env.REGISTRY_AUTH_TOKEN}`,
                 },
-                body: JSON.stringify({
-                    project_name: req.name,
-                    public: req.visibility === "public",
-                }),
             },
         );
 
+        console.log("after creation in harbor");
+        console.log(result);
 
         const registryInProject = await prisma.registry.findFirst({
             where: {
@@ -93,7 +93,14 @@ export async function POST(request: Request, { params }: NextRequest) {
             return NextResponse.json(registryNamespace, { status: 201 });
         }
         const now = new Date();
-        const utcTimestamp = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds());
+        const utcTimestamp = Date.UTC(
+            now.getUTCFullYear(),
+            now.getUTCMonth(),
+            now.getUTCDate(),
+            now.getUTCHours(),
+            now.getUTCMinutes(),
+            now.getUTCSeconds(),
+        );
 
         const dateInUtc = new Date(utcTimestamp);
         const results = await prisma.$transaction(async (tx) => {
@@ -130,7 +137,6 @@ export async function POST(request: Request, { params }: NextRequest) {
 
 // @ts-ignore
 export async function GET(request: Request, { params }: NextRequest) {
-
     const { project }: RequestParams = params!;
     const session = await getServerSession(authOptions);
     if (!session) {
@@ -195,4 +201,3 @@ export async function GET(request: Request, { params }: NextRequest) {
 
     return NextResponse.json(registryNamespaces, { status: 200 });
 }
-

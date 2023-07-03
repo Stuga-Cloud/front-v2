@@ -120,7 +120,7 @@ export default function Dashboard({
                                                 onClick(namespace.id)
                                             }
                                         >
-                                            {namespace.createdAt}
+                                            {new Date(namespace.createdAt).toLocaleString()}
                                         </td>
                                         <td className="px-6 py-4 text-right">
                                             <a

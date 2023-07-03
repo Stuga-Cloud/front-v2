@@ -53,7 +53,8 @@ export async function POST(
     try {
         if (image) {
             const repository = image.split("/")[0];
-            const imageName = image.split("/")[1];
+            const parts = image.split("/");
+            const imageName = parts.slice(1).join("/");
 
             const verifyIfImageExistsResponse = await verifyIfImageExists(
                 imageName,

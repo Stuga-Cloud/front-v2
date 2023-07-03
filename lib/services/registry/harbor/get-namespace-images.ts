@@ -1,4 +1,5 @@
 import axios, { AxiosError } from "axios";
+import { log } from "console";
 import { InternalServerError, StugaError } from "../../error/error";
 
 export interface ImageInformationsHarborResponse {
@@ -22,13 +23,13 @@ export const GetNamespaceImages = async (
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: `Basic ${process.env.REGISTRY_AUTH_TOKEN}`,
+                    Authorization: `Bearer ${process.env.REGISTRY_AUTH_TOKEN}`,
                 },
             },
         );
         return res.data.map((image) => ({
             ...image,
-            name: image.name.split("/")[1],
+            name: image.name.split("/").slice(1).join("/"),
         }));
     } catch (e) {
         if (e instanceof AxiosError) {

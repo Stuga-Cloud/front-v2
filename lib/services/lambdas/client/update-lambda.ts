@@ -8,8 +8,6 @@ export const UpdateLambda = async (
     lambda: LambdaModel,
 ): Promise<void> => {
     try {
-        console.log("update lambda");
-        console.log(lambda);
         await axios.put(
             `/api/projects/${projectId}/services/lambdas/${lambda.id}`,
             lambda,

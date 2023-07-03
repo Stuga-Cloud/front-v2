@@ -4,9 +4,12 @@ WORKDIR /frontend
 
 COPY package*.json ./
 
+COPY . .
+
 RUN npm install
 
-COPY . .
+CMD npm run build
+
 
 EXPOSE 3000
 

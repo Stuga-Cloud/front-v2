@@ -22,12 +22,13 @@ export default function LambdasDashboard({
         setLoading(true);
         try {
             await DeleteLambda({ lambdaId, projectId });
+            console.log("print after delete")
+            await afterDelete();
             toastEventEmitter.emit("pop", {
                 type: "success",
                 mesage: "lambda deleted successfully",
-                duration: 2000,
+                duration: 5000,
             });
-            await afterDelete();
         } catch (error) {
             toastEventEmitter.emit("pop", {
                 type: "danger",
@@ -59,6 +60,9 @@ export default function LambdasDashboard({
                                     </th>
                                     <th scope="col" className="px-6 py-3">
                                         visibility
+                                    </th>
+                                    <th scope="col" className="px-6 py-3">
+                                        access lambda
                                     </th>
                                     <th scope="col" className="px-6 py-3">
                                         cpu
@@ -103,6 +107,12 @@ export default function LambdasDashboard({
                                             className="px-6 py-4"
                                             onClick={() => onClick(lambda)}
                                         >
+                                            {lambda.urlAccess}
+                                        </td>
+                                        <td
+                                            className="px-6 py-4"
+                                            onClick={() => onClick(lambda)}
+                                        >
                                             {lambda.cpuLimitmCPU} mCPU
                                         </td>
                                         <td
@@ -115,7 +125,9 @@ export default function LambdasDashboard({
                                             className="px-6 py-4"
                                             onClick={() => onClick(lambda)}
                                         >
-                                            {lambda.createdAt.toString()}
+                                            {new Date(
+                                                lambda.createdAt as unknown as string,
+                                            ).toLocaleString()}
                                         </td>
                                         <td className="px-6 py-4 text-right">
                                             <a

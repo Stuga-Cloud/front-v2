@@ -14,7 +14,6 @@ import {
 } from "../../../../../../lib/models/lambdas/lambda-create";
 import { getProjectNamespaces } from "@/lib/services/registry/namespace/get-project-namespaces";
 import { StugaErrorToNextResponse } from "@/lib/services/error/stuga-error-to-next-response";
-import { getLambdaImageInProject } from "@/lib/services/lambdas/get-lambda-image-in-user-namespaces";
 import { checkIfDockerHubImageExists } from "@/lib/services/utils/check-if-docker-hub-image-exists";
 import { GetLambdaByNameInProject } from "@/lib/services/lambdas/get-image-by-name";
 import { Registry } from "../../../../../../lib/models/lambdas/lambda-create";
@@ -55,6 +54,22 @@ export async function POST(request: Request, { params }: NextRequest) {
     // @ts-ignore
     const userId = session!.user!.id as string;
 
+    const numOfLambdaForThisUser = await prisma.lambda.count({
+        where: {
+            createdBy: userId,
+        },
+    });
+
+    if (
+        Number(process.env.LIMIT_CREATION_LAMBDA_NUM) <= numOfLambdaForThisUser
+    ) {
+        return ResponseService.unauthorized(
+            "you have reach the max of lambda for an account:  " +
+                Number(process.env.LIMIT_CREATION_LAMBDA_NUM) +
+                ". Contact us if you have a particular need.",
+        );
+    }
+
     console.log(req);
 
     const projectGetOrNextResponse = await VerifyIfUserCanAccessProject(
@@ -91,7 +106,8 @@ export async function POST(request: Request, { params }: NextRequest) {
     }
 
     const repository = req.imageName.split("/")[0];
-    const imageName = req.imageName.split("/")[1];
+    const parts = req.imageName.split("/");
+    const imageName = parts.slice(1).join("/");
 
     const verifyIfImageExistsResponse = await verifyIfImageExists(
         imageName,
@@ -189,6 +205,7 @@ export async function POST(request: Request, { params }: NextRequest) {
             storage_mega: 2,
             minimum_instance_number: req.minInstanceNumber,
             maximum_instance_number: req.maxInstanceNumber,
+            environment_variables: req.environmentVariables,
         });
 
         stateCreated = "all-lambda-created";
@@ -243,7 +260,7 @@ export async function GET(request: Request, { params }: NextRequest) {
                 projectId: projectId,
             },
         });
-        console.log(lambdas[0].createdAt);
+
         return ResponseService.success(lambdas);
     } catch (e) {
         return ResponseService.internalServerError("internal-server-error", e);

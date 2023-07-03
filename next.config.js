@@ -5,7 +5,7 @@ const nextConfig = {
         appDir: true,
     },
     pageExtensions: ["mdx", "md", "jsx", "js", "tsx", "ts"],
-    swcMinify: true,
+    swcMinify: false,
     images: {
         domains: ["lh3.googleusercontent.com", "vercel.com"],
         remotePatterns: [
