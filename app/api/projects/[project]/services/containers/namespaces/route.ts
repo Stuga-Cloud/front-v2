@@ -91,10 +91,7 @@ export async function GET(
                 }
             }),
         );
-        namespaces = namespaces.filter((ns) => ns !== null);
-
-        console.log('namespaces', namespaces);
-        
+        namespaces = namespaces.filter((ns) => ns !== null);        
         return ResponseService.success(namespaces);
     } catch (error) {
         console.error("Error fetching namespace:", error);
