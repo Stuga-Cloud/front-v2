@@ -62,7 +62,7 @@ export async function GET(request: Request, { params }: NextRequest) {
                     Authorization: `Basic ${process.env.REGISTRY_AUTH_TOKEN}`,
                 },
             },
-        );
+        );        
 
         const data: ImageInformationsHarborResponse[] = res.data;
 

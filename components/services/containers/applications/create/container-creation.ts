@@ -6,6 +6,7 @@ import process from "process";
 import { DisplayToast } from "@/components/shared/toast/display-toast";
 import { ContainerNamespace } from "@/lib/models/containers/prisma/container-namespace";
 import { isEmailValid } from "@/lib/utils";
+import { CPU_LIMIT_AVAILABLE_CHOICES, MAX_REPLICAS, MEMORY_LIMIT_AVAILABLE_CHOICES } from "./new-container-form";
 
 export type AvailableContainerRegistriesName =
     | "Docker hub"
@@ -329,7 +330,25 @@ export class ContainerCreation {
     public isReplicasValid() {
         return (
             this.replicas == undefined ||
-            (this.replicas >= 1 && this.replicas <= 10)
+            (this.replicas >= 1 && this.replicas <= MAX_REPLICAS)
+        );
+    }
+
+    public isCPULimitValid() {
+        return (
+            this.applicationCpuLimit == undefined ||
+            CPU_LIMIT_AVAILABLE_CHOICES.map((choice) => choice.value).includes(
+                this.applicationCpuLimit,
+            )
+        );
+    }
+
+    public isMemoryLimitValid() {
+        return (
+            this.applicationMemoryLimit == undefined ||
+            MEMORY_LIMIT_AVAILABLE_CHOICES.map((choice) => choice.value).includes(
+                this.applicationMemoryLimit,
+            )
         );
     }
 
@@ -384,6 +403,9 @@ export class ContainerCreation {
         }
         if (!this.isReplicasValid()) {
             errors.push("Replicas is not valid, it should be between 1 and 10");
+        }
+        if (!this.isCPULimitValid()) {
+            errors.push("CPU limit is not valid");
         }
         if (!this.isCpuUsageThresholdValid()) {
             errors.push(
