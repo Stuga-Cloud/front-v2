@@ -10,7 +10,7 @@ RUN npm install
 
 CMD npm run build
 
-FROM nginx:16-alpine as production-stage
+FROM node:16-alpine as production-stage
 
 WORKDIR /app
 COPY --from=builder /frontend ./
