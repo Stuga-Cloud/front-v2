@@ -1,4 +1,4 @@
-FROM node:16-alpine
+FROM node:16-alpine as build-stage
 
 WORKDIR /frontend
 
@@ -10,7 +10,11 @@ RUN npm install
 
 CMD npm run build
 
+FROM nginx:16-alpine as production-stage
 
-EXPOSE 3000
+WORKDIR /app
+COPY --from=builder /frontend ./
 
-CMD npm run dev
+EXPOSE 80
+
+CMD npm run start
