@@ -11,6 +11,7 @@ import TabsContainersInfo from "@/components/services/containers/informations/ta
 import axios from "axios";
 import { DisplayToast } from "@/components/shared/toast/display-toast";
 import { ContainerNamespace } from "@/lib/models/containers/prisma/container-namespace";
+import { log } from "console";
 
 export type AvailableContainersInfoTab = "namespaces";
 export default function ContainersInfo({
@@ -57,20 +58,23 @@ export default function ContainersInfo({
                         setNamespacesInAPI(namespaces);
                     })
                     .catch((error) => {
+                        console.log(`error when try to get namespaces`, error);
                         DisplayToast({
                             type: "error",
                             message:
-                                "Could not get namespaces, please try again later or contact support",
+                                // TODO: Mettre ça partout
+                                "We are sorry, we encountered a problem. Please try again or contact support",
                             duration: 3000,
                         });
+                        router.push(`/projects/${projectId}`);
                     });
             })
             .catch((error) => {
-                toastEventEmitter.emit("pop", {
-                    type: "danger",
+                DisplayToast({
+                    type: "error",
                     message:
-                        "error when try to get project in containers list page",
-                    duration: 2000,
+                        "Could not get project, please try again later or contact support",
+                    duration: 3000,
                 });
                 console.error(
                     "error when try to get project in containers list page",
@@ -81,7 +85,7 @@ export default function ContainersInfo({
             .finally(() => {
                 setLoading(false);
             });
-    }, [router, projectId]);
+    }, [projectId]);
 
     const handleClick = (tab: "namespaces") => {
         setActiveTab(tab);
@@ -156,8 +160,8 @@ export default function ContainersInfo({
                                     project={project!}
                                     namespaces={namespaces}
                                     namespacesInAPI={namespacesInAPI}
-                                    reloadNamespaces={() => {
-                                        reloadNamespaces();
+                                    reloadNamespaces={async () => {
+                                        await reloadNamespaces();
                                     }}
                                 />
                             )}

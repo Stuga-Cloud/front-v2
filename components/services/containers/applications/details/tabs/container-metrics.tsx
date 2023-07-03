@@ -9,6 +9,7 @@ import { ContainerRetrieved } from "@/components/services/containers/application
 import axios from "axios";
 import { DisplayToast } from "@/components/shared/toast/display-toast";
 import { ContainerApplicationMetrics } from "@/lib/models/containers/container-application-metrics";
+import { memoryToMB } from "@/lib/models/containers/container-application";
 
 export default function ContainerMetrics({
     session,
@@ -101,7 +102,7 @@ export default function ContainerMetrics({
                                             Memory Usage
                                         </h4>
                                         <h4 className="text-md font-bold">
-                                            {metric.memoryUsage} /{" "}
+                                            {memoryToMB(metric.memoryUsage)} /{" "}
                                             {metric.maxMemoryUsage}
                                         </h4>
                                     </div>
