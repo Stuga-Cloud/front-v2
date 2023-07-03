@@ -30,15 +30,31 @@ export const availableContainerRegistries: AvailableContainerRegistriesInformati
         },
     ];
 
+export const findRegistryByRegistry = (
+    findingRegistry: Registry,
+): AvailableContainerRegistriesInformation => {
+    const foundRegistry = availableContainerRegistries.find((registry) => registry.registry === findingRegistry)
+    if (
+        foundRegistry
+    ) {
+        return foundRegistry;
+    }
+    DisplayToast({
+        type: "error",
+        message: `Registry ${findingRegistry} not found`,
+        duration: 5000,
+    });
+    return availableContainerRegistries[0];
+}
+
 export const findRegistryByName = (
     name: AvailableContainerRegistriesName,
 ): AvailableContainerRegistriesInformation => {
+    const foundRegistry = availableContainerRegistries.find((registry) => registry.name === name)
     if (
-        availableContainerRegistries.find((registry) => registry.name === name)
+        foundRegistry
     ) {
-        return availableContainerRegistries.find(
-            (registry) => registry.name === name,
-        )!;
+        return foundRegistry;
     }
     DisplayToast({
         type: "error",
@@ -366,6 +382,32 @@ export class ContainerCreation {
         );
     }
 
+    private doesntContainDuplicates(
+        array: ContainerApplicationSecret[] | ContainerEnvironmentVariable[],
+    ): boolean {
+        const names = array.map((item) => item.name);
+        return names.every((name, index) => names.indexOf(name) === index);
+    };
+
+
+    public isEnvironmentVariablesValid() {
+        return this.applicationEnvironmentVariables.every(
+            (envVar) =>
+                envVar.name.length > 0 
+                && !envVar.name.includes(" ") 
+                && /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(envVar.name)
+        ) && this.doesntContainDuplicates(this.applicationEnvironmentVariables);
+    }
+
+    public isSecretsValid() {
+        return this.applicationSecrets.every(
+            (secret) =>
+                secret.name.length > 0
+                && !secret.name.includes(" ")
+                && /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(secret.name)
+        ) && this.doesntContainDuplicates(this.applicationSecrets);
+    }
+    
     public updateAdministratorEmail(email: string) {
         this.administratorEmail = email;
     }
@@ -407,6 +449,9 @@ export class ContainerCreation {
         if (!this.isCPULimitValid()) {
             errors.push("CPU limit is not valid");
         }
+        if (!this.isMemoryLimitValid()) {
+            errors.push("Memory limit is not valid");
+        }
         if (!this.isCpuUsageThresholdValid()) {
             errors.push(
                 "CPU usage threshold is not valid, it should be >= 0 and <= 100",
@@ -416,6 +461,12 @@ export class ContainerCreation {
             errors.push(
                 "Memory usage threshold is not valid, it should be >= 0 and <= 100",
             );
+        }
+        if (!this.isEnvironmentVariablesValid()) {
+            errors.push("Environment variables are not valid (name should not be empty and contain only letters, numbers and underscores and start with a letter or underscore, also, there should not be duplicates)");
+        }
+        if (!this.isSecretsValid()) {
+            errors.push("Secrets are not valid (name should not be empty and contain only letters, numbers and underscores and start with a letter or underscore, also, there should not be duplicates)");
         }
         return errors;
     }

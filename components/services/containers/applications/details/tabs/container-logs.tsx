@@ -117,6 +117,10 @@ export default function ContainerLogs({
                             className="h-96 w-full rounded-lg border border-gray-300 bg-gray-900 p-2.5 text-sm text-white focus:border-green-500 focus:ring-green-500"
                             value={currentLogs}
                             readOnly
+                            ref={(el) => {
+                                if (!el) return;
+                                el.scrollTop = el.scrollHeight;
+                            }}
                         />
                         <button
                             className="mt-2 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700"

@@ -14,13 +14,14 @@ import ContainerDeployment from "@/components/services/containers/applications/d
 import ContainerMetrics from "@/components/services/containers/applications/details/tabs/container-metrics";
 import ContainerLogs from "@/components/services/containers/applications/details/tabs/container-logs";
 import { Container } from "@/lib/models/containers/prisma/container";
+import ContainerStatus from "./tabs/container-status";
 
 export type AvailableContainerDetailsTabs =
     | "preview"
     | "deployment"
     | "logs"
     | "metrics"
-    | "settings";
+    | "status";
 
 export interface ContainerRetrieved {
     container: Container;
@@ -204,6 +205,18 @@ export default function ContainerDetails({
                         )}
                         {activeTab === "metrics" && (
                             <ContainerMetrics
+                                session={session}
+                                project={project}
+                                container={container}
+                                namespace={container.containerInAPI.namespace}
+                                reloadContainer={async () => {
+                                    setLoading(true);
+                                    await loadContainer();
+                                }}
+                            />
+                        )}
+                        {activeTab === "status" && (
+                            <ContainerStatus
                                 session={session}
                                 project={project}
                                 container={container}

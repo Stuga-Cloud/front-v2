@@ -147,7 +147,7 @@ export default function NewContainerForm({
 
     const [administratorEmail, setAdministratorEmail] = useState<
         string | undefined
-    >(undefined);
+    >(user?.email || undefined);
 
     const handleNext = () => {
         setStep((prevStep) => prevStep + 1);
@@ -475,9 +475,7 @@ export default function NewContainerForm({
         return (
             cpuLimit == undefined ||
             CPU_LIMIT_AVAILABLE_CHOICES.some(
-                (cpuLimitChoice) =>
-                    `${cpuLimitChoice.value}${cpuLimitChoice.unit}` ===
-                    cpuLimit,
+                (cpuLimitChoice) => `${cpuLimitChoice.value}` === cpuLimit,
             )
         );
     };
@@ -487,8 +485,7 @@ export default function NewContainerForm({
             memoryLimit == undefined ||
             MEMORY_LIMIT_AVAILABLE_CHOICES.some(
                 (memoryLimitChoice) =>
-                    `${memoryLimitChoice.value}${memoryLimitChoice.unit}` ===
-                    memoryLimit,
+                    `${memoryLimitChoice.value}` === memoryLimit,
             )
         );
     };
@@ -508,6 +505,35 @@ export default function NewContainerForm({
         return (
             memoryUsageThreshold == undefined ||
             (memoryUsageThreshold >= 0 && memoryUsageThreshold <= 100)
+        );
+    };
+
+    const doesntContainDuplicates = (
+        array: ContainerApplicationSecret[] | ContainerEnvironmentVariable[],
+    ) => {
+        const names = array.map((item) => item.name);
+        return names.every((name, index) => names.indexOf(name) === index);
+    };
+
+    const isEnvironmentVariablesValid = (): boolean => {
+        return (
+            applicationEnvironmentVariables.every(
+                (envVar) =>
+                    envVar.name.length > 0 &&
+                    !envVar.name.includes(" ") &&
+                    /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(envVar.name),
+            ) && doesntContainDuplicates(applicationEnvironmentVariables)
+        );
+    };
+
+    const isSecretsValid = (): boolean => {
+        return (
+            applicationSecrets.every(
+                (secret) =>
+                    secret.name.length > 0 &&
+                    !secret.name.includes(" ") &&
+                    /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(secret.name),
+            ) && doesntContainDuplicates(applicationSecrets)
         );
     };
 
@@ -565,25 +591,15 @@ export default function NewContainerForm({
                 "Memory usage threshold is not valid, it should be >= 0 and <= 100",
             );
         }
-        if (
-            !CPU_LIMIT_AVAILABLE_CHOICES.some(
-                (cpuLimit) =>
-                    `${cpuLimit.value}${cpuLimit.unit}` === applicationCpuLimit,
-            )
-        ) {
+
+        if (!isEnvironmentVariablesValid()) {
             errors.push(
-                "CPU limit is not valid, please choose a valid value in the available choices",
+                "Environment variables are not valid (name should not be empty and contain only letters, numbers and underscores and start with a letter or underscore, also, there should not be duplicates)",
             );
         }
-        if (
-            !MEMORY_LIMIT_AVAILABLE_CHOICES.some(
-                (memoryLimit) =>
-                    `${memoryLimit.value}${memoryLimit.unit}` ===
-                    applicationMemoryLimit,
-            )
-        ) {
+        if (!isSecretsValid()) {
             errors.push(
-                "Memory limit is not valid, please choose a valid value in the available choices",
+                "Environment variables are not valid (name should not be empty and contain only letters, numbers and underscores and start with a letter or underscore, also, there should not be duplicates)",
             );
         }
         return errors;
@@ -1057,11 +1073,27 @@ export default function NewContainerForm({
                                                                 )}
                                                                 target="_blank"
                                                             >
-                                                                Here, choose the
-                                                                correct
-                                                                namespace
-                                                                according to the
-                                                                image
+                                                                {registry.registry ===
+                                                                    "dockerhub" &&
+                                                                    displayImageInRegistryUrl(
+                                                                        registry.url,
+                                                                        applicationImage,
+                                                                        registry.registry,
+                                                                        projectId,
+                                                                    )}
+                                                                {registry.registry ===
+                                                                    "pcr" && (
+                                                                    <>
+                                                                        Here,
+                                                                        choose
+                                                                        the
+                                                                        correct
+                                                                        namespace
+                                                                        according
+                                                                        to the
+                                                                        image
+                                                                    </>
+                                                                )}
                                                             </Link>
                                                         </p>
                                                     </>
@@ -1179,7 +1211,7 @@ export default function NewContainerForm({
                                             {CPU_LIMIT_AVAILABLE_CHOICES.map(
                                                 (choice) => (
                                                     <option
-                                                        key={choice.value}
+                                                        key={`${choice.value}${choice.unit}`}
                                                         value={`${choice.value}${choice.unit}`}
                                                     >
                                                         {choice.value}{" "}
@@ -1206,7 +1238,7 @@ export default function NewContainerForm({
                                             {MEMORY_LIMIT_AVAILABLE_CHOICES.map(
                                                 (choice) => (
                                                     <option
-                                                        key={choice.value}
+                                                        key={`${choice.value}${choice.unit}`}
                                                         value={`${choice.value}${choice.unit}`}
                                                     >
                                                         {choice.value}{" "}
@@ -1262,7 +1294,7 @@ export default function NewContainerForm({
                                                 )}
                                             </div>
                                             {
-                                                <div className="mb-10 ms-5 flex flex-col">
+                                                <div className="mb-10 ms-5 mt-5 flex flex-col">
                                                     <div className="mb-2 flex flex-col">
                                                         <label
                                                             htmlFor="replicas"
@@ -1417,7 +1449,11 @@ export default function NewContainerForm({
                                             }
                                         </div>
                                     )}
-                                {step === 7 && (
+                                {step ===
+                                    7 -
+                                        (applicationType === "LOAD_BALANCED"
+                                            ? 0
+                                            : 1) && (
                                     <div className="mb-10 ms-5 flex h-full w-full flex-col">
                                         <label
                                             htmlFor="environment-variables"
@@ -1494,7 +1530,11 @@ export default function NewContainerForm({
                                         </button>
                                     </div>
                                 )}
-                                {step === 8 && (
+                                {step ===
+                                    8 -
+                                        (applicationType === "LOAD_BALANCED"
+                                            ? 0
+                                            : 1) && (
                                     <div className="mb-10 ms-5 flex h-full w-full flex-col">
                                         <label
                                             htmlFor="application-secrets"
@@ -1569,20 +1609,28 @@ export default function NewContainerForm({
                                         </button>
                                     </div>
                                 )}
-                                {step === 9 && (
+                                {step ===
+                                    9 -
+                                        (applicationType === "LOAD_BALANCED"
+                                            ? 0
+                                            : 1) && (
                                     <div className="mb-10 ms-5 flex h-full w-full flex-col">
                                         <p className="mb-4 mt-2 text-sm text-gray-500">
                                             The administrator email is used to
                                             receive notifications about the
-                                            application scalability. In manual
-                                            scaling mode, the administrator
-                                            email will receive notifications
-                                            when the application should be
-                                            scaled up or down. In automatic
-                                            scaling mode, the administrator
-                                            email will receive notifications
-                                            when the application is scaled up or
-                                            down automatically.
+                                            application scalability.
+                                        </p>
+                                        <p className="mb-4 mt-2 text-sm text-gray-500">
+                                            In manual scaling mode, the
+                                            administrator email will receive
+                                            notifications when the application
+                                            should be scaled up or down.
+                                        </p>
+                                        <p className="mb-4 mt-2 text-sm text-gray-500">
+                                            In automatic scaling mode, the
+                                            administrator email will receive
+                                            notifications when the application
+                                            is scaled up or down automatically.
                                         </p>
                                         <label
                                             htmlFor="admin-email"

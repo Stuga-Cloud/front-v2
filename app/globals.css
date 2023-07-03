@@ -1,12 +1,11 @@
-@import '@radix-ui/colors/green.css';
-@import '@radix-ui/colors/orange.css';
-@import '@radix-ui/colors/red.css';
-@import '@radix-ui/colors/gray.css';
+@import "@radix-ui/colors/green.css";
+@import "@radix-ui/colors/orange.css";
+@import "@radix-ui/colors/red.css";
+@import "@radix-ui/colors/gray.css";
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
 
 ::-webkit-input-placeholder {
     font-style: italic;
@@ -23,7 +22,6 @@
 :-ms-input-placeholder {
     font-style: italic;
 }
-
 
 .Button {
     display: inline-flex;
@@ -74,7 +72,7 @@
     color: var(--gray9);
 }
 
-.Button.stuga-primary-color[aria-expanded='true'] {
+.Button.stuga-primary-color[aria-expanded="true"] {
     background-color: transparent;
     color: var(--green2);
 }
@@ -105,7 +103,7 @@
     color: var(--gray9);
 }
 
-.Button.stuga-red-color[aria-expanded='true'] {
+.Button.stuga-red-color[aria-expanded="true"] {
     background-color: transparent;
 }
 
@@ -135,7 +133,7 @@
     color: var(--gray9);
 }
 
-.Button.stuga-orange-color[aria-expanded='true'] {
+.Button.stuga-orange-color[aria-expanded="true"] {
     background-color: transparent;
 }
 
@@ -173,12 +171,12 @@
     border-radius: 0.5rem;
     padding: 1.25rem;
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    height: 15rem;
+    min-width: 12rem;
     --tw-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
     --tw-shadow-colored: 0 1px 2px 0 var(--tw-shadow-color);
 }
 
-.StugaCard[aria-hidden='true'] {
+.StugaCard[aria-hidden="true"] {
     opacity: 0.5;
     background-color: transparent;
     box-shadow: none;

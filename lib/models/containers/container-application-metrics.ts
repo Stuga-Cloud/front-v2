@@ -7,4 +7,6 @@ export interface ContainerApplicationMetrics {
     ephemeralStorageUsage: string;
     maxEphemeralStorage: string;
     pods: string;
+    cpuUsageInPercentage: number;
+    memoryUsageInPercentage: number;
 }

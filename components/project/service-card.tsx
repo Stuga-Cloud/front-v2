@@ -15,22 +15,25 @@ export default function ServiceCard({
 }) {
     return (
         <div className="StugaCard" onClick={onClick} aria-hidden={dialogOpened}>
-            <Image
-                src={`/${imageName}`}
-                alt="docker picture"
-                width="60"
-                height="60"
-                className="ms-5"
-            ></Image>
+            {/* // Align image to the center */}
+            <div className="mb-1 flex w-full justify-center">
+                <Image
+                    src={`/${imageName}`}
+                    alt="docker picture"
+                    width="60"
+                    height="60"
+                    className="object-center"
+                ></Image>
+            </div>
             <a href="#">
-                <h5 className="mb-2 ms-5 text-2xl font-semibold tracking-tight text-gray-600">
+                <h5 className="mb-2 text-2xl font-semibold tracking-tight text-gray-600">
                     {title}
                 </h5>
             </a>
-            <p className="mb-3 ms-5 font-normal text-gray-500">{description}</p>
+            <p className="mb-3 font-normal text-gray-500">{description}</p>
             <a
                 href="#"
-                className="ms-5 inline-flex items-center text-blue-600 hover:underline"
+                className="inline-flex items-center text-blue-600 hover:underline"
                 onClick={onClick}
             >
                 Go to service

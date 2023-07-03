@@ -23,10 +23,11 @@ export const GetNamespaceImages = async (
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: `Bearer ${process.env.REGISTRY_AUTH_TOKEN}`,
+                    Authorization: `Basic ${process.env.REGISTRY_AUTH_TOKEN}`,
                 },
             },
         );
+        
         return res.data.map((image) => ({
             ...image,
             name: image.name.split("/").slice(1).join("/"),

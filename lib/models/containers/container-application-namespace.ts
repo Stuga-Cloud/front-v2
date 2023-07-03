@@ -10,4 +10,14 @@ export interface ContainerApplicationNamespace {
     updatedAt: Date;
     applications: ContainerApplication[];
     memberships: ContainerApplicationNamespaceMembership[];
+    isUserAuthorized: boolean;
+}
+
+export interface ContainerApplicationNamespaceWithLimits {
+    currentApplicationsByNamespace: number;
+    currentApplicationsByUser: number;
+    hasReachedMaxApplicationsByNamespace: boolean;
+    hasReachedMaxApplicationsByUser: boolean;
+    maxApplicationsByNamespace: number;
+    maxApplicationsByUser: number;
 }

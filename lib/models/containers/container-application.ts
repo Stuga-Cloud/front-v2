@@ -28,6 +28,7 @@ export interface ContainerApplication {
     name: string;
     description: string;
     image: string;
+    registry: "pcr" | "dockerhub";
     userId: string;
     namespaceId: string;
     namespace: ContainerApplicationNamespace;
