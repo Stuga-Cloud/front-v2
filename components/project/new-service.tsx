@@ -84,6 +84,7 @@ export default function NewService({
                             <ServicePopUpCard
                                 title="Container Registry"
                                 description="A collection of repositories made to store container images."
+                                color="purple"
                                 onClick={() => afterCreate("registry")}
                             />
                         )}
@@ -91,6 +92,7 @@ export default function NewService({
                             <ServicePopUpCard
                                 title="Lambdas"
                                 description="Functions that can be executed on demand."
+                                color="green"
                                 onClick={() => afterCreate("lambda")}
                             />
                         )}
@@ -98,12 +100,14 @@ export default function NewService({
                             <ServicePopUpCard
                                 title="Containers"
                                 description="Deploy containers on demand (API, Web, Worker, DB etc)."
+                                color="blue"
                                 onClick={() => afterCreate("container")}
                             />
                         )}
                         {!alreadyHave.includes("database") && (
                             <ServicePopUpCard
-                                title="Database"
+                                title="Zero Knowledge Database"
+                                color="red"
                                 description="Secure database to store your data."
                                 onClick={() => afterCreate("database")}
                             />
