@@ -62,6 +62,9 @@ export default function LambdasDashboard({
                                         visibility
                                     </th>
                                     <th scope="col" className="px-6 py-3">
+                                        access lambda
+                                    </th>
+                                    <th scope="col" className="px-6 py-3">
                                         cpu
                                     </th>
                                     <th scope="col" className="px-6 py-3">
@@ -99,6 +102,12 @@ export default function LambdasDashboard({
                                             onClick={() => onClick(lambda)}
                                         >
                                             {lambda.visibility}
+                                        </td>
+                                        <td
+                                            className="px-6 py-4"
+                                            onClick={() => onClick(lambda)}
+                                        >
+                                            {lambda.urlAccess}
                                         </td>
                                         <td
                                             className="px-6 py-4"

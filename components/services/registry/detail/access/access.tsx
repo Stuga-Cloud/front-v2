@@ -159,7 +159,7 @@ export default function Access({
                             access to this registry
                         </div>
                     </div>
-                    {!isPrivateNamesapce && (
+                    {isPrivateNamesapce && (
                         <>
                             <div>
                                 <h3 className="mb-5 mt-10 w-4/5 text-3xl font-bold">

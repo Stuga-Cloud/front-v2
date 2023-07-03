@@ -32,6 +32,8 @@ export default function LambdaInformation({
                     </h2>
                     {lambda && (
                         <LambdaNameForm
+                            title="Your lambda is available at"
+                            subtext="If you have a problem to use it, refer you to the documentation"
                             name={lambda?.name}
                             isLambdaNameValid={(name) =>
                                 isLambdaNameValid(name)

@@ -120,7 +120,7 @@ export default function LambdaImageUpdate({
                     </Link>
                 </p> */}
             </div>
-            <div className="mt-10 flex justify-between">
+            <div className="mt-10 flex justify-center">
                 <div className="mt-10 w-2/5">
                     <button
                         type="submit"
