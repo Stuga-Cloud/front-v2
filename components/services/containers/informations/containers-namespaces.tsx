@@ -212,10 +212,6 @@ export default function ContainersNamespaces({
                                             namespacesInAPI.map((namespace) => {
                                                 const namespaceUrl =
                                                     getNamespaceURL(namespace);
-                                                console.log(
-                                                    "namespace url",
-                                                    namespaceUrl,
-                                                );
                                                 return (
                                                     <tr
                                                         key={namespace.id}

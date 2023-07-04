@@ -28,7 +28,7 @@ import {
 } from "@/components/services/containers/applications/create/container-creation";
 import { displayImageInRegistryUrl } from "../details/tabs/container-deployment";
 
-export const MAX_REPLICAS = 3;
+export const MAX_REPLICAS = Number(process.env.NEXT_PUBLIC_MAX_REPLICAS);
 
 export const CPU_LIMIT_AVAILABLE_CHOICES: ApplicationCPULimit[] = [
     { value: 70, unit: "mCPU" },

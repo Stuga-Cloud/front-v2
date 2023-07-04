@@ -5,7 +5,7 @@ import { redirect, useRouter } from "next/navigation";
 import { Project } from "@/lib/models/project";
 import { toastEventEmitter } from "@/lib/event-emitter/toast-event-emitter";
 import { LoadingSpinner } from "@/components/shared/icons";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { DisplayToast } from "@/components/shared/toast/display-toast";
 import TabsContainerDetails from "@/components/services/containers/applications/details/tabs/tabs-container-details";
 import { ContainerApplication } from "@/lib/models/containers/container-application";
@@ -103,11 +103,26 @@ export default function ContainerDetails({
             })
             .catch((error) => {
                 setLoading(false);
-                console.log(error);
-                DisplayToast({
-                    type: "error",
-                    message: `Could not find container, please try again later or contact support.`,
-                });
+                console.log(`error when try to get container`, error);
+                if (error instanceof AxiosError) {
+                    if (
+                        error.response?.status === 403 ||
+                        error.response?.status === 401
+                    ) {
+                        DisplayToast({
+                            type: "error",
+                            message:
+                                "You are not authorized to access this application, please contact your project admin's",
+                            duration: 3000,
+                        });
+                    }
+                } else {
+                    DisplayToast({
+                        type: "error",
+                        message: `Could not find container, please try again later or contact support.`,
+                    });
+                }
+
                 router.push(
                     `/projects/${projectId}/services/containers/namespaces/${namespaceId}`,
                 );

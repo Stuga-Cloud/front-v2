@@ -41,7 +41,7 @@ export default function Project({
             const res = await axios.get(`/api/projects/${projectId}`);
             return await res.data;
         } catch (error) {
-            console.log(error);
+            console.log(`error when try to get project informations`, error);
             throw error;
         }
     };
@@ -53,7 +53,7 @@ export default function Project({
             const res = await axios.get(`/api/projects/${projectId}/services`);
             return await res.data;
         } catch (error) {
-            console.log(error);
+            console.log(`error when try to get services informations`, error);
             throw error;
         }
     };

@@ -9,6 +9,7 @@ import { DeleteContainerApplicationByID } from "@/lib/services/containers/namesp
 import { verifyIfImageExists } from "@/lib/services/lambdas/verify-if-image-exists";
 import { UpdateContainerApplicationBody } from "@/lib/services/containers/update-container-application.body";
 import { UpdateContainerApplication } from "@/lib/services/containers/update-container-application";
+import { UnauthorizedToUpdateApplicationError } from "@/lib/services/containers/errors/unauthorize-to-update-applicatioon.error";
 
 export async function GET(
     _req: NextRequest,
@@ -344,6 +345,11 @@ export async function PUT(
 
         return ResponseService.updated(updatedContainer);
     } catch (error) {
+        console.log('error while updating container', error);
+        
+        if (error instanceof UnauthorizedToUpdateApplicationError) {
+            return ResponseService.unauthorized(error.message);
+        }
         console.error("Error updating container:", error);
         return ResponseService.internalServerError();
     }
