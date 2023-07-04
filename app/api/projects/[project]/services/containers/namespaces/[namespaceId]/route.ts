@@ -56,7 +56,7 @@ export async function GET(
             namespace.idInAPI,
             userId,
         );
-        if (!namespaceInAPI) {
+        if (!namespaceInAPI.namespace) {
             return ResponseService.notFound(
                 `Namespace not found with id ${namespace.idInAPI}`,
             );
@@ -64,7 +64,8 @@ export async function GET(
 
         return ResponseService.success({
             namespace,
-            namespaceInAPI,
+            namespaceInAPI: namespaceInAPI.namespace,
+            limits: namespaceInAPI.limits,
         });
     } catch (error) {
         console.error("Error fetching namespace:", error);
@@ -224,7 +225,7 @@ export async function PUT(
             namespace.idInAPI,
             userId,
         );
-        if (!namespaceInAPI) {
+        if (!namespaceInAPI.namespace) {
             return ResponseService.notFound(
                 `Namespace not found with id ${namespace.idInAPI}`,
             );
@@ -239,9 +240,9 @@ export async function PUT(
         }
 
         const updatedNamespace = await UpdateContainerNamespace(
-            namespaceInAPI.id,
+            namespaceInAPI.namespace.id,
             description,
-            namespaceInAPI.userId,
+            namespaceInAPI.namespace.userId,
             userId,
         );
         if (!updatedNamespace) {

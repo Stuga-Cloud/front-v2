@@ -71,7 +71,7 @@ export async function DELETE(
         namespace.idInAPI,
         removedBy,
     );
-    if (!namespaceInAPI) {
+    if (!namespaceInAPI.namespace) {
         return NextResponse.json(
             {
                 error: `Namespace in API ${namespaceId} not found`,
@@ -81,7 +81,7 @@ export async function DELETE(
     }
 
     await RemoveMemberFromContainerNamespace(
-        namespaceInAPI.id,
+        namespaceInAPI.namespace.id,
         params.userId,
         removedBy,
     );

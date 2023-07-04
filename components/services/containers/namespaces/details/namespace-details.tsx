@@ -8,7 +8,10 @@ import { DisplayToast } from "@/components/shared/toast/display-toast";
 import TabsNamespaceInfo from "@/components/services/containers/namespaces/details/tabs-namespace-info";
 import NamespaceContainers from "@/components/services/containers/namespaces/details/namespace-containers";
 import { ContainerApplication } from "@/lib/models/containers/container-application";
-import { ContainerApplicationNamespace } from "@/lib/models/containers/container-application-namespace";
+import {
+    ContainerApplicationNamespace,
+    ContainerApplicationNamespaceWithLimits,
+} from "@/lib/models/containers/container-application-namespace";
 import axios from "axios";
 import NamespaceSettings from "@/components/services/containers/namespaces/details/namespace-settings";
 import { ContainerNamespace } from "@/lib/models/containers/prisma/container-namespace";
@@ -36,6 +39,8 @@ export default function NamespaceDetails({
 
     const [project, setProject] = useState<Project | null>(null);
     const [namespace, setNamespace] = useState<ContainerNamespace | null>(null);
+    const [applicationLimitations, setApplicationLimitations] =
+        useState<ContainerApplicationNamespaceWithLimits | null>(null);
     const [namespaceInAPI, setNamespaceInAPI] =
         useState<ContainerApplicationNamespace | null>(null);
     const [containers, setContainers] = useState<ContainerApplication[]>([]);
@@ -80,6 +85,7 @@ export default function NamespaceDetails({
             );
             setNamespace(res.data.namespace);
             setNamespaceInAPI(res.data.namespaceInAPI);
+            setApplicationLimitations(res.data.limits);
             setContainers(res.data.namespaceInAPI.applications || []);
         } catch (error) {
             console.log(error);
@@ -147,6 +153,7 @@ export default function NamespaceDetails({
                                     project={project!}
                                     namespace={namespace}
                                     namespaceInAPI={namespaceInAPI!}
+                                    applicationLimitations={applicationLimitations!}
                                     containers={containers}
                                     reloadContainers={async () => {
                                         setLoading(true);

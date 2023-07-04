@@ -1,183 +1,148 @@
 import Balancer from "react-wrap-balancer";
-import WebVitals from "./web-vitals";
-import { DEPLOY_URL } from "@/lib/constants";
-import Image from "next/image";
+import { Boxes, Box, FunctionSquare, Key, Icon } from "lucide-react";
+import Image from "next/image"
 
-export default function UnAuthentified() {
-    // const { stargazers_count: stars } = await fetch(
-    //     "https://api.github.com/repos/steven-tey/precedent",
-    //     {
-    //         ...(process.env.GITHUB_OAUTH_TOKEN && {
-    //             headers: {
-    //                 Authorization: `Bearer ${process.env.GITHUB_OAUTH_TOKEN}`,
-    //                 "Content-Type": "application/json",
-    //             },
-    //         }),
-    //         // data will revalidate every 60 seconds
-    //         next: { revalidate: 60 },
-    //     },
-    // )
-    //     .then((res) => res.json())
-    //     .catch((e) => console.log(e));
-    return (
-        <>
-            <div className="h-5/5 z-10 flex items-center justify-center">
-                <div className="z-10 w-full max-w-xl px-5 xl:px-0">
-                    <h1
-                        className="animate-fade-up bg-gradient-to-br from-black to-stone-500 bg-clip-text text-center font-display text-4xl font-bold tracking-[-0.02em] text-transparent opacity-0 drop-shadow-sm md:text-7xl md:leading-[5rem]"
-                        style={{
-                            animationDelay: "0.15s",
-                            animationFillMode: "forwards",
-                        }}
-                    >
-                        <Balancer>The simplicity in the cloud</Balancer>
-                    </h1>
-                    <p
-                        className="mt-6 animate-fade-up text-center text-gray-500 opacity-0 md:text-xl"
-                        style={{
-                            animationDelay: "0.25s",
-                            animationFillMode: "forwards",
-                        }}
-                    >
-                        <Balancer>
-                            Simplicity, speed and security, all in one place
-                        </Balancer>
-                    </p>
-                    {/* <div
-            className="mx-auto mt-6 flex animate-fade-up items-center justify-center space-x-5 opacity-0"
-            style={{
-                animationDelay: "0.3s",
-                animationFillMode: "forwards",
-            }}
-        >
-            <a
-                className="group flex max-w-fit items-center justify-center space-x-2 rounded-full border border-black bg-black px-5 py-2 text-sm text-white transition-colors hover:bg-white hover:text-black"
-                href={DEPLOY_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-            >
-                <svg
-                    className="h-4 w-4 group-hover:text-black"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    xmlns="http://www.w3.org/2000/svg"
-                >
-                    <path
-                        d="M12 4L20 20H4L12 4Z"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                    />
-                </svg>
-                <p>Deploy to Vercel</p>
-            </a>
-            <a
-                className="flex max-w-fit items-center justify-center space-x-2 rounded-full border border-gray-300 bg-white px-5 py-2 text-sm text-gray-600 shadow-md transition-colors hover:border-gray-800"
-                href="https://github.com/steven-tey/precedent"
-                target="_blank"
-                rel="noopener noreferrer"
-            >
-                <Github />
-                <p>
-                    <span className="hidden sm:inline-block">
-                        Star on
-                    </span>{" "}
-                    GitHub{" "}
-                    <span className="font-semibold">
-                        {nFormatter(stars)}
-                    </span>
-                </p>
-            </a>
-        </div> */}
-                </div>
-                {/* <div className="my-10 grid w-full max-w-screen-xl animate-fade-up grid-cols-1 gap-5 px-5 md:grid-cols-3 xl:px-0">
-        {features.map(({ title, description, demo, large }) => (
-            <Card
-                key={title}
-                title={title}
-                description={description}
-                demo={
-                    title === "Beautiful, reusable components" ? (
-                        <ComponentGrid />
-                    ) : (
-                        demo
-                    )
-                }
-                large={large}
-            />
-        ))}
-    </div> */}
-            </div>
-        </>
-    );
+type FeatureProps = {
+  feature: {
+    name: string
+    description: string
+    icon: Icon
+    bgColor: string
+  }
 }
 
 const features = [
-    {
-        title: "Beautiful, reusable components",
-        description:
-            "Pre-built beautiful, a11y-first components, powered by [Tailwind CSS](https://tailwindcss.com/), [Radix UI](https://www.radix-ui.com/), and [Framer Motion](https://framer.com/motion)",
-        large: true,
-    },
-    {
-        title: "Performance first",
-        description:
-            "Built on [Next.js](https://nextjs.org/) primitives like `@next/font` and `next/image` for stellar performance.",
-        demo: <WebVitals />,
-    },
-    {
-        title: "One-click Deploy",
-        description:
-            "Jumpstart your next project by deploying Precedent to [Vercel](https://vercel.com/) in one click.",
-        demo: (
-            <a href={DEPLOY_URL}>
-                <Image
-                    src="https://vercel.com/button"
-                    alt="Deploy with Vercel"
-                    width={120}
-                    height={30}
-                    unoptimized
-                />
-            </a>
-        ),
-    },
-    {
-        title: "Built-in Auth + Database",
-        description:
-            "Precedent comes with authentication and database via [Auth.js](https://authjs.dev/) + [Prisma](https://prisma.io/)",
-        demo: (
-            <div className="flex items-center justify-center space-x-20">
-                <Image
-                    alt="Auth.js logo"
-                    src="/authjs.webp"
-                    width={50}
-                    height={50}
-                />
-                <Image
-                    alt="Prisma logo"
-                    src="/prisma.svg"
-                    width={50}
-                    height={50}
-                />
-            </div>
-        ),
-    },
-    {
-        title: "Hooks, utilities, and more",
-        description:
-            "Precedent offers a collection of hooks, utilities, and `@vercel/og`",
-        demo: (
-            <div className="grid grid-flow-col grid-rows-3 gap-10 p-10">
-                <span className="font-mono font-semibold">
-                    useIntersectionObserver
-                </span>
-                <span className="font-mono font-semibold">useLocalStorage</span>
-                <span className="font-mono font-semibold">useScroll</span>
-                <span className="font-mono font-semibold">nFormatter</span>
-                <span className="font-mono font-semibold">capitalize</span>
-                <span className="font-mono font-semibold">truncate</span>
-            </div>
-        ),
-    },
-];
+  {
+    name: 'Zero Knowledge database',
+    description: 'Secure database where data is encrypted and decrypted client-side, ensuring privacy and protection even if the provider is compromised.',
+    icon: Key,
+    bgColor: 'bg-red-600',
+  },
+  {
+    name: 'Container registry',
+    description: 'Central repository to store and distribute container images, facilitating application sharing and deployment.',
+    icon: Boxes,
+    bgColor: 'bg-lime-600',
+  },
+  {
+    name: 'Function as a service',
+    description:
+'Serverless computing where developers focus on code, and the cloud provider handles infrastructure management.',
+    icon: FunctionSquare,
+    bgColor: 'bg-yellow-600',
+  },
+  {
+    name: 'Container as a service',
+    description:
+    'Platform for running and managing containers, simplifying deployment and scaling of containerized applications.',
+    icon: Box,
+    bgColor: 'bg-sky-600',
+  },
+]
+
+const Testimonial = () => (
+  <div className="z-20 pb-8 pt-8 sm:pb-8 sm:pt-12 xl:pb-12">
+    <div className="bg-gray-900 pb-20 sm:pb-24 xl:pb-0">
+      <div className="mx-auto flex max-w-7xl flex-col items-center gap-x-8 gap-y-10 px-6 sm:gap-y-8 lg:px-8 xl:flex-row xl:items-stretch">
+        <div className="-mt-8 w-full max-w-2xl xl:-mb-8 xl:w-96 xl:flex-none">
+          <div className="relative aspect-[2/1] h-full md:-mx-8 xl:mx-0 xl:aspect-auto">
+            <img
+              className="absolute inset-0 h-full w-full rounded-2xl bg-gray-800 object-cover shadow-2xl"
+              src="/paul.png"
+              alt="Paul Abib with pool glasses"
+            />
+          </div>
+        </div>
+        <div className="w-full max-w-2xl xl:max-w-none xl:flex-auto xl:px-16 xl:py-24">
+          <figure className="relative isolate pt-6 sm:pt-12">
+            <svg
+              viewBox="0 0 162 128"
+              fill="none"
+              aria-hidden="true"
+              className="absolute left-0 top-0 -z-10 h-32 stroke-white/20"
+            >
+              <path
+                id="b56e9dab-6ccb-4d32-ad02-6b4bb5d9bbeb"
+                d="M65.5697 118.507L65.8918 118.89C68.9503 116.314 71.367 113.253 73.1386 109.71C74.9162 106.155 75.8027 102.28 75.8027 98.0919C75.8027 94.237 75.16 90.6155 73.8708 87.2314C72.5851 83.8565 70.8137 80.9533 68.553 78.5292C66.4529 76.1079 63.9476 74.2482 61.0407 72.9536C58.2795 71.4949 55.276 70.767 52.0386 70.767C48.9935 70.767 46.4686 71.1668 44.4872 71.9924L44.4799 71.9955L44.4726 71.9988C42.7101 72.7999 41.1035 73.6831 39.6544 74.6492C38.2407 75.5916 36.8279 76.455 35.4159 77.2394L35.4047 77.2457L35.3938 77.2525C34.2318 77.9787 32.6713 78.3634 30.6736 78.3634C29.0405 78.3634 27.5131 77.2868 26.1274 74.8257C24.7483 72.2185 24.0519 69.2166 24.0519 65.8071C24.0519 60.0311 25.3782 54.4081 28.0373 48.9335C30.703 43.4454 34.3114 38.345 38.8667 33.6325C43.5812 28.761 49.0045 24.5159 55.1389 20.8979C60.1667 18.0071 65.4966 15.6179 71.1291 13.7305C73.8626 12.8145 75.8027 10.2968 75.8027 7.38572C75.8027 3.6497 72.6341 0.62247 68.8814 1.1527C61.1635 2.2432 53.7398 4.41426 46.6119 7.66522C37.5369 11.6459 29.5729 17.0612 22.7236 23.9105C16.0322 30.6019 10.618 38.4859 6.47981 47.558L6.47976 47.558L6.47682 47.5647C2.4901 56.6544 0.5 66.6148 0.5 77.4391C0.5 84.2996 1.61702 90.7679 3.85425 96.8404L3.8558 96.8445C6.08991 102.749 9.12394 108.02 12.959 112.654L12.959 112.654L12.9646 112.661C16.8027 117.138 21.2829 120.739 26.4034 123.459L26.4033 123.459L26.4144 123.465C31.5505 126.033 37.0873 127.316 43.0178 127.316C47.5035 127.316 51.6783 126.595 55.5376 125.148L55.5376 125.148L55.5477 125.144C59.5516 123.542 63.0052 121.456 65.9019 118.881L65.5697 118.507Z"
+              />
+              <use href="#b56e9dab-6ccb-4d32-ad02-6b4bb5d9bbeb" x={86} />
+            </svg>
+            <blockquote className="text-xl font-semibold leading-8 text-white sm:text-2xl sm:leading-9">
+              <p>
+A developer's dream. An enthralling journey through the mysteries of technology, where cloud providers strive to reach new levels of unreliability and frustration. Amidst this chaotic landscape, Stuga Cloud stands tall, offering an unforgettable experience 
+              </p>
+            </blockquote>
+            <figcaption className="mt-8 text-base">
+              <div className="font-semibold text-white">Paul Abib</div>
+              <div className="mt-1 text-gray-400">Developer @ SNCF Connect</div>
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+    </div>
+  </div>
+)
+
+const Feature = ({ feature }: FeatureProps) => (
+  <div key={feature.name} className="relative pl-16">
+    <dt className="text-base font-semibold leading-7 text-gray-900">
+      <div className={`absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg ${feature.bgColor}`}>
+        <feature.icon className="h-6 w-6 text-white" aria-hidden="true" />
+      </div>
+      {feature.name}
+    </dt>
+    <dd className="mt-2 text-base leading-7 text-gray-600">{feature.description}</dd>
+  </div>
+)
+
+export default function UnAuthentified() {
+    return (
+        <>
+          <div className="h-5/5 z-10 flex items-center justify-center">
+            <div className="z-10 w-full max-w-xl px-5 xl:px-0">
+              <h1
+                  className="animate-fade-up bg-gradient-to-br from-black to-stone-500 bg-clip-text text-center font-display text-4xl font-bold tracking-[-0.02em] text-transparent opacity-0 drop-shadow-sm md:text-7xl md:leading-[5rem]"
+                  style={{
+                      animationDelay: "0.15s",
+                      animationFillMode: "forwards",
+                  }}
+              >
+                <Balancer>The simplicity in the cloud</Balancer>
+              </h1>
+              <p
+                className="mt-6 animate-fade-up text-center text-gray-500 opacity-0 md:text-xl"
+                style={{
+                    animationDelay: "0.25s",
+                    animationFillMode: "forwards",
+                }}
+              >
+                <Balancer>
+                    Simplicity, speed and security, all in one place
+                </Balancer>
+              </p>
+          </div>
+        </div>
+        {/* Feature section */}
+        <div className="mx-auto mt-12 max-w-7xl px-6 sm:mt-24 z-10 lg:px-8">
+          <div className="mx-auto max-w-2xl lg:text-center">
+            <h2 className="text-base font-semibold leading-7 text-fuchsia-600">Cloud</h2>
+            <p className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl text-indigo-500">
+              <Balancer>Key Features of Our Cloud Provider</Balancer>
+            </p>
+            <p className="mt-6 text-lg leading-8">
+              Host and Protect Your Sensitive Data with State-of-the-Art Technology from stuga cloud
+            </p>
+          </div>
+          <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">
+            <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-2 lg:gap-y-16">
+              {features.map((feature) => (
+                <Feature feature={feature} />
+              ))}
+            </dl>
+          </div>
+        </div>
+        <Testimonial />
+      </>
+    );
+}
+

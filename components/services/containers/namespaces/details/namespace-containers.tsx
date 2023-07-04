@@ -6,15 +6,20 @@ import { Project } from "@/lib/models/project";
 import { LoadingSpinner } from "@/components/shared/icons";
 import { ContainerApplication } from "@/lib/models/containers/container-application";
 import { ContainerNamespace } from "@/lib/models/containers/prisma/container-namespace";
-import { ContainerApplicationNamespace } from "@/lib/models/containers/container-application-namespace";
+import {
+    ContainerApplicationNamespace,
+    ContainerApplicationNamespaceWithLimits,
+} from "@/lib/models/containers/container-application-namespace";
 import { applicationStatusToComponent } from "@/lib/services/containers/application-status-to-component";
 import Image from "next/image";
+import { DisplayToast } from "@/components/shared/toast/display-toast";
 
 export default function NamespaceContainers({
     session,
     project,
     namespace,
     namespaceInAPI,
+    applicationLimitations,
     containers,
     reloadContainers,
 }: {
@@ -22,6 +27,7 @@ export default function NamespaceContainers({
     project: Project;
     namespace: ContainerNamespace;
     namespaceInAPI: ContainerApplicationNamespace;
+    applicationLimitations: ContainerApplicationNamespaceWithLimits;
     containers: ContainerApplication[];
     reloadContainers: () => void;
 }) {
@@ -34,14 +40,36 @@ export default function NamespaceContainers({
     );
     const [loading, setLoading] = useState(false);
 
-    const clickOnContainer = (container: ContainerApplication) => {
+    const getContainerURL = (container: ContainerApplication) => {
         const correspondingContainerInPrisma = namespace.containers.find(
             (c) => c.idInAPI === container.id,
         );
+        return `/projects/${project?.id}/services/containers/namespaces/${
+            namespace.id
+        }/applications/${correspondingContainerInPrisma!.id}`;
+    };
+
+    const clickOnNewContainerBtn = () => {
+        if (
+            applicationLimitations.hasReachedMaxApplicationsByUser ||
+            applicationLimitations.hasReachedMaxApplicationsByNamespace
+        ) {
+            if (applicationLimitations.hasReachedMaxApplicationsByUser) {
+                DisplayToast({
+                    type: "error",
+                    message: `You reached the maximum number of applications for your account (max: ${applicationLimitations.maxApplicationsByUser})`,
+                });
+            }
+            if (applicationLimitations.hasReachedMaxApplicationsByNamespace) {
+                DisplayToast({
+                    type: "error",
+                    message: `You reached the maximum number of applications for this namespace (max: ${applicationLimitations.maxApplicationsByNamespace})`,
+                });
+            }
+            return;
+        }
         router.push(
-            `/projects/${project.id}/services/containers/namespaces/${
-                namespace.id
-            }/applications/${correspondingContainerInPrisma!.id}`,
+            `/projects/${project.id}/services/containers/namespaces/${namespace.id}/applications/new`,
         );
     };
 
@@ -49,14 +77,43 @@ export default function NamespaceContainers({
         <>
             <div className="z-10 flex w-full flex-col items-center justify-center">
                 <div className="mb-4 flex w-4/5 flex-row items-center justify-between">
-                    <h2 className="mb-5 w-2/5 text-4xl font-bold"></h2>
+                    <h2 className="w-3/5 text-sm font-semibold">
+                        {/* Display limitation if user has reached the application limit */}
+                        {applicationLimitations.hasReachedMaxApplicationsByUser && (
+                            <span className="text-red-500">
+                                You have reached the maximum number of
+                                applications for your account (max:{" "}
+                                {applicationLimitations.maxApplicationsByUser})
+                            </span>
+                        )}
+                        {applicationLimitations.hasReachedMaxApplicationsByUser &&
+                            applicationLimitations.hasReachedMaxApplicationsByNamespace && (
+                                <br />
+                            )}
+                        {/* Display limitation if namespace has reached the application limit */}
+                        {applicationLimitations.hasReachedMaxApplicationsByNamespace && (
+                            <span className="text-red-500">
+                                {applicationLimitations.hasReachedMaxApplicationsByUser
+                                    ? "You have also "
+                                    : "You have "}
+                                reached the maximum number of applications for
+                                this namespace (max:{" "}
+                                {
+                                    applicationLimitations.maxApplicationsByNamespace
+                                }
+                                )
+                            </span>
+                        )}
+                    </h2>
                     <button
                         className="Button stuga-primary-color cursor-pointer"
                         onClick={() => {
-                            router.push(
-                                `/projects/${project.id}/services/containers/namespaces/${namespace.id}/applications/new`,
-                            );
+                            clickOnNewContainerBtn();
                         }}
+                        disabled={
+                            applicationLimitations.hasReachedMaxApplicationsByUser ||
+                            applicationLimitations.hasReachedMaxApplicationsByNamespace
+                        }
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -79,7 +136,7 @@ export default function NamespaceContainers({
                 {loading && <LoadingSpinner />}
 
                 {containers.length == 0 && (
-                    <div className="flex h-[50vh] w-full items-center justify-center gap-2 border-2  border-dashed">
+                    <div className="flex h-[50vh] w-4/5 items-center justify-center gap-2 border-2  border-dashed">
                         <Image
                             src="/stuga-logo.png"
                             alt="Description de l'image"
@@ -121,56 +178,47 @@ export default function NamespaceContainers({
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {containers.map((container) => (
-                                        <tr
-                                            key={container.id}
-                                            className="cursor-pointer border-b bg-gray-100 hover:bg-green-50"
-                                        >
-                                            <th
-                                                scope="row"
-                                                className="whitespace-nowrap px-6 py-4 font-medium"
-                                                onClick={() => {
-                                                    clickOnContainer(container);
-                                                }}
+                                    {containers.map((container) => {
+                                        const containerUrl =
+                                            getContainerURL(container);
+                                        return (
+                                            <tr
+                                                key={container.id}
+                                                className="cursor-pointer border-b bg-gray-100 hover:bg-green-50"
                                             >
-                                                {container.name}
-                                            </th>
-                                            <td
-                                                className="px-6 py-4"
-                                                onClick={() => {
-                                                    clickOnContainer(container);
-                                                }}
-                                            >
-                                                {container.description}
-                                            </td>
-                                            <td
-                                                className="px-6 py-4"
-                                                onClick={() => {
-                                                    clickOnContainer(container);
-                                                }}
-                                            >
-                                                {container.image}
-                                            </td>
-                                            <td
-                                                className="px-6 py-4"
-                                                onClick={() => {
-                                                    clickOnContainer(container);
-                                                }}
-                                            >
-                                                {applicationStatusToComponent(
-                                                    container.status,
-                                                )}
-                                            </td>
-                                            <td
-                                                className="px-6 py-4"
-                                                onClick={() => {
-                                                    clickOnContainer(container);
-                                                }}
-                                            >
-                                                {container.createdAt.toLocaleString()}
-                                            </td>
-                                        </tr>
-                                    ))}
+                                                <th
+                                                    scope="row"
+                                                    className="whitespace-nowrap px-6 py-4 font-medium"
+                                                >
+                                                    <a href={containerUrl}>
+                                                        {container.name}
+                                                    </a>
+                                                </th>
+                                                <td className="px-6 py-4">
+                                                    <a href={containerUrl}>
+                                                        {container.description}
+                                                    </a>
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    <a href={containerUrl}>
+                                                        {container.image}
+                                                    </a>
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    <a href={containerUrl}>
+                                                        {applicationStatusToComponent(
+                                                            container.status,
+                                                        )}
+                                                    </a>
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    <a href={containerUrl}>
+                                                        {container.createdAt.toLocaleString()}
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
                                 </tbody>
                             </table>
                         </div>

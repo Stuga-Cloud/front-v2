@@ -10,8 +10,8 @@ export default async function ProjectSettingsPage({ params }: ProjectParam) {
     const projectId: string = params?.project;
     const session = await getServerSession(authOptions);
     const breadcrumbItems = [
-        { text: "project", slug: `projects/${projectId}` },
-        { text: "settings", slug: `projects/${projectId}/settings` },
+        { text: "project", slug: `/projects/${projectId}` },
+        { text: "settings", slug: `/projects/${projectId}/settings` },
     ];
 
     return (

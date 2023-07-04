@@ -129,77 +129,83 @@ export default function ContainerPreview({
                             </span>
                         </div>
                     </div>
-                    <div className="flex flex-row items-start gap-3 pb-5 ps-5 pt-5">
-                        <div className="flex flex-col gap-1">
-                            <h2 className="text-xl font-bold">
-                                Scalability specifications
-                            </h2>
-                            <div className="flex flex-row gap-1">
-                                <div>
-                                    <span className="italic">Replicas: </span>
+                    {container.containerInAPI.applicationType ===
+                        "LOAD_BALANCED" && (
+                        <div className="flex flex-row items-start gap-3 pb-5 ps-5 pt-5">
+                            <div className="flex flex-col gap-1">
+                                <h2 className="text-xl font-bold">
+                                    Scalability specifications
+                                </h2>
+                                <div className="flex flex-row gap-1">
+                                    <div>
+                                        <span className="italic">
+                                            Replicas:{" "}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <strong>
+                                            {container.containerInAPI
+                                                .scalabilitySpecifications
+                                                ?.replicas
+                                                ? `${container.containerInAPI.scalabilitySpecifications.replicas}`
+                                                : "none"}
+                                        </strong>
+                                    </div>
                                 </div>
-                                <div>
-                                    <strong>
-                                        {container.containerInAPI
-                                            .scalabilitySpecifications?.replicas
-                                            ? `${container.containerInAPI.scalabilitySpecifications.replicas}`
-                                            : "none"}
-                                    </strong>
-                                </div>
-                            </div>
 
-                            <div className="flex flex-row gap-1">
-                                <div>
-                                    <span className="italic">
-                                        CPU usage percentage threshold:{" "}
-                                    </span>
+                                <div className="flex flex-row gap-1">
+                                    <div>
+                                        <span className="italic">
+                                            CPU usage percentage threshold:{" "}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <strong>
+                                            {container.containerInAPI
+                                                .scalabilitySpecifications
+                                                ?.cpuUsagePercentageThreshold
+                                                ? `${container.containerInAPI.scalabilitySpecifications.cpuUsagePercentageThreshold}%`
+                                                : "none"}
+                                        </strong>
+                                    </div>
                                 </div>
-                                <div>
-                                    <strong>
-                                        {container.containerInAPI
-                                            .scalabilitySpecifications
-                                            ?.cpuUsagePercentageThreshold
-                                            ? `${container.containerInAPI.scalabilitySpecifications.cpuUsagePercentageThreshold}%`
-                                            : "none"}
-                                    </strong>
-                                </div>
-                            </div>
 
-                            <div className="flex flex-row gap-1">
-                                <div>
-                                    <span className="italic">
-                                        Memory usage percentage threshold:{" "}
-                                    </span>
+                                <div className="flex flex-row gap-1">
+                                    <div>
+                                        <span className="italic">
+                                            Memory usage percentage threshold:{" "}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <strong>
+                                            {container.containerInAPI
+                                                .scalabilitySpecifications
+                                                ?.memoryUsagePercentageThreshold
+                                                ? `${container.containerInAPI.scalabilitySpecifications.memoryUsagePercentageThreshold}%`
+                                                : "none"}
+                                        </strong>
+                                    </div>
                                 </div>
-                                <div>
-                                    <strong>
-                                        {container.containerInAPI
-                                            .scalabilitySpecifications
-                                            ?.memoryUsagePercentageThreshold
-                                            ? `${container.containerInAPI.scalabilitySpecifications.memoryUsagePercentageThreshold}%`
-                                            : "none"}
-                                    </strong>
-                                </div>
-                            </div>
 
-                            <div className="flex flex-row gap-1">
-                                <div>
-                                    <span className="italic">
-                                        Scaling mode:{" "}
-                                    </span>
-                                </div>
-                                <div>
-                                    <strong>
-                                        {container.containerInAPI
-                                            .scalabilitySpecifications
-                                            ?.isAutoScaled
-                                            ? "Auto scaled"
-                                            : "Manually scaled"}
-                                    </strong>
+                                <div className="flex flex-row gap-1">
+                                    <div>
+                                        <span className="italic">
+                                            Scaling mode:{" "}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <strong>
+                                            {container.containerInAPI
+                                                .scalabilitySpecifications
+                                                ?.isAutoScaled
+                                                ? "Auto scaled"
+                                                : "Manually scaled"}
+                                        </strong>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    )}
                     <div className="mb-5 ms-5 mt-5 flex flex w-full flex-col gap-1">
                         <h2 className="text-xl font-bold">Description</h2>
                         <span>
