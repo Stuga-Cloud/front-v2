@@ -2,6 +2,7 @@ import { Project } from "@/lib/models/project";
 import { useState } from "react";
 import LoadingSpinner from "../../shared/icons/loading-spinner";
 import { toastEventEmitter } from "@/lib/event-emitter/toast-event-emitter";
+import ConfirmDeleteModal from '../../services/registry/modal-delete-confirm';
 
 export default function ProjectGlobalSettings({
     currentProject,
@@ -10,7 +11,10 @@ export default function ProjectGlobalSettings({
 }) {
     const [loading, setLoading] = useState(false);
     const [project, setProject] = useState(currentProject);
-
+    const [isOpenDeleteModal, setIsOpenDeleteModal] = useState(false);
+    const handleDeleteProject = async () => {
+        console.log("delete project");
+    };
     const updateProject = async (event: any) => {
         event.preventDefault();
         const name = event.target.name.value;
@@ -85,8 +89,25 @@ export default function ProjectGlobalSettings({
                     >
                         Save modifications
                     </button>
+                    <button 
+                    onClick={(event) => {
+                        event.preventDefault();
+                        setIsOpenDeleteModal(true);
+                    }}
+                    className="Button stuga-red-color ms-2">
+                        Delete project
+                    </button>
                 </div>
             </form>
+            <ConfirmDeleteModal 
+                text={`Are you sure you want to delete ${project.name} project?`}
+                onClose={() => setIsOpenDeleteModal(false)}
+                isOpenFromParent={isOpenDeleteModal}
+                deleteAction={async () => {
+                    await handleDeleteProject();
+                    setIsOpenDeleteModal(false);
+                }}
+            />
         </div>
     );
 }
