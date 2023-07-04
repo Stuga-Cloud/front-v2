@@ -53,11 +53,17 @@ export async function POST(
     try {
         if (image) {
             const repository = image.split("/")[0];
-            const parts = image.split("/");
-            const imageName = parts.slice(1).join("/");
-
+            // const parts = image.split("/");
+            // const imageName = parts.slice(1).join("/");
+            var imageToCheck = image;
+            if (registry === "pcr") {
+                imageToCheck = image.split(":")[0];
+            }
+            if (registry === "dockerhub") {
+                imageToCheck = image.split("/")[1];
+            }
             const verifyIfImageExistsResponse = await verifyIfImageExists(
-                imageName,
+                imageToCheck,
                 projectId,
                 registry,
                 repository,

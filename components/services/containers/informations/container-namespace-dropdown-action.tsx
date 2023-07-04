@@ -38,26 +38,24 @@ export const ContainerNamespaceDropdownAction = ({
                     id="menu-button"
                     aria-expanded={isOpen}
                     aria-haspopup="true"
-                    onClick={handleButtonClick}
+                    onClick={() => {
+                        setIsOpenDeleteModal(true);
+                    }}
                 >
-                    <svg
-                        className="h-5 w-5"
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="black"
-                        stroke="black"
-                        strokeWidth="1.5"
-                        aria-hidden="true"
-                    >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"
-                        ></path>
-                    </svg>
+                    <div className="py-1" role="none">
+                        <a
+                            href="#"
+                            className="block px-4 py-2 text-sm text-red-700 hover:bg-red-100"
+                            role="menuitem"
+                            tabIndex={-1}
+                            id="menu-item-0"
+                        >
+                            Delete
+                        </a>
+                    </div>
                 </button>
             </div>{" "}
-            {isOpen && (
+            {/* {isOpen && (
                 <div
                     className="absolute right-0 z-20 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 hover:bg-gray-100 focus:outline-none"
                     role="menu"
@@ -81,7 +79,7 @@ export const ContainerNamespaceDropdownAction = ({
                         </a>
                     </div>
                 </div>
-            )}
+            )} */}
             <ConfirmDeleteContainerNamespaceModal
                 text={messagePopup}
                 onClose={() => setIsOpenDeleteModal(false)}

@@ -59,7 +59,7 @@ export async function GET(
         namespace.idInAPI,
         userId,
     );
-    if (!namespaceInAPI) {
+    if (!namespaceInAPI.namespace) {
         return NextResponse.json(
             {
                 error: `Namespace in API ${namespaceId} not found`,
@@ -68,7 +68,7 @@ export async function GET(
         );
     }
 
-    const namespaceInAPIMemberships = namespaceInAPI.memberships;
+    const namespaceInAPIMemberships = namespaceInAPI.namespace.memberships;
     const correspondingUsers = await prisma.user.findMany({
         where: {
             id: {
@@ -148,7 +148,7 @@ export async function POST(
         namespace.idInAPI,
         addedBy,
     );
-    if (!namespaceInAPI) {
+    if (!namespaceInAPI.namespace) {
         return NextResponse.json(
             {
                 error: `Namespace in API ${namespaceId} not found`,

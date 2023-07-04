@@ -12,6 +12,7 @@ import {
     AvailableContainerRegistriesName,
     ContainerCreation,
     findRegistryByName,
+    findRegistryByRegistry,
 } from "@/components/services/containers/applications/create/container-creation";
 import { DisplayToast } from "@/components/shared/toast/display-toast";
 import { CreateContainerApplicationBody } from "@/lib/services/containers/create-container-application.body";
@@ -55,10 +56,10 @@ export default function ContainerDeployment({
         useState<ContainerNamespace>(container.container.namespace);
     const [registry, setRegistry] =
         useState<AvailableContainerRegistriesInformation>({
-            // TODO -> register in db
-            registry: "dockerhub",
-            url: process.env.NEXT_PUBLIC_DOCKER_HUB_URL!,
-            name: "Docker hub",
+            registry: container.containerInAPI.registry,
+            url: findRegistryByRegistry(container.containerInAPI.registry).url,
+            name: findRegistryByRegistry(container.containerInAPI.registry)
+                .name,
         });
     const [image, setImage] = useState<string | undefined>(
         container.containerInAPI.image,
@@ -115,9 +116,11 @@ export default function ContainerDeployment({
             description: container.containerInAPI.description ?? "",
             registry: {
                 // TODO -> register in db
-                registry: "dockerhub",
-                url: process.env.NEXT_PUBLIC_DOCKER_HUB_URL!,
-                name: "Docker hub",
+                registry: container.containerInAPI.registry,
+                url: findRegistryByRegistry(container.containerInAPI.registry)
+                    .url,
+                name: findRegistryByRegistry(container.containerInAPI.registry)
+                    .name,
             },
             image: container.containerInAPI.image,
             port: container.containerInAPI.port,
@@ -154,7 +157,6 @@ export default function ContainerDeployment({
 
     const handleSubmit = async (event: { preventDefault: () => void }) => {
         event.preventDefault();
-        console.log("Container update : ", containerUpdate);
         const errors = containerUpdate.validateForm("update");
         if (errors.length > 0) {
             const displayTime =
@@ -215,7 +217,7 @@ export default function ContainerDeployment({
                     data: createContainerApplicationBody,
                 },
             );
-            console.log("updatedContainer", updatedContainer);
+
             DisplayToast({
                 type: "success",
                 message: `Application ${containerUpdate.applicationName} updated`,
@@ -298,6 +300,9 @@ export default function ContainerDeployment({
                                                     ),
                                                 );
                                             }}
+                                            value={
+                                                containerUpdate.registry.name
+                                            }
                                         >
                                             {availableContainerRegistries.map(
                                                 (registry) => {
@@ -379,10 +384,24 @@ export default function ContainerDeployment({
                                                             )}
                                                             target="_blank"
                                                         >
-                                                            Here, choose the
-                                                            correct namespace
-                                                            according to the
-                                                            image
+                                                            {registry.registry ===
+                                                                "dockerhub" &&
+                                                                displayImageInRegistryUrl(
+                                                                    registry.url,
+                                                                    containerUpdate.image,
+                                                                    registry.registry,
+                                                                    project.id,
+                                                                )}
+                                                            {registry.registry ===
+                                                                "pcr" && (
+                                                                <>
+                                                                    Here, choose
+                                                                    the correct
+                                                                    namespace
+                                                                    according to
+                                                                    the image
+                                                                </>
+                                                            )}
                                                         </Link>
                                                     </p>
                                                 </>

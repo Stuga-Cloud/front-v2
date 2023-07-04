@@ -15,7 +15,7 @@ export default async function ProjectPage({ params }: ProjectParam) {
                 <Nav
                     session={session}
                     breadcrumbItems={[
-                        { text: "project", slug: `project/${params.project}` },
+                        { text: "project", slug: `/projects/${params.project}` },
                     ]}
                 />
             </Suspense>
