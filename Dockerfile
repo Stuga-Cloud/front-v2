@@ -13,7 +13,7 @@ CMD npm run build
 FROM node:16-alpine as production-stage
 
 WORKDIR /app
-COPY --from=builder /frontend ./
+COPY --from=build-stage /frontend ./
 
 EXPOSE 80
 

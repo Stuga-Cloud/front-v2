@@ -29,7 +29,7 @@ export const authOptions: NextAuthOptions = {
             session = {
                 ...session,
                 user: {
-                    // @ts-ignore 
+                    // @ts-ignore
                     id: user.id,
                     ...session.user,
                 },
@@ -37,6 +37,7 @@ export const authOptions: NextAuthOptions = {
             return session;
         },
     },
+    secret: process.env.NEXTAUTH_SECRET,
 };
 
 const handler = NextAuth(authOptions);
