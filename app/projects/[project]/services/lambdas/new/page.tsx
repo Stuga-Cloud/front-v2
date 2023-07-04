@@ -4,6 +4,7 @@ import { Breadcrumb, BreadcrumbItem } from "@/components/shared/breadcrumb";
 import { getServerSession } from "next-auth";
 import { Suspense } from "react";
 import Nav from "@/components/layout/nav";
+import UnAuthentified from "@/components/home/un-authentified";
 
 export default async function LambdaNewPage({
     params,
@@ -32,10 +33,14 @@ export default async function LambdaNewPage({
             <Suspense fallback="...">
                 <Nav session={session} breadcrumbItems={breadcrumbItem} />
             </Suspense>
-            <div className="z-10 mt-5 flex flex w-full flex-col">
-                <Breadcrumb items={breadcrumbItem} />
-                <NewLambdaForm session={session} projectId={projectId} />
-            </div>
+            {session ? (
+                <div className="z-10 mt-5 flex flex w-full flex-col">
+                    {/* <Breadcrumb items={breadcrumbItem} /> */}
+                    <NewLambdaForm session={session} projectId={projectId} />
+                </div>
+            ) : (
+                <UnAuthentified />
+            )}
         </>
     );
 }
