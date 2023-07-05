@@ -46,7 +46,6 @@ export default function ContainerLogs({
         const logsResponse = await axios.get(
             `/api/projects/${project.id}/services/containers/namespaces/${container.container.namespace.id}/applications/${applicationId}/logs`,
         );
-        console.log(logsResponse);
         return logsResponse.data.logs;
     };
 

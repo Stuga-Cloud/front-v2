@@ -51,6 +51,20 @@ export default function TabsContainerDetails({
                     <a
                         href="#"
                         className={`group inline-flex rounded-t-lg p-4 ${
+                            activeTab === "deployment"
+                                ? "border-b-2 border-green-400 text-green-400"
+                                : "border-transparent hover:border-gray-300 hover:text-gray-600"
+                        }`}
+                        aria-current="page"
+                        onClick={() => handleClick("deployment")}
+                    >
+                        Deployment
+                    </a>
+                </li>
+                <li className="mr-2">
+                    <a
+                        href="#"
+                        className={`group inline-flex rounded-t-lg p-4 ${
                             activeTab === "logs"
                                 ? "border-b-2 border-green-400 text-green-400"
                                 : "border-transparent hover:border-gray-300 hover:text-gray-600"
@@ -73,20 +87,6 @@ export default function TabsContainerDetails({
                         onClick={() => handleClick("metrics")}
                     >
                         Metrics
-                    </a>
-                </li>
-                <li className="mr-2">
-                    <a
-                        href="#"
-                        className={`group inline-flex rounded-t-lg p-4 ${
-                            activeTab === "deployment"
-                                ? "border-b-2 border-green-400 text-green-400"
-                                : "border-transparent hover:border-gray-300 hover:text-gray-600"
-                        }`}
-                        aria-current="page"
-                        onClick={() => handleClick("deployment")}
-                    >
-                        Deployment
                     </a>
                 </li>
                 {/*<li className="mr-2">*/}

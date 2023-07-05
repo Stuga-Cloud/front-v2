@@ -10,6 +10,7 @@ import { DisplayToast } from "@/components/shared/toast/display-toast";
 import { ContainerNamespaceDropdownAction } from "@/components/services/containers/informations/container-namespace-dropdown-action";
 import { ContainerNamespace } from "@/lib/models/containers/prisma/container-namespace";
 import Image from "next/image";
+import ConfirmDeleteContainerNamespaceModal from "./modal-delete-container-namespace-confirm";
 
 export default function ContainersNamespaces({
     session,
@@ -29,9 +30,7 @@ export default function ContainersNamespaces({
         redirect(`/projects/${project.id}/services/containers`);
 
     const router = useRouter();
-    const [errorFromMessage, setErrorFormMessage] = useState<string | null>(
-        null,
-    );
+    const [isDeleteModalOpened, setIsDeleteModalOpened] = useState(false);
     const [loading, setLoading] = useState(false);
 
     const getNamespaceURL = (namespaceInAPI: ContainerApplicationNamespace) => {
@@ -49,6 +48,9 @@ export default function ContainersNamespaces({
             (namespaceInPrisma) => namespaceInPrisma.idInAPI === namespace.id,
         );
         if (!correspondingNamespaceInPrisma) {
+            console.log(
+                `could not find namespace in prisma with id ${namespace.id}`,
+            );
             DisplayToast({
                 type: "error",
                 message:
@@ -57,6 +59,7 @@ export default function ContainersNamespaces({
             });
             return;
         }
+        setIsDeleteModalOpened(false);
         setLoading(true);
         try {
             const res = await axios.delete(
@@ -89,6 +92,7 @@ export default function ContainersNamespaces({
                     "Could not delete namespace, please try again later or contact support",
                 duration: 7000,
             });
+            setLoading(false);
         }
     };
 
@@ -216,50 +220,73 @@ export default function ContainersNamespaces({
                                                     <tr
                                                         key={namespace.id}
                                                         className="cursor-pointer border-b bg-gray-100 hover:bg-green-50"
+                                                        onClick={() => {
+                                                            router.push(
+                                                                namespaceUrl!,
+                                                            );
+                                                        }}
                                                     >
                                                         <th
                                                             scope="row"
                                                             className="h-full whitespace-nowrap px-6 py-4 font-medium"
                                                         >
-                                                            <a
+                                                            {/* <a
                                                                 href={
                                                                     namespaceUrl
                                                                 }
                                                                 className="flex h-full w-full flex-row text-start"
-                                                            >
-                                                                {namespace.name}
-                                                            </a>
+                                                            > */}
+                                                            {namespace.name}
+                                                            {/* </a> */}
                                                         </th>
                                                         <td className="px-6 py-4">
-                                                            <a
+                                                            {/* <a
                                                                 href={
                                                                     namespaceUrl
                                                                 }
                                                                 className="flex h-full w-full flex-row text-start"
-                                                            >
-                                                                {
-                                                                    namespace.description
-                                                                }
-                                                            </a>
+                                                            > */}
+                                                            {
+                                                                namespace.description
+                                                            }
+                                                            {/* </a> */}
                                                         </td>
                                                         <td className="px-6 py-4">
-                                                            <a
+                                                            {/* <a
                                                                 href={
                                                                     namespaceUrl
                                                                 }
                                                                 className="flex h-full w-full flex-row text-start"
-                                                            >
-                                                                {namespace.createdAt.toLocaleString()}
-                                                            </a>
+                                                            > */}
+                                                            {namespace.createdAt.toLocaleString()}
+                                                            {/* </a> */}
                                                         </td>
                                                         <td className="px-6 py-4 text-right">
                                                             <ContainerNamespaceDropdownAction
                                                                 messagePopup="Are you sure you want to delete this namespace?"
                                                                 deleteAction={async () =>
-                                                                    await deleteContainerNamespace(
-                                                                        namespace,
+                                                                    setIsDeleteModalOpened(
+                                                                        true,
                                                                     )
                                                                 }
+                                                            />
+                                                            <ConfirmDeleteContainerNamespaceModal
+                                                                text={
+                                                                    "Are you sure you want to delete this namespace?"
+                                                                }
+                                                                onClose={() =>
+                                                                    setIsDeleteModalOpened(
+                                                                        false,
+                                                                    )
+                                                                }
+                                                                isOpenFromParent={
+                                                                    isDeleteModalOpened
+                                                                }
+                                                                deleteAction={async () => {
+                                                                    await deleteContainerNamespace(
+                                                                        namespace,
+                                                                    );
+                                                                }}
                                                             />
                                                         </td>
                                                     </tr>

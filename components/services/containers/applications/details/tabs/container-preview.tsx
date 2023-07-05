@@ -13,6 +13,7 @@ import {
     humanizeContainerCPULimitSpecifications,
     humanizeContainerMemoryLimitSpecifications,
 } from "@/lib/models/containers/container-application";
+import ConfirmDeleteContainerApplicationModal from "./modal-delete-container-application-confirm";
 
 export default function ContainerPreview({
     session,
@@ -33,6 +34,7 @@ export default function ContainerPreview({
 
     const router = useRouter();
     const [loading, setLoading] = useState(false);
+    const [isDeleteModalOpened, setIsDeleteModalOpened] = useState(false);
 
     const deleteContainer = async () => {
         setLoading(true);
@@ -228,12 +230,22 @@ export default function ContainerPreview({
                                 all associated data.
                             </span>
                             <button
-                                type="submit"
+                                type="button"
                                 className="Button stuga-red-color"
-                                onClick={deleteContainer}
+                                onClick={() => setIsDeleteModalOpened(true)}
                             >
                                 Delete container
                             </button>
+                            <ConfirmDeleteContainerApplicationModal
+                                text={
+                                    "Are you sure you want to delete this application?"
+                                }
+                                onClose={() => setIsDeleteModalOpened(false)}
+                                isOpenFromParent={isDeleteModalOpened}
+                                deleteAction={async () => {
+                                    await deleteContainer();
+                                }}
+                            />
                         </div>
                     </div>
                 </div>
