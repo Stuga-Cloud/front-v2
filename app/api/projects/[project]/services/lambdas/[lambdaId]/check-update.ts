@@ -3,6 +3,7 @@ import { Lambda, Project } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { verifyIfImageExists } from "@/lib/services/lambdas/verify-if-image-exists";
 import { GetAPiKey } from "@/lib/services/lambdas/liserk-api/get-api-key";
+import { LambdaVisibility } from "@/lib/models/lambdas/lambda-create";
 
 export const checkImageUpdate = async (
     projectId: string,
@@ -97,7 +98,7 @@ export const hasGatewayToUpdate = (
 };
 
 export const hasToGenerateApiKey = async (
-    newLambda: LambdaModel,
+    visibility: "private" | "public",
     project: Project,
 ): Promise<boolean> => {
     try {
@@ -105,10 +106,8 @@ export const hasToGenerateApiKey = async (
         return false;
     } catch (e) {
         console.log("error in api key generate");
-        console.log(newLambda.confidentiality.visibility);
-        return (
-            newLambda.confidentiality.visibility === "private"
-        );
+        // console.log(confidentiality.visibility);
+        return visibility === "private";
     }
 };
 

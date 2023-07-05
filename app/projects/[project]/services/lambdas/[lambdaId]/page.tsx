@@ -1,4 +1,5 @@
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import UnAuthentified from "@/components/home/un-authentified";
 import Nav from "@/components/layout/nav";
 import LambdaDetail from "@/components/services/lambdas/detail/lambda-detail";
 import { getServerSession } from "next-auth";
@@ -32,11 +33,15 @@ export default async function LambdaDetailPage({
                     ]}
                 />
             </Suspense>
-            <LambdaDetail
-                session={session}
-                lambdaId={lambdaId}
-                projectId={projectId}
-            />
+            {session ? (
+                <LambdaDetail
+                    session={session}
+                    lambdaId={lambdaId}
+                    projectId={projectId}
+                />
+            ) : (
+                <UnAuthentified />
+            )}
         </>
     );
 }

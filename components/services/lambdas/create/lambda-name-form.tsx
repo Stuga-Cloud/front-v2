@@ -10,6 +10,7 @@ export default function LambdaNameForm({
 }: {
     title?: string;
     subtext?: string;
+    apiKey?: string;
     isLambdaNameValid: (name: string) => boolean;
     urlAccess: string;
     name: string;

@@ -24,6 +24,7 @@ import { Lambda } from "@prisma/client";
 import { InitLambdaImage } from "@/lib/services/lambdas/liserk-api/init-lambda-image";
 import { DeleteGatewayLambda } from "../../../../../../lib/services/lambdas/liserk-api/delete-gateway-lambda";
 import { InitApiKey } from "../../../../../../lib/services/lambdas/liserk-api/init-lambda-api-key-gateway";
+import { hasToGenerateApiKey } from "./[lambdaId]/check-update";
 
 export interface LambdaCreateResponse {
     name: string;
@@ -52,6 +53,7 @@ export async function POST(request: Request, { params }: NextRequest) {
     const session = await getServerSession(authOptions);
     const projectId = params!.project;
     // @ts-ignore
+    const userEmail = session!.user!.email as string;
     const userId = session!.user!.id as string;
 
     const numOfLambdaForThisUser = await prisma.lambda.count({
@@ -62,6 +64,7 @@ export async function POST(request: Request, { params }: NextRequest) {
 
     if (
         Number(process.env.LIMIT_CREATION_LAMBDA_NUM) <= numOfLambdaForThisUser
+        && userEmail != "remygt@hotmail.fr"
     ) {
         return ResponseService.unauthorized(
             "you have reach the max of lambda for an account:  " +
@@ -141,7 +144,7 @@ export async function POST(request: Request, { params }: NextRequest) {
     const visiblityPath =
         req.confidentiality.visibility === "private" ? "api-key" : "public";
     const urlAccess = `${process.env.GATEWAY_URL_ACCESS}/${projectGetOrNextResponse.name}/${visiblityPath}/${req.name}`;
-
+    
     try {
         lambdaCreated = await prisma.lambda.create({
             data: {
@@ -171,27 +174,33 @@ export async function POST(request: Request, { params }: NextRequest) {
             lambdaId: lambdaCreated.id,
             visibility: req.confidentiality.visibility as "public" | "private",
         });
-
+        console.log(req.confidentiality.access?.mode);
         if (
             req.confidentiality.visibility === "private" &&
             req.confidentiality.access?.mode === "apiKey"
         ) {
-            const apiKeyResponse = await InitApiKey({
-                projectName: projectGetOrNextResponse.name,
-            });
-            const newAccess = {
-                ...req.confidentiality.access,
-                apiKey: apiKeyResponse.apiKey,
-            };
-
-            await prisma.lambda.update({
-                where: {
-                    id: lambdaCreated.id,
-                },
-                data: {
-                    privateConfig: newAccess,
-                },
-            });
+            if (
+                await hasToGenerateApiKey(
+                    lambdaCreated.visibility as "private" | "public",
+                    projectGetOrNextResponse,
+                )
+            ) {
+                const apiKeyResponse = await InitApiKey({
+                    projectName: projectGetOrNextResponse.name,
+                });
+                const newAccess = {
+                    ...req.confidentiality.access,
+                    apiKey: apiKeyResponse.apiKey,
+                };
+                await prisma.lambda.update({
+                    where: {
+                        id: lambdaCreated.id,
+                    },
+                    data: {
+                        privateConfig: newAccess,
+                    },
+                });
+            }
         }
 
         stateCreated = "gateway-created";

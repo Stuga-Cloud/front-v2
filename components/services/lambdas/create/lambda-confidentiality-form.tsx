@@ -33,12 +33,11 @@ export default function LambdaConfidentialityForm({
             <RadioButtons
                 value={value.visibility}
                 onChangeValue={(value: string) => {
-                    if (value === "private" && apiKey) {
+                    if (value === "private") {
                         handleVisibilityChange({
                             visibility: "private",
                             access: {
                                 mode: "apiKey",
-                                apiKey,
                             },
                         });
                     } else {

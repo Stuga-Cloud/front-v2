@@ -1,3 +1,5 @@
+/* eslint-disable @next/next/no-img-element */
+/* eslint-disable react/no-unescaped-entities */
 import Balancer from "react-wrap-balancer";
 import { Boxes, Box, FunctionSquare, Key, Icon } from "lucide-react";
 
