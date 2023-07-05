@@ -14,7 +14,10 @@ import { ContainerEnvironmentVariable } from "@/lib/models/containers/container-
 import { ContainerApplicationSecret } from "@/lib/models/containers/container-application-secrets";
 import { ContainerLimitUnit } from "@/lib/models/containers/container-application-specifications";
 import { StugaError } from "@/lib/services/error/error";
-import { ContainerApplicationNamespace } from "@/lib/models/containers/container-application-namespace";
+import {
+    ContainerApplicationNamespace,
+    ContainerApplicationNamespaceWithLimits,
+} from "@/lib/models/containers/container-application-namespace";
 import { DisplayToast } from "@/components/shared/toast/display-toast";
 import { ContainerApplication } from "@/lib/models/containers/container-application";
 import { isEmailValid } from "@/lib/utils";
@@ -27,8 +30,14 @@ import {
     findRegistryByName,
 } from "@/components/services/containers/applications/create/container-creation";
 import { displayImageInRegistryUrl } from "../details/tabs/container-deployment";
+import {
+    MAX_APPLICATIONS_BY_NAMESPACE,
+    MAX_APPLICATIONS_BY_USER,
+    namespaceHasReachedMaxApplicationsLimit,
+    userHasReachedMaxApplicationsLimit,
+} from "../../namespaces/details/namespace-containers";
 
-export const MAX_REPLICAS = 3;
+export const MAX_REPLICAS = Number(process.env.NEXT_PUBLIC_MAX_REPLICAS);
 
 export const CPU_LIMIT_AVAILABLE_CHOICES: ApplicationCPULimit[] = [
     { value: 70, unit: "mCPU" },
@@ -75,6 +84,8 @@ export default function NewContainerForm({
     const [applicationNamespace, setApplicationNamespace] =
         useState<ContainerApplicationNamespace | null>(null);
     const [containers, setContainers] = useState<ContainerApplication[]>([]);
+    const [applicationLimitations, setApplicationLimitations] =
+        useState<ContainerApplicationNamespaceWithLimits | null>(null);
 
     const loadNamespace = async () => {
         setLoading(true);
@@ -90,9 +101,10 @@ export default function NewContainerForm({
             .then((response) => {
                 setApplicationNamespace(response.data.namespace);
                 setContainers(response.data.namespaceInAPI.applications);
+                setApplicationLimitations(response.data.limits);
             })
             .catch((error) => {
-                console.log(error);
+                console.log(`got error while loading namespace: ${error}`);
                 DisplayToast({
                     type: "error",
                     message:
@@ -102,6 +114,39 @@ export default function NewContainerForm({
                 router.push(`/projects/${projectId}/services/containers`);
             })
             .finally(() => setLoading(false));
+        if (
+            applicationLimitations &&
+            userHasReachedMaxApplicationsLimit(
+                applicationLimitations,
+                MAX_APPLICATIONS_BY_USER,
+            )
+        ) {
+            DisplayToast({
+                type: "error",
+                message: `You have reached maximum application limit by user (max: ${MAX_APPLICATIONS_BY_USER})`,
+                duration: 5000,
+            });
+            router.push(
+                `/projects/${projectId}/services/containers/namespaces/${namespaceId}`,
+            );
+            return;
+        }
+        if (
+            applicationLimitations &&
+            namespaceHasReachedMaxApplicationsLimit(
+                applicationLimitations,
+                MAX_APPLICATIONS_BY_NAMESPACE,
+            )
+        ) {
+            DisplayToast({
+                type: "error",
+                message: `You have reached maximum application limit by namespace (max: ${MAX_APPLICATIONS_BY_NAMESPACE})`,
+                duration: 5000,
+            });
+            router.push(
+                `/projects/${projectId}/services/containers/namespaces/${namespaceId}`,
+            );
+        }
     }, [projectId, namespaceId]);
 
     const [project, setProject] = useState({} as Project);

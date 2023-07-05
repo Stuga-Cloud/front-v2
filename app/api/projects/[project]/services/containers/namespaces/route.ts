@@ -87,7 +87,10 @@ export async function GET(
                             } as ContainerApplicationNamespace;
                         }
                     }
-                    return null;
+                    
+                    throw new FindContainerNamespaceError(
+                        `Error getting namespace with id '${ns.idInAPI}' : ${e}`,
+                    );
                 }
             }),
         );

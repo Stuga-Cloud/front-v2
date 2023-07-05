@@ -149,16 +149,18 @@ export default function NamespaceSettings({
                     Namespace information
                 </h2>
             </div>
-            {/*  Display namespace description  */}
-            <div className="mb-4 ms-12 flex w-4/5 flex-col gap-4">
-                <h3 className="w-2/5 text-xl font-bold">Description</h3>
-                <EditableText
-                    text={namespaceInAPI.description}
-                    onSave={(newValue) => {
-                        updateNamespaceDescription(newValue);
-                    }}
-                />
-            </div>
+
+            {!loading && (
+                <div className="mb-4 ms-12 flex w-4/5 flex-col gap-4">
+                    <h3 className="w-2/5 text-xl font-bold">Description</h3>
+                    <EditableText
+                        text={namespaceInAPI.description}
+                        onSave={(newValue) => {
+                            updateNamespaceDescription(newValue);
+                        }}
+                    />
+                </div>
+            )}
 
             {/*  See members of the namespace and be able to add new members  */}
             <div className="mt-12 flex w-4/5 flex-row items-center justify-between">

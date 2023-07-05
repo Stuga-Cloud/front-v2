@@ -16,7 +16,7 @@ import {
 } from "@/components/services/containers/applications/create/container-creation";
 import { DisplayToast } from "@/components/shared/toast/display-toast";
 import { CreateContainerApplicationBody } from "@/lib/services/containers/create-container-application.body";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { StugaError } from "@/lib/services/error/error";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
 import process from "process";
@@ -31,6 +31,7 @@ import { ContainerLimitUnit } from "@/lib/models/containers/container-applicatio
 import { ContainerNamespace } from "@/lib/models/containers/prisma/container-namespace";
 import { ContainerEnvironmentVariable } from "@/lib/models/containers/container-application-environment-variables";
 import { ContainerApplicationSecret } from "@/lib/models/containers/container-application-secrets";
+import { MAX_REPLICAS } from "../../create/new-container-form";
 
 export default function ContainerDeployment({
     session,
@@ -237,13 +238,18 @@ export default function ContainerDeployment({
                 });
                 return;
             }
-            if (error instanceof StugaError) {
-                DisplayToast({
-                    type: "error",
-                    message: error.message,
-                    duration: 4000,
-                });
-                return;
+            if (error instanceof AxiosError) {
+                if (
+                    error.response?.status === 403 ||
+                    error.response?.status === 401
+                ) {
+                    DisplayToast({
+                        type: "error",
+                        message: `You don't have the permission to update this application`,
+                        duration: 4000,
+                    });
+                    return;
+                }
             }
             DisplayToast({
                 type: "error",
@@ -649,7 +655,7 @@ export default function ContainerDeployment({
                                                         }}
                                                         placeholder="Enter Number of Replicas"
                                                         min="0"
-                                                        max="10"
+                                                        max={MAX_REPLICAS}
                                                         required
                                                     />
                                                     {!containerUpdate.isReplicasValid() ? (

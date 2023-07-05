@@ -147,18 +147,20 @@ export default function UnAuthentified() {
             {/* Feature section */}
             <div className="z-10 mx-auto mt-12 max-w-7xl px-6 sm:mt-24 lg:px-8">
                 <div className="mx-auto max-w-2xl lg:text-center">
-                    <h2 className="text-base font-semibold leading-7 text-fuchsia-600">
-                        Cloud
+                    <h2 className="text-4xl font-semibold leading-7 text-fuchsia-600 sm:text-3xl">
+                        What do we offer?
                     </h2>
-                    <p className="mt-2 text-3xl font-bold tracking-tight text-indigo-500 sm:text-4xl">
-                        <Balancer>Key Features of Our Cloud Provider</Balancer>
-                    </p>
-                    <p className="mt-6 text-lg leading-8">
-                        Host and Protect Your Sensitive Data with
-                        State-of-the-Art Technology from stuga cloud
+                    <p className="mt-4 text-lg leading-8">
+                        Host and Protect your sensitive data with
+                        State-of-the-Art technology from Stuga Cloud
                     </p>
                 </div>
-                <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">
+                <div className="mx-auto max-w-2xl lg:text-center">
+                    <p className="mt-20 text-3xl font-bold tracking-tight text-indigo-500 sm:text-3xl">
+                        <Balancer>Key features of our Cloud Provider</Balancer>
+                    </p>
+                </div>
+                <div className="mx-auto mt-4 max-w-2xl sm:mt-8 lg:mt-12 lg:max-w-4xl">
                     <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-2 lg:gap-y-16">
                         {features.map((feature) => (
                             <Feature key={feature.name} feature={feature} />

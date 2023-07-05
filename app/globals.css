@@ -176,6 +176,13 @@
     --tw-shadow-colored: 0 1px 2px 0 var(--tw-shadow-color);
 }
 
+/* When small */
+@media (max-width: 640px) {
+    .StugaCard {
+        min-width: 9rem;
+    }
+}
+
 .StugaCard[aria-hidden="true"] {
     opacity: 0.5;
     background-color: transparent;

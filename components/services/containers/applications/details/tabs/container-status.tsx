@@ -85,18 +85,12 @@ export default function ContainerStatus({
             state = firstContainerStatus.state.running;
         } else if (firstContainerStatus.state.terminated) {
             state = firstContainerStatus.state.terminated;
-        } else {
-            DisplayToast({
-                type: "error",
-                message: `Couldn't get state of container ${container.container.name}, please try again later or contact support.`,
-                duration: 5000,
-            });
         }
         return state;
     };
 
     const getPodLastTerminationState = (pod: any) => {
-        var state;
+        var state = null;
         var firstContainerStatus = pod.status.containerStatuses[0];
         if (firstContainerStatus.lastTerminationState.waiting) {
             state = firstContainerStatus.lastTerminationState.waiting;
@@ -104,12 +98,6 @@ export default function ContainerStatus({
             state = firstContainerStatus.lastTerminationState.running;
         } else if (firstContainerStatus.lastTerminationState.terminated) {
             state = firstContainerStatus.lastTerminationState.terminated;
-        } else {
-            DisplayToast({
-                type: "error",
-                message: `Couldn't get lastTerminationState of container ${container.container.name}, please try again later or contact support.`,
-                duration: 5000,
-            });
         }
         return state;
     };
@@ -196,65 +184,84 @@ export default function ContainerStatus({
                                 containerStatus.podList.items.map(
                                     (pod: any) => {
                                         return (
-                                            <>
-                                                <div
-                                                    className="m-3 w-full rounded-lg border-2 border-dashed border-green-300 p-5"
-                                                    key={pod.metadata.name}
-                                                >
-                                                    <h1 className="text-2xl font-bold">
-                                                        {pod.metadata.name}
-                                                    </h1>
-                                                    <div className="mt-5 flex w-full flex-col">
-                                                        <div className="flex w-full flex-col items-start gap-2">
-                                                            <div className="flex w-full flex-row gap-4">
-                                                                <h4 className="text-md">
-                                                                    Phase:
-                                                                </h4>
-                                                                <h4 className="text-md font-semibold">
-                                                                    {
-                                                                        pod
-                                                                            .status
-                                                                            .phase
-                                                                    }
-                                                                </h4>
-                                                            </div>
-                                                            <div className="flex w-full flex-row gap-4">
-                                                                <h4 className="text-md">
-                                                                    Ready:
-                                                                </h4>
-                                                                <h4 className="text-md font-semibold">
-                                                                    {pod.status
+                                            <div
+                                                className="m-3 w-full rounded-lg border-2 border-dashed border-green-300 p-5"
+                                                key={pod.metadata.name}
+                                            >
+                                                <h1 className="text-2xl font-bold">
+                                                    {pod.metadata.name}
+                                                </h1>
+                                                <div className="mt-5 flex w-full flex-col">
+                                                    <div className="flex w-full flex-col items-start gap-2">
+                                                        <div className="flex w-full flex-row gap-4">
+                                                            <h4 className="text-md">
+                                                                Phase:
+                                                            </h4>
+                                                            <h4 className="text-md font-semibold">
+                                                                {
+                                                                    pod.status
+                                                                        .phase
+                                                                }
+                                                            </h4>
+                                                        </div>
+                                                        <div className="flex w-full flex-row gap-4">
+                                                            <h4 className="text-md">
+                                                                Ready:
+                                                            </h4>
+                                                            <h4 className="text-md font-semibold">
+                                                                {pod.status
+                                                                    .containerStatuses[0]
+                                                                    .ready ===
+                                                                true
+                                                                    ? "Yes"
+                                                                    : "No"}
+                                                            </h4>
+                                                        </div>
+                                                        <div className="flex w-full flex-row gap-4">
+                                                            <h4 className="text-md">
+                                                                Restart count:
+                                                            </h4>
+                                                            <h4 className="text-md font-semibold">
+                                                                {
+                                                                    pod.status
                                                                         .containerStatuses[0]
-                                                                        .ready ===
-                                                                    true
-                                                                        ? "Yes"
-                                                                        : "No"}
-                                                                </h4>
-                                                            </div>
-                                                            <div className="flex w-full flex-row gap-4">
-                                                                <h4 className="text-md">
-                                                                    Restart
-                                                                    count:
-                                                                </h4>
-                                                                <h4 className="text-md font-semibold">
-                                                                    {
-                                                                        pod
-                                                                            .status
-                                                                            .containerStatuses[0]
-                                                                            .restartCount
-                                                                    }
-                                                                </h4>
-                                                            </div>
-                                                            {/* use state & lastTerminationState */}
-                                                            <div className="flex w-full flex-col">
-                                                                <h4 className="text-md">
-                                                                    State:
-                                                                </h4>
-                                                                <div className="ms-10 flex w-5/6 flex-col">
-                                                                    {pod.status
-                                                                        .containerStatuses[0]
-                                                                        .state && (
-                                                                        <div className="flex w-full flex-col">
+                                                                        .restartCount
+                                                                }
+                                                            </h4>
+                                                        </div>
+                                                        {/* use state & lastTerminationState */}
+                                                        <div className="flex w-full flex-col">
+                                                            <h4 className="text-md">
+                                                                State:
+                                                            </h4>
+                                                            <div className="ms-10 flex w-5/6 flex-col">
+                                                                {getPodState(
+                                                                    pod,
+                                                                ) && (
+                                                                    <div className="flex w-full flex-col">
+                                                                        {getPodState(
+                                                                            pod,
+                                                                        )
+                                                                            .startedAt && (
+                                                                            <div className="flex w-full flex-row gap-4">
+                                                                                <h4 className="text-md">
+                                                                                    Started
+                                                                                    at:
+                                                                                </h4>
+                                                                                <h4 className="text-md font-semibold">
+                                                                                    {
+                                                                                        getPodState(
+                                                                                            pod,
+                                                                                        )
+                                                                                            .startedAt
+                                                                                    }
+                                                                                </h4>
+                                                                            </div>
+                                                                        )}
+                                                                        {getPodState(
+                                                                            pod,
+                                                                        )
+                                                                            .reason && (
                                                                             <div className="flex w-full flex-row gap-4">
                                                                                 <h4 className="text-md">
                                                                                     Reason:
@@ -268,6 +275,11 @@ export default function ContainerStatus({
                                                                                     }
                                                                                 </h4>
                                                                             </div>
+                                                                        )}
+                                                                        {getPodState(
+                                                                            pod,
+                                                                        )
+                                                                            .message && (
                                                                             <div className="flex w-full flex-row gap-4">
                                                                                 <h4 className="text-md">
                                                                                     Message:
@@ -281,22 +293,25 @@ export default function ContainerStatus({
                                                                                     }
                                                                                 </h4>
                                                                             </div>
-                                                                        </div>
-                                                                    )}
-                                                                </div>
+                                                                        )}
+                                                                    </div>
+                                                                )}
                                                             </div>
-                                                            {/* use lastTerminationState */}
+                                                        </div>
+                                                        {getPodLastTerminationState(
+                                                            pod,
+                                                        ) && (
                                                             <div className="flex w-full flex-col">
                                                                 <h4 className="text-md">
                                                                     Last
                                                                     termination
                                                                 </h4>
                                                                 <div className="ms-10 flex w-5/6 flex-col">
-                                                                    {pod.status
-                                                                        .containerStatuses[0]
-                                                                        .lastTerminationState && (
-                                                                        <div className="flex w-full flex-col">
-                                                                            {/* exitCode, signal */}
+                                                                    <div className="flex w-full flex-col">
+                                                                        {getPodLastTerminationState(
+                                                                            pod,
+                                                                        )
+                                                                            .exitCode && (
                                                                             <div className="flex w-full flex-row gap-4">
                                                                                 <h4 className="text-md">
                                                                                     Exit
@@ -311,6 +326,12 @@ export default function ContainerStatus({
                                                                                     }
                                                                                 </h4>
                                                                             </div>
+                                                                        )}
+
+                                                                        {getPodLastTerminationState(
+                                                                            pod,
+                                                                        )
+                                                                            .signal && (
                                                                             <div className="flex w-full flex-row gap-4">
                                                                                 <h4 className="text-md">
                                                                                     Signal:
@@ -324,6 +345,11 @@ export default function ContainerStatus({
                                                                                     }
                                                                                 </h4>
                                                                             </div>
+                                                                        )}
+                                                                        {getPodLastTerminationState(
+                                                                            pod,
+                                                                        )
+                                                                            .reason && (
                                                                             <div className="flex w-full flex-row gap-4">
                                                                                 <h4 className="text-md">
                                                                                     Reason:
@@ -337,6 +363,11 @@ export default function ContainerStatus({
                                                                                     }
                                                                                 </h4>
                                                                             </div>
+                                                                        )}
+                                                                        {getPodLastTerminationState(
+                                                                            pod,
+                                                                        )
+                                                                            .message && (
                                                                             <div className="flex flex-row gap-4">
                                                                                 <h4 className="text-md">
                                                                                     Message:
@@ -350,28 +381,27 @@ export default function ContainerStatus({
                                                                                     }
                                                                                 </h4>
                                                                             </div>
-                                                                        </div>
-                                                                    )}
+                                                                        )}
+                                                                    </div>
                                                                 </div>
                                                             </div>
+                                                        )}
 
-                                                            <div className="flex w-full flex-row gap-4">
-                                                                <h4 className="text-md">
-                                                                    Image:
-                                                                </h4>
-                                                                <h4 className="text-md font-semibold">
-                                                                    {
-                                                                        pod
-                                                                            .status
-                                                                            .containerStatuses[0]
-                                                                            .image
-                                                                    }
-                                                                </h4>
-                                                            </div>
+                                                        <div className="flex w-full flex-row gap-4">
+                                                            <h4 className="text-md">
+                                                                Image:
+                                                            </h4>
+                                                            <h4 className="text-md font-semibold">
+                                                                {
+                                                                    pod.status
+                                                                        .containerStatuses[0]
+                                                                        .image
+                                                                }
+                                                            </h4>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </>
+                                            </div>
                                         );
                                     },
                                 )}

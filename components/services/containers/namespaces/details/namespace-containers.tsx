@@ -14,6 +14,33 @@ import { applicationStatusToComponent } from "@/lib/services/containers/applicat
 import Image from "next/image";
 import { DisplayToast } from "@/components/shared/toast/display-toast";
 
+export const MAX_APPLICATIONS_BY_USER = Number(
+    process.env.NEXT_PUBLIC_MAX_APPLICATIONS_BY_USER,
+);
+export const MAX_APPLICATIONS_BY_NAMESPACE = Number(
+    process.env.NEXT_PUBLIC_MAX_APPLICATIONS_BY_NAMESPACE,
+);
+
+export const userHasReachedMaxApplicationsLimit = (
+    applicationLimitations: ContainerApplicationNamespaceWithLimits,
+    maxApplications: number,
+) => {
+    return (
+        applicationLimitations.hasReachedMaxApplicationsByUser ||
+        applicationLimitations.currentApplicationsByUser >= maxApplications
+    );
+};
+
+export const namespaceHasReachedMaxApplicationsLimit = (
+    applicationLimitations: ContainerApplicationNamespaceWithLimits,
+    maxApplications: number,
+) => {
+    return (
+        applicationLimitations.hasReachedMaxApplicationsByNamespace ||
+        applicationLimitations.currentApplicationsByNamespace >= maxApplications
+    );
+};
+
 export default function NamespaceContainers({
     session,
     project,
@@ -44,6 +71,9 @@ export default function NamespaceContainers({
         const correspondingContainerInPrisma = namespace.containers.find(
             (c) => c.idInAPI === container.id,
         );
+        if (!correspondingContainerInPrisma) {
+            return;
+        }
         return `/projects/${project?.id}/services/containers/namespaces/${
             namespace.id
         }/applications/${correspondingContainerInPrisma!.id}`;
@@ -51,16 +81,32 @@ export default function NamespaceContainers({
 
     const clickOnNewContainerBtn = () => {
         if (
-            applicationLimitations.hasReachedMaxApplicationsByUser ||
-            applicationLimitations.hasReachedMaxApplicationsByNamespace
+            userHasReachedMaxApplicationsLimit(
+                applicationLimitations,
+                MAX_APPLICATIONS_BY_USER,
+            ) ||
+            namespaceHasReachedMaxApplicationsLimit(
+                applicationLimitations,
+                MAX_APPLICATIONS_BY_NAMESPACE,
+            )
         ) {
-            if (applicationLimitations.hasReachedMaxApplicationsByUser) {
+            if (
+                userHasReachedMaxApplicationsLimit(
+                    applicationLimitations,
+                    MAX_APPLICATIONS_BY_USER,
+                )
+            ) {
                 DisplayToast({
                     type: "error",
                     message: `You reached the maximum number of applications for your account (max: ${applicationLimitations.maxApplicationsByUser})`,
                 });
             }
-            if (applicationLimitations.hasReachedMaxApplicationsByNamespace) {
+            if (
+                namespaceHasReachedMaxApplicationsLimit(
+                    applicationLimitations,
+                    MAX_APPLICATIONS_BY_NAMESPACE,
+                )
+            ) {
                 DisplayToast({
                     type: "error",
                     message: `You reached the maximum number of applications for this namespace (max: ${applicationLimitations.maxApplicationsByNamespace})`,
@@ -79,21 +125,34 @@ export default function NamespaceContainers({
                 <div className="mb-4 flex w-4/5 flex-row items-center justify-between">
                     <h2 className="w-3/5 text-sm font-semibold">
                         {/* Display limitation if user has reached the application limit */}
-                        {applicationLimitations.hasReachedMaxApplicationsByUser && (
+                        {userHasReachedMaxApplicationsLimit(
+                            applicationLimitations,
+                            MAX_APPLICATIONS_BY_USER,
+                        ) && (
                             <span className="text-red-500">
                                 You have reached the maximum number of
                                 applications for your account (max:{" "}
                                 {applicationLimitations.maxApplicationsByUser})
                             </span>
                         )}
-                        {applicationLimitations.hasReachedMaxApplicationsByUser &&
-                            applicationLimitations.hasReachedMaxApplicationsByNamespace && (
-                                <br />
-                            )}
+                        {userHasReachedMaxApplicationsLimit(
+                            applicationLimitations,
+                            MAX_APPLICATIONS_BY_USER,
+                        ) &&
+                            namespaceHasReachedMaxApplicationsLimit(
+                                applicationLimitations,
+                                MAX_APPLICATIONS_BY_NAMESPACE,
+                            ) && <br />}
                         {/* Display limitation if namespace has reached the application limit */}
-                        {applicationLimitations.hasReachedMaxApplicationsByNamespace && (
+                        {namespaceHasReachedMaxApplicationsLimit(
+                            applicationLimitations,
+                            MAX_APPLICATIONS_BY_NAMESPACE,
+                        ) && (
                             <span className="text-red-500">
-                                {applicationLimitations.hasReachedMaxApplicationsByUser
+                                {userHasReachedMaxApplicationsLimit(
+                                    applicationLimitations,
+                                    MAX_APPLICATIONS_BY_USER,
+                                )
                                     ? "You have also "
                                     : "You have "}
                                 reached the maximum number of applications for
@@ -111,8 +170,14 @@ export default function NamespaceContainers({
                             clickOnNewContainerBtn();
                         }}
                         disabled={
-                            applicationLimitations.hasReachedMaxApplicationsByUser ||
-                            applicationLimitations.hasReachedMaxApplicationsByNamespace
+                            userHasReachedMaxApplicationsLimit(
+                                applicationLimitations,
+                                MAX_APPLICATIONS_BY_USER,
+                            ) ||
+                            namespaceHasReachedMaxApplicationsLimit(
+                                applicationLimitations,
+                                MAX_APPLICATIONS_BY_NAMESPACE,
+                            )
                         }
                     >
                         <svg
@@ -185,36 +250,44 @@ export default function NamespaceContainers({
                                             <tr
                                                 key={container.id}
                                                 className="cursor-pointer border-b bg-gray-100 hover:bg-green-50"
+                                                onClick={() => {
+                                                    console.log(
+                                                        "Routing to " +
+                                                            containerUrl,
+                                                    );
+
+                                                    router.push(containerUrl!);
+                                                }}
                                             >
                                                 <th
                                                     scope="row"
                                                     className="whitespace-nowrap px-6 py-4 font-medium"
                                                 >
-                                                    <a href={containerUrl}>
-                                                        {container.name}
-                                                    </a>
+                                                    {/* <a href={containerUrl}> */}
+                                                    {container.name}
+                                                    {/* </a> */}
                                                 </th>
                                                 <td className="px-6 py-4">
-                                                    <a href={containerUrl}>
-                                                        {container.description}
-                                                    </a>
+                                                    {/* <a href={containerUrl}> */}
+                                                    {container.description}
+                                                    {/* </a> */}
                                                 </td>
                                                 <td className="px-6 py-4">
-                                                    <a href={containerUrl}>
-                                                        {container.image}
-                                                    </a>
+                                                    {/* <a href={containerUrl}> */}
+                                                    {container.image}
+                                                    {/* </a> */}
                                                 </td>
                                                 <td className="px-6 py-4">
-                                                    <a href={containerUrl}>
-                                                        {applicationStatusToComponent(
-                                                            container.status,
-                                                        )}
-                                                    </a>
+                                                    {/* <a href={containerUrl}> */}
+                                                    {applicationStatusToComponent(
+                                                        container.status,
+                                                    )}
+                                                    {/* </a> */}
                                                 </td>
                                                 <td className="px-6 py-4">
-                                                    <a href={containerUrl}>
-                                                        {container.createdAt.toLocaleString()}
-                                                    </a>
+                                                    {/* <a href={containerUrl}> */}
+                                                    {container.createdAt.toLocaleString()}
+                                                    {/* </a> */}
                                                 </td>
                                             </tr>
                                         );

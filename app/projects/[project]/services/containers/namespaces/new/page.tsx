@@ -15,14 +15,10 @@ export default async function ContainerNewNamespacePage({
     const projectId = params.project;
 
     const breadcrumbItems: BreadcrumbItem[] = [
-        { text: "project", slug: `/projects/${projectId}` },
+        { text: "...", slug: `/projects/${projectId}` },
         {
             text: "containers",
-            slug: `/projects/${projectId}/services/containers/`,
-        },
-        {
-            text: "namespaces",
-            slug: `/projects/${projectId}/services/containers/namespaces`,
+            slug: `/projects/${projectId}/services/containers`,
         },
         {
             text: "new",

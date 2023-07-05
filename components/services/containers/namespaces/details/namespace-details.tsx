@@ -12,7 +12,7 @@ import {
     ContainerApplicationNamespace,
     ContainerApplicationNamespaceWithLimits,
 } from "@/lib/models/containers/container-application-namespace";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import NamespaceSettings from "@/components/services/containers/namespaces/details/namespace-settings";
 import { ContainerNamespace } from "@/lib/models/containers/prisma/container-namespace";
 
@@ -88,13 +88,27 @@ export default function NamespaceDetails({
             setApplicationLimitations(res.data.limits);
             setContainers(res.data.namespaceInAPI.applications || []);
         } catch (error) {
-            console.log(error);
-            DisplayToast({
-                type: "error",
-                message:
-                    "Could not retrieve namespace information, please try again later or contact support",
-                duration: 3000,
-            });
+            console.log(`error while loading namespace ${error}`);
+            if (error instanceof AxiosError) {
+                if (
+                    error.response?.status === 403 ||
+                    error.response?.status === 401
+                ) {
+                    DisplayToast({
+                        type: "error",
+                        message:
+                            "You are not authorized to access this namespace, please contact your project admin's",
+                        duration: 3000,
+                    });
+                }
+            } else {
+                DisplayToast({
+                    type: "error",
+                    message:
+                        "Could not retrieve namespace information, please try again later or contact support",
+                    duration: 3000,
+                });
+            }
             router.push("/");
         } finally {
             setLoading(false);
@@ -117,7 +131,7 @@ export default function NamespaceDetails({
                 setLoading(false);
             })
             .catch((error) => {
-                console.log(error);
+                console.log(`error while loading namespace ${error}`);
                 DisplayToast({
                     type: "error",
                     message:
@@ -153,7 +167,9 @@ export default function NamespaceDetails({
                                     project={project!}
                                     namespace={namespace}
                                     namespaceInAPI={namespaceInAPI!}
-                                    applicationLimitations={applicationLimitations!}
+                                    applicationLimitations={
+                                        applicationLimitations!
+                                    }
                                     containers={containers}
                                     reloadContainers={async () => {
                                         setLoading(true);
