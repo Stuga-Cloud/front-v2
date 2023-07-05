@@ -152,7 +152,7 @@ export default function ContainerList({
                         width="60"
                         height="60"
                     ></Image>
-                    <div className="flex h-16 flex-col justify-center overflow-hidden text-sm">
+                    <div className="flex flex-col justify-center overflow-hidden text-sm">
                         <h5 className="text-2xl font-bold text-gray-500 md:text-2xl">
                             Create a new containerized application
                         </h5>

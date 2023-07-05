@@ -8,6 +8,7 @@ import { CreateContainerApplication } from "@/lib/services/containers/create-con
 import { CreateContainerApplicationBody } from "@/lib/services/containers/create-container-application.body";
 import { PrismaClientKnownRequestError } from "prisma/prisma-client/runtime";
 import { verifyIfImageExists } from "@/lib/services/lambdas/verify-if-image-exists";
+import { AxiosError } from "axios";
 
 export async function POST(
     req: NextRequest,
@@ -123,6 +124,25 @@ export async function POST(
         if (error instanceof PrismaClientKnownRequestError) {
             if (error.code === "P2002") {
                 return ResponseService.conflict();
+            }
+        }
+        if (error instanceof AxiosError) {
+            console.log('error.response', error.response);
+            if (error.response?.status === 404) {
+                return ResponseService.notFound(
+                    "Namespace not found in container provider",
+                );
+            }
+            if (error.response?.status === 403) {
+                return ResponseService.unauthorized(
+                    "You are not authorized to access this namespace",
+                );
+            }
+            
+            if (error.response?.data?.error.includes("already exists")) {
+                return ResponseService.conflict(
+                    "Application already exists in container provider",
+                );
             }
         }
         return ResponseService.internalServerError();

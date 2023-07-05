@@ -208,7 +208,7 @@ export default function NamespaceContainers({
                             width="60"
                             height="60"
                         ></Image>
-                        <div className="flex h-16 flex-col justify-center overflow-hidden text-sm">
+                        <div className="flex flex-col justify-center overflow-hidden text-sm">
                             <h5 className="text-2xl font-bold text-gray-500 md:text-2xl">
                                 No container found, start by creating one ! 🚀
                             </h5>
@@ -251,11 +251,6 @@ export default function NamespaceContainers({
                                                 key={container.id}
                                                 className="cursor-pointer border-b bg-gray-100 hover:bg-green-50"
                                                 onClick={() => {
-                                                    console.log(
-                                                        "Routing to " +
-                                                            containerUrl,
-                                                    );
-
                                                     router.push(containerUrl!);
                                                 }}
                                             >

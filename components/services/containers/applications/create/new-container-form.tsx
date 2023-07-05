@@ -8,7 +8,7 @@ import * as process from "process";
 import { ContainerApplicationType } from "@/lib/models/containers/container-application-type";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { CreateContainerApplicationBody } from "@/lib/services/containers/create-container-application.body";
 import { ContainerEnvironmentVariable } from "@/lib/models/containers/container-application-environment-variables";
 import { ContainerApplicationSecret } from "@/lib/models/containers/container-application-secrets";
@@ -644,7 +644,7 @@ export default function NewContainerForm({
         }
         if (!isSecretsValid()) {
             errors.push(
-                "Environment variables are not valid (name should not be empty and contain only letters, numbers and underscores and start with a letter or underscore, also, there should not be duplicates)",
+                "Secrets are not valid (name should not be empty and contain only letters, numbers and underscores and start with a letter or underscore, also, there should not be duplicates)",
             );
         }
         return errors;
@@ -654,15 +654,12 @@ export default function NewContainerForm({
         event.preventDefault();
         const errors = validateForm();
         if (errors.length > 0) {
-            const displayTime =
-                errors.reduce((acc, error) => acc + error.length, 0) * 100;
-
             DisplayToast({
                 type: "error",
                 message: `Your form is not valid, please fix the following errors: \n${errors
                     .map((error) => `- ${error}`)
                     .join("\n")}`,
-                duration: displayTime,
+                duration: 5000,
             });
             return;
         }
@@ -737,6 +734,16 @@ export default function NewContainerForm({
                     duration: 4000,
                 });
                 return;
+            }
+            if (error instanceof AxiosError) {
+                if (error.response?.status === 409) {
+                    DisplayToast({
+                        type: "error",
+                        message: `Application ${applicationName} already exists in this namespace`,
+                        duration: 4000,
+                    });
+                    return;
+                }
             }
             DisplayToast({
                 type: "error",

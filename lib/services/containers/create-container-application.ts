@@ -24,7 +24,10 @@ export const CreateContainerApplication = async (
                 },
             },
         );
-        return application.data.application;
+        if (application.data.application) {
+            return application.data.application;
+        }
+        return null;
     } catch (e: any) {
         console.log("Error creating application:", e);
         if (e.response.status === 409) {
