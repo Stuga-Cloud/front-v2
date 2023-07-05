@@ -14,8 +14,12 @@ import { applicationStatusToComponent } from "@/lib/services/containers/applicat
 import Image from "next/image";
 import { DisplayToast } from "@/components/shared/toast/display-toast";
 
-export const MAX_APPLICATIONS_BY_USER = 3;
-export const MAX_APPLICATIONS_BY_NAMESPACE = 3;
+export const MAX_APPLICATIONS_BY_USER = Number(
+    process.env.NEXT_PUBLIC_MAX_APPLICATIONS_BY_USER,
+);
+export const MAX_APPLICATIONS_BY_NAMESPACE = Number(
+    process.env.NEXT_PUBLIC_MAX_APPLICATIONS_BY_NAMESPACE,
+);
 
 export const userHasReachedMaxApplicationsLimit = (
     applicationLimitations: ContainerApplicationNamespaceWithLimits,

@@ -16,7 +16,7 @@ export default function ServiceCard({
     return (
         <div className="StugaCard" onClick={onClick} aria-hidden={dialogOpened}>
             {/* // Align image to the center */}
-            <div className="mb-1 flex w-full justify-center">
+            <div className="mb-1 flex w-full justify-end">
                 <Image
                     src={`/${imageName}`}
                     alt="docker picture"

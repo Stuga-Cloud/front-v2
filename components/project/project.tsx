@@ -237,7 +237,7 @@ export default function Project({
                 )}
             {!loader && servicesSupported && (
                 <div className="flex w-4/5 flex-row items-start justify-start">
-                    <div className="grid w-full grid-cols-2 gap-4">
+                    <div className="grid w-full grid-cols-2 gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2">
                         {servicesSupported && servicesSupported.registry && (
                             <div
                                 key={servicesSupported.registry.id}

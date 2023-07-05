@@ -102,38 +102,6 @@ export default function NewContainerForm({
                 setApplicationNamespace(response.data.namespace);
                 setContainers(response.data.namespaceInAPI.applications);
                 setApplicationLimitations(response.data.limits);
-
-                if (
-                    userHasReachedMaxApplicationsLimit(
-                        applicationLimitations!,
-                        MAX_APPLICATIONS_BY_USER,
-                    )
-                ) {
-                    DisplayToast({
-                        type: "error",
-                        message: `You have reached maximum application limit by namespace (max: ${MAX_APPLICATIONS_BY_USER})`,
-                        duration: 5000,
-                    });
-                    router.push(
-                        `/projects/${projectId}/services/containers/namespaces/${namespaceId}`,
-                    );
-                    return;
-                }
-                if (
-                    namespaceHasReachedMaxApplicationsLimit(
-                        applicationLimitations!,
-                        MAX_APPLICATIONS_BY_NAMESPACE,
-                    )
-                ) {
-                    DisplayToast({
-                        type: "error",
-                        message: `You have reached maximum application limit by namespace (max: ${MAX_APPLICATIONS_BY_NAMESPACE})`,
-                        duration: 5000,
-                    });
-                    router.push(
-                        `/projects/${projectId}/services/containers/namespaces/${namespaceId}`,
-                    );
-                }
             })
             .catch((error) => {
                 console.log(`got error while loading namespace: ${error}`);
@@ -146,6 +114,39 @@ export default function NewContainerForm({
                 router.push(`/projects/${projectId}/services/containers`);
             })
             .finally(() => setLoading(false));
+        if (
+            applicationLimitations &&
+            userHasReachedMaxApplicationsLimit(
+                applicationLimitations,
+                MAX_APPLICATIONS_BY_USER,
+            )
+        ) {
+            DisplayToast({
+                type: "error",
+                message: `You have reached maximum application limit by user (max: ${MAX_APPLICATIONS_BY_USER})`,
+                duration: 5000,
+            });
+            router.push(
+                `/projects/${projectId}/services/containers/namespaces/${namespaceId}`,
+            );
+            return;
+        }
+        if (
+            applicationLimitations &&
+            namespaceHasReachedMaxApplicationsLimit(
+                applicationLimitations,
+                MAX_APPLICATIONS_BY_NAMESPACE,
+            )
+        ) {
+            DisplayToast({
+                type: "error",
+                message: `You have reached maximum application limit by namespace (max: ${MAX_APPLICATIONS_BY_NAMESPACE})`,
+                duration: 5000,
+            });
+            router.push(
+                `/projects/${projectId}/services/containers/namespaces/${namespaceId}`,
+            );
+        }
     }, [projectId, namespaceId]);
 
     const [project, setProject] = useState({} as Project);
