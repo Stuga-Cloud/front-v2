@@ -11,9 +11,9 @@ import TabsContainersInfo from "@/components/services/containers/informations/ta
 import axios from "axios";
 import { DisplayToast } from "@/components/shared/toast/display-toast";
 import { ContainerNamespace } from "@/lib/models/containers/prisma/container-namespace";
-import { log } from "console";
+import ContainersDocumentation from "./containers-documentation";
 
-export type AvailableContainersInfoTab = "namespaces";
+export type AvailableContainersInfoTab = "namespaces" | "documentation";
 export default function ContainersInfo({
     session,
     projectId,
@@ -163,6 +163,15 @@ export default function ContainersInfo({
                                     reloadNamespaces={async () => {
                                         await reloadNamespaces();
                                     }}
+                                />
+                            )}
+
+                        {!loading &&
+                            activeTab === "documentation" &&
+                            namespacesInAPI && (
+                                <ContainersDocumentation
+                                    session={session}
+                                    project={project!}
                                 />
                             )}
                     </>
