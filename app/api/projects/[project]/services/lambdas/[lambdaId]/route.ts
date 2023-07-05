@@ -1,5 +1,5 @@
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { StugaError } from "@/lib/services/error/error";
+import { InternalServerError, StugaError } from "@/lib/services/error/error";
 import { VerifyIfUserCanAccessProject } from "@/lib/services/project/verify-user-access";
 import { getServerSession } from "next-auth/next";
 import { NextRequest, NextResponse } from "next/server";
@@ -196,8 +196,10 @@ export async function PUT(request: Request, { params }: NextRequest) {
             await DeleteLambda({
                 lambdaId: lambda.id,
             });
+            console.log("lambda deleted");
             stepUpdate = "Init lambda image";
             console.log(stepUpdate);
+            console.log("lambda image init");
             await InitLambdaImage({
                 id: lambda.id,
                 image_name: req.imageName,
@@ -215,10 +217,17 @@ export async function PUT(request: Request, { params }: NextRequest) {
             if (hasGatewayToUpdate(req, lambda)) {
                 stepUpdate = "enter in update gateway";
                 console.log(stepUpdate);
+                console.log("delete gateway");
                 await DeleteGatewayLambda({
                     projectName: projectGetOrNextResponse.name,
                     lambdaName: lambda.name,
                 });
+                console.log("gateway modified");
+                console.log(projectGetOrNextResponse.name)
+                console.log(req.name)
+                console.log(lambda.id)
+                console.log(req.confidentiality.visibility)
+                console.log("create gateway");
                 await CreateGateway({
                     projectName: projectGetOrNextResponse.name,
                     lambdaName: req.name,
@@ -227,6 +236,7 @@ export async function PUT(request: Request, { params }: NextRequest) {
                         | "public"
                         | "private",
                 });
+                console.log("gateway updated");
             }
 
             stepUpdate = "hasMetadataToUpdate";

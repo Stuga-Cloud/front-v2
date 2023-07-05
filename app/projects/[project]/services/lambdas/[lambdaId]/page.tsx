@@ -25,10 +25,10 @@ export default async function LambdaDetailPage({
                 <Nav
                     session={session}
                     breadcrumbItems={[
-                        { text: "project", slug: `project/${params.project}` },
+                        { text: "project", slug: `projects/${params.project}` },
                         {
                             text: "lambdas",
-                            slug: `project/${params.project}/services/lambdas`,
+                            slug: `projects/${params.project}/services/lambdas`,
                         },
                     ]}
                 />

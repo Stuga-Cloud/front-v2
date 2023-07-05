@@ -12,10 +12,14 @@ export const checkImageUpdate = async (
 ) => {
     if (lambdaModel.registry !== lambdaRegister.registry) {
         console.log("registry change redeploy");
+        const repository = lambdaModel.imageName.split("/")[0];
+        const parts = lambdaModel.imageName.split("/");
+        const imageName = parts.slice(1).join("/");
         const response = await verifyIfImageExists(
-            lambdaModel.imageName,
+            imageName,
             projectId,
             lambdaModel.registry,
+            repository
         );
         if (response instanceof NextResponse) {
             return response;
@@ -32,10 +36,14 @@ export const checkImageUpdate = async (
             projectId,
             registry: lambdaModel.registry,
         });
+        const repository = lambdaModel.imageName.split("/")[0];
+        const parts = lambdaModel.imageName.split("/");
+        const imageName = parts.slice(1).join("/");
         const response = await verifyIfImageExists(
-            lambdaModel.imageName,
+            imageName,
             projectId,
             lambdaModel.registry,
+            repository
         );
         if (response instanceof NextResponse) {
             return response;
@@ -91,6 +99,10 @@ export const hasGatewayToUpdate = (
     newLambda: LambdaModel,
     oldLambda: Lambda,
 ): boolean => {
+    console.log("---------------------")
+    console.log(newLambda)
+    console.log(oldLambda)
+    console.log("---------------------")
     return (
         newLambda.confidentiality.visibility !== oldLambda.visibility ||
         newLambda.name !== oldLambda.name
