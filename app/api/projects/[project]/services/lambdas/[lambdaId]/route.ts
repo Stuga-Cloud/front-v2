@@ -23,6 +23,7 @@ import { CreateGateway } from "@/lib/services/lambdas/liserk-api/create-gateway"
 import { DeleteGatewayLambda } from "@/lib/services/lambdas/liserk-api/delete-gateway-lambda";
 import { UpdateImageMetadata } from "@/lib/services/lambdas/liserk-api/update-image-metadata";
 import { DeleteLambda } from "@/lib/services/lambdas/liserk-api/delete-lambda";
+import { GetAPiKey } from "@/lib/services/lambdas/liserk-api/get-api-key";
 
 // @ts-ignore
 export async function DELETE(request: Request, { params }: NextRequest) {
@@ -249,12 +250,25 @@ export async function PUT(request: Request, { params }: NextRequest) {
 
         stepUpdate = "hasToGenerateApiKey";
         console.log(stepUpdate);
-        if (await hasToGenerateApiKey(req, projectGetOrNextResponse)) {
+        if (
+            await hasToGenerateApiKey(
+                req.confidentiality.visibility,
+                projectGetOrNextResponse,
+            )
+        ) {
             const apikey = await InitApiKey({
                 projectName: projectGetOrNextResponse.name,
             });
             // @ts-ignore
             req.confidentiality.access!.apiKey = apikey.apiKey;
+        } else if (req.confidentiality.visibility === "private") {
+            const apiKey = await GetAPiKey({
+                projectName: projectGetOrNextResponse.name,
+            });
+            req.confidentiality.access! = {
+                mode: "apiKey",
+                apiKey: apiKey.apiKey,
+            };
         }
     } catch (e) {
         stepUpdate = "ERRORUPDATE ADD";
