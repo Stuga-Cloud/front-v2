@@ -49,7 +49,20 @@ export default function AddUserToProject({
                     type: "error",
                     message: "This user is already a member of this project.",
                 });
+                return;
             }
+            if (error.response.status === 404) {
+                DisplayToast({
+                    type: "error",
+                    message: "This user does not exist.",
+                });
+                return;
+            }
+
+            DisplayToast({
+                type: "error",
+                message: "An error occurred while adding the user.",
+            });
         }
     };
     return (

@@ -33,7 +33,7 @@ export default async function ContainerNewNamespacePage({
             </Suspense>
             {session ? (
                 <>
-                    <div className="z-10 flex flex w-full flex-col">
+                    <div className="z-10 flex w-full flex-col">
                         <NewNamespaceForm
                             session={session}
                             projectId={projectId}
