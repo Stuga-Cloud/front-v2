@@ -74,7 +74,7 @@ export default function NamespaceDetails({
                     error,
                 );
                 setLoading(false);
-                router.push("/services/containers");
+                router.push("/");
             });
     }, [projectId]);
 

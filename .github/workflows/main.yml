@@ -10,6 +10,16 @@ jobs:
         name: Install Dependencies and Build
         runs-on: ubuntu-latest
         steps:
+            #     steps:
+            # - uses: actions/checkout@v3
+            # - uses: actions/setup-node@v3
+            #   with:
+            #     node-version: 16
+            # - run: npm install
+            # - run: npm run build
+            #   env:
+            #     DOTENV_KEY: ${{ secrets.DOTENV_KEY }}
+
             - name: Checkout code
               uses: actions/checkout@v2
 

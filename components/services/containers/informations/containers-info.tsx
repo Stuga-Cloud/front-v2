@@ -80,7 +80,7 @@ export default function ContainersInfo({
                     "error when try to get project in containers list page",
                     error,
                 );
-                router.push("/services/containers");
+                router.push("/");
             })
             .finally(() => {
                 setLoading(false);
@@ -107,12 +107,14 @@ export default function ContainersInfo({
                         setNamespacesInAPI(namespaces);
                     })
                     .catch((error) => {
+                        console.log(`error when try to get namespaces`, error);
                         DisplayToast({
                             type: "error",
                             message:
                                 "Could not get namespaces, please try again later or contact support",
                             duration: 3000,
                         });
+                        router.push(`/projects/${projectId}`);
                     });
                 setLoading(false);
             })
@@ -128,7 +130,7 @@ export default function ContainersInfo({
                     error,
                 );
                 setLoading(false);
-                router.push("/services/containers");
+                router.push("/");
             });
     };
 

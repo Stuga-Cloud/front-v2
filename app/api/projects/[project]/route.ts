@@ -171,3 +171,138 @@ export async function PUT(request: Request, { params }: NextRequest) {
         );
     }
 }
+
+
+// Delete project, but if there is a container namespace, a database, a lamdba or a registry -> dont delete
+// @ts-ignore
+export async function DELETE(request: Request, { params }: NextRequest) {
+    const session = await getServerSession(authOptions);
+    const projectId = params!.project;
+
+    if (!session) {
+        return NextResponse.json(
+            {
+                error: `You must be signed in to delete a project.`,
+            },
+            { status: 401 },
+        );
+    }
+
+    const user = await prisma.user.findUnique({
+        where: {
+            email: session.user!.email!,
+        },
+    });
+
+    if (!user) {
+        return NextResponse.json(
+            {
+                error: `Logged in user with email ${
+                    session.user!.email
+                } not found.`,
+            },
+            { status: 401 },
+        );
+    }
+
+    const project = await prisma.project.findFirst({
+        where: {
+            id: projectId,
+        },
+        include: {
+            containerNamespaces: true,
+            databases: true,
+            lambdas: true,
+            registry: true,
+            members: true,
+        },
+    });
+
+    if (!project) {
+        return NextResponse.json(
+            {
+                error: "Project not found.",
+            },
+            { status: 404 },
+        );
+    }
+
+    var isAdmin = false;
+    for(var member of project.members) {
+        if(member.userId == user.id && member.role == "ADMIN") {
+            isAdmin = true;
+            break;
+        }
+    }
+    
+    if (!isAdmin) {
+        return NextResponse.json(
+            {
+                message: "You are not authorized to delete this project (not admin)",
+                code: "NOT_ADMIN",
+            },
+            { status: 403 },
+        );
+    }
+
+    var stillLeftServices: string[] = [];
+    if(project.containerNamespaces.length > 0) {
+        const leftService = "Container namespace(s)";
+        const containerNamespaces = project.containerNamespaces.map((containerNamespace) => containerNamespace.name);
+        stillLeftServices.push(`${leftService} : ${containerNamespaces.join(", ")}`);
+    }
+    if(project.databases.length > 0) {
+        const leftService = "Database(s)";
+        const databases = project.databases.map((database) => database.name);
+        stillLeftServices.push(`${leftService} : ${databases.join(", ")}`);
+    }
+    if(project.lambdas.length > 0) {
+        const leftService = "Lambda(s)";
+        const lambdas = project.lambdas.map((lambda) => lambda.name);
+        stillLeftServices.push(`${leftService} : ${lambdas.join(", ")}`);
+    }
+    if(project.registry) {
+        const leftService = "Container registry";
+        stillLeftServices.push(`${leftService}`);
+    }
+
+    if(stillLeftServices.length > 0) {
+        return NextResponse.json(
+            {
+                message: `Project not empty. Still left services : ${stillLeftServices.join(", ")}`,
+                code: "PROJECT_NOT_EMPTY",
+            },
+            { status: 403 },
+        );
+    }
+    
+    try {
+        const deletedProject = await prisma.project.delete({
+            where: {
+                id: projectId,
+            },
+        });
+
+        const deletedProjectMemberships = await prisma.projectMembership.deleteMany({
+            where: {
+                projectId: projectId,
+            },
+        });
+
+        return NextResponse.json(
+            {
+                message: `Le projet ${deletedProject.name} a été supprimé.`,
+                project: deletedProject,
+                projectMemberships: deletedProjectMemberships,
+            },
+            { status: 200 },
+        );
+    } catch (e: any) {
+        return NextResponse.json(
+            {
+                error: `An error occurred while deleting the project: ${e.message}`,
+            },
+            { status: 500 },
+        );
+    }
+}
