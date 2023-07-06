@@ -2,7 +2,7 @@ name: Stuga Cloud Web App - CI/CD
 
 on:
     push:
-        branches:
+        tags:
             - "*"
 
 jobs:
