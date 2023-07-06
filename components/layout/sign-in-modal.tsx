@@ -43,7 +43,7 @@ const SignInModal = ({
               signInGoogleClicked
                 ? "cursor-not-allowed border-gray-200 bg-gray-100"
                 : "border border-gray-200 bg-white text-black hover:bg-gray-50"
-            } flex h-10 w-full items-center justify-center space-x-3 rounded-md border text-sm shadow-sm transition-all duration-75 focus:outline-none`}
+            } flex h-10 w-full items-center justify-center space-x-3 rounded-md border text-sm shadow-sm transition-all duration-75 focus:outline-none cursor-pointer`}
             onClick={() => {
               setSignInGoogleClicked(true);
               signIn("google");
@@ -64,7 +64,7 @@ const SignInModal = ({
               signInGithubClicked
                 ? "cursor-not-allowed border-gray-200 bg-gray-100"
                 : "border border-gray-200 bg-white text-black hover:bg-gray-50"
-            } flex h-10 w-full items-center justify-center space-x-3 rounded-md border text-sm shadow-sm transition-all duration-75 focus:outline-none`}
+            } flex h-10 w-full items-center justify-center space-x-3 rounded-md border text-sm shadow-sm transition-all duration-75 focus:outline-none cursor-pointer`}
             onClick={() => {
               setSignInGithubClicked(true);
               signIn("github");
@@ -75,7 +75,7 @@ const SignInModal = ({
             ) : (
               <>
                 <Github className="h-5 w-5" />
-                <p>Sign In with Github</p>
+                <p >Sign In with Github</p>
               </>
             )}
           </button>

@@ -16,26 +16,24 @@ export const Breadcrumb = ({ items }: { items: BreadcrumbItem[] }) => {
         >
             <ol className="inline-flex items-center space-x-1 md:space-x-3">
                 <li className="inline-flex items-center">
+                    <Image
+                        src="/stuga-logo.png"
+                        alt="stuga logo"
+                        width="30"
+                        height="30"
+                        className="mr-2 rounded-sm"
+                    />
+                    <Link
+                    href="/"
+                    className="me-4 ms-5 text-green-500 hover:text-blue-600"
+                    >
+                        Docs
+                    </Link>
                     <Link
                         href="/"
                         className="inline-flex items-center text-sm font-medium text-gray-700"
                     >
-                        <Image
-                            src="/stuga-logo.png"
-                            alt="stuga logo"
-                            width="30"
-                            height="30"
-                            className="mr-2 rounded-sm"
-                        />
-                        <a
-                            href="https://stuga-cloud.github.io/docs/"
-                            className="me-4 ms-5 text-green-500 hover:text-blue-600"
-                        >
-                            Docs
-                        </a>
-                        <p className="me-8 ms-5">
-                            |
-                        </p>
+                        <p className="me-8 ms-5">|</p>
                         <p className="hover:text-blue-600">Home</p>
                     </Link>
                 </li>
