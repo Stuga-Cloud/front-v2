@@ -23,15 +23,11 @@ import process from "process";
 import Link from "next/link";
 import { ContainerApplicationType } from "@/lib/models/containers/container-application-type";
 import { isEmailValid } from "@/lib/utils";
-import {
-    cpuLimitsChoices,
-    memoryLimitsChoices,
-} from "@/lib/models/lambdas/config/lambda-create-config";
 import { ContainerLimitUnit } from "@/lib/models/containers/container-application-specifications";
 import { ContainerNamespace } from "@/lib/models/containers/prisma/container-namespace";
 import { ContainerEnvironmentVariable } from "@/lib/models/containers/container-application-environment-variables";
 import { ContainerApplicationSecret } from "@/lib/models/containers/container-application-secrets";
-import { MAX_REPLICAS } from "../../create/new-container-form";
+import { CPU_LIMIT_AVAILABLE_CHOICES, MAX_REPLICAS, MEMORY_LIMIT_AVAILABLE_CHOICES } from "../../create/new-container-form";
 
 export default function ContainerDeployment({
     session,
@@ -532,7 +528,7 @@ export default function ContainerDeployment({
                                             );
                                         }}
                                     >
-                                        {cpuLimitsChoices.map((choice) => (
+                                        {CPU_LIMIT_AVAILABLE_CHOICES.map((choice) => (
                                             <option
                                                 key={choice.value}
                                                 value={`${choice.value}`}
@@ -561,7 +557,7 @@ export default function ContainerDeployment({
                                             );
                                         }}
                                     >
-                                        {memoryLimitsChoices.map((choice) => (
+                                        {MEMORY_LIMIT_AVAILABLE_CHOICES.map((choice) => (
                                             <option
                                                 key={choice.value}
                                                 value={`${choice.value}`}
