@@ -83,7 +83,7 @@ export default function LambdaAccueil({
                 </div>
             ) : (
                 <TabsLambdas
-                    onClick={(tab: "monitor" | "dashboard") => {
+                    onClick={(tab: "dashboard") => {
                         setActiveTab(tab);
                     }}
                     tabsHidden={[]}
@@ -113,8 +113,8 @@ export default function LambdaAccueil({
                         }
                     }}
                 />
-            ) : !loading && activeTab === "monitor" ? (
-                <LambdaMonitor projectId={projectId} />
+            // ) : !loading && activeTab === "monitor" ? (
+            //     <LambdaMonitor projectId={projectId} />
             ) : null}
         </div>
     );

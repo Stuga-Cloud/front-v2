@@ -22,6 +22,10 @@ import LambdaEnvVarForm from "../create/lambda-env-var";
 import { UpdateLambda } from "@/lib/services/lambdas/client/update-lambda";
 import { UpdateDeployLambda } from "@/lib/services/lambdas/client/update-deploy-lambda";
 import { throwIfLambdaCreationCandidateIsNotValid } from "@/lib/models/lambdas/validation/lambda-create-candidate";
+import { LambdaMetrics } from "../../../../lib/services/lambdas/lambda-metrics";
+import { GetLambdaMetrics } from "@/lib/services/lambdas/client/get-lambda-metrics";
+import LambdaMonitor from "./lambda-monitor";
+import { Lambda } from "@prisma/client";
 
 export default function LambdaDetail({
     session,
@@ -34,6 +38,7 @@ export default function LambdaDetail({
 }) {
     const [lambdaInit, setLambdaInit] = useState<LambdaModel>();
     const [lambda, setLambda] = useState<LambdaModel>();
+    const [lambdaMetrics, setLambdaMetrics] = useState<LambdaMetrics[]>([]);
     const [errorFromMessage, setErrorFormMessage] = useState<string | null>(
         null,
     );
@@ -78,7 +83,6 @@ export default function LambdaDetail({
     const handleUpdateLambda = async (lambdaParam: LambdaModel) => {
         try {
             throwIfLambdaCreationCandidateIsNotValid(lambda!);
-            
         } catch (error) {
             if (error instanceof Error) {
                 setErrorFormMessage(error.message);
@@ -114,6 +118,19 @@ export default function LambdaDetail({
         if (!lambdaId) return;
 
         setLoading(true);
+        GetLambdaMetrics({ projectId, lambdaId })
+            .then((lambdaMetricsGet) => {
+                setLambdaMetrics(lambdaMetricsGet);
+            })
+            .catch((error) => {
+                toastEventEmitter.emit("pop", {
+                    type: "danger",
+                    message:
+                        error.message ?? "error when try to get lambda info",
+                    duration: 5000,
+                });
+            });
+
         GetLambdaById(projectId, lambdaId)
             .then((lambda) => {
                 setLambda(lambda);
@@ -122,7 +139,8 @@ export default function LambdaDetail({
             .catch((error) => {
                 toastEventEmitter.emit("pop", {
                     type: "danger",
-                    message: error.message ?? "error when try to update lambda",
+                    message:
+                        error.message ?? "error when try to get lambda info",
                     duration: 5000,
                 });
             })
@@ -203,7 +221,7 @@ export default function LambdaDetail({
                         />
                     </>
                 )}
-                {!loading && lambda && activeTab === "environments" && (
+                {/* {!loading && lambda && activeTab === "environments" && (
                     <div className="w-4/5">
                         <h2 className="mb-5 ms-5 mt-10 w-4/5 text-xl font-bold">
                             Lambda Variables
@@ -269,7 +287,7 @@ export default function LambdaDetail({
                             </button>
                         </div>
                     </div>
-                )}
+                )} */}
                 {!loading && lambda && activeTab === "visibility" && (
                     <div className="w-4/5">
                         <h2 className="mb-5 ms-5 mt-10 w-4/5 text-xl font-bold">
@@ -298,6 +316,9 @@ export default function LambdaDetail({
                             </button>
                         </div>
                     </div>
+                )}
+                {!loading && lambda && activeTab === "monitor" && (
+                    <LambdaMonitor lambdaMetrics={lambdaMetrics} />
                 )}
             </div>
         </>

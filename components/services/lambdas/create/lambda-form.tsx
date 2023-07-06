@@ -236,7 +236,7 @@ export default function NewLambdaForm({
                                         }}
                                     />
                                 )}
-                                {activeStep === 3 && (
+                                {/* {activeStep === 3 && (
                                     <LambdaEnvVarForm
                                         variables={
                                             applicationEnvironmentVariables
@@ -286,8 +286,8 @@ export default function NewLambdaForm({
                                             );
                                         }}
                                     />
-                                )}
-                                {activeStep === 4 && (
+                                )} */}
+                                {activeStep === 3 && (
                                     <LambdaConfidentialityForm
                                         value={confidentiality}
                                         handleVisibilityChange={(
@@ -306,7 +306,7 @@ export default function NewLambdaForm({
                                         }}
                                     />
                                 )}
-                                {activeStep === 5 && (
+                                {activeStep === 4 && (
                                     <LambdaSettingsForm
                                         timeout={timeout}
                                         cpuChoices={cpuLimitsChoices}
@@ -324,7 +324,7 @@ export default function NewLambdaForm({
                                         }}
                                     />
                                 )}
-                                {activeStep === 6 && (
+                                {activeStep === 5 && (
                                     <LambdaScalabilityForm
                                         maxInstanceNumber={maxInstanceNumber}
                                         minInstanceNumber={minInstanceNumber}

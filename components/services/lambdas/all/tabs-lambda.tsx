@@ -4,13 +4,13 @@ export default function TabsLambdas({
     onClick,
     tabsHidden,
 }: {
-    onClick: (tab: "monitor" | "dashboard") => void;
+    onClick: (tab: "dashboard") => void;
     tabsHidden: string[];
 }) {
-    const [activeTab, setActiveTab] = useState<"dashboard" | "monitor">(
+    const [activeTab, setActiveTab] = useState<"dashboard" >(
         "dashboard",
     );
-    const handleClick = (tab: "monitor" | "dashboard") => {
+    const handleClick = (tab:  "dashboard") => {
         onClick(tab);
         setActiveTab(tab);
     };
@@ -45,7 +45,7 @@ export default function TabsLambdas({
                         Dashboard
                     </a>
                 </li>
-                {!tabsHidden.includes("profile") && (
+                {/* {!tabsHidden.includes("profile") && (
                     <li className="mr-2">
                         <a
                             href="#"
@@ -76,7 +76,7 @@ export default function TabsLambdas({
                             Monitor
                         </a>
                     </li>
-                )}
+                )} */}
             </ul>
         </div>
     );
