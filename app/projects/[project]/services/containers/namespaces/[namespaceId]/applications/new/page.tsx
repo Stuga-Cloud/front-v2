@@ -18,7 +18,7 @@ export default async function ContainerNewPage({
     const breadcrumbItems: BreadcrumbItem[] = [
         { text: "...", slug: `/projects/${projectId}/services/containers/` },
         {
-            text: "applications",
+            text: "namespace",
             slug: `/projects/${projectId}/services/containers/namespaces/${namespaceId}`,
         },
         {
