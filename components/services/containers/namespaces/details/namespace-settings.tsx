@@ -1,6 +1,6 @@
 "use client";
 import { Session } from "next-auth";
-import { redirect } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Project } from "@/lib/models/project";
 import { ContainerApplicationNamespace } from "@/lib/models/containers/container-application-namespace";
@@ -13,6 +13,7 @@ import Image from "next/image";
 import { getUserBadge } from "@/lib/services/containers/member-badge-component";
 import AddUserToContainerNamespace from "@/components/services/containers/namespaces/details/add-user-to-container-namespace";
 import { sortUserByName } from "@/lib/utils";
+import ConfirmDeleteContainerNamespaceModal from "../../informations/modal-delete-container-namespace-confirm";
 
 export default function NamespaceSettings({
     session,
@@ -31,6 +32,7 @@ export default function NamespaceSettings({
     if (!namespace) redirect(`/projects/${project.id}/services/containers`);
 
     const [loading, setLoading] = useState(false);
+    const [isDeleteModalOpened, setIsDeleteModalOpened] = useState(false);
 
     const updateNamespaceDescription = async (description: string) => {
         setLoading(true);
@@ -137,6 +139,44 @@ export default function NamespaceSettings({
                     "Could not remove member from namespace, please try again later or contact support.",
                 duration: 5000,
             });
+            setLoading(false);
+        }
+    };
+
+    const router = useRouter();
+
+    const deleteContainerNamespace = async (namespace: ContainerNamespace) => {
+        setIsDeleteModalOpened(false);
+        setLoading(true);
+        try {
+            const res = await axios.delete(
+                `/api/projects/${project.id}/services/containers/namespaces/${namespace.id}`,
+            );
+            if (res.status === 200) {
+                DisplayToast({
+                    type: "success",
+                    message: "Namespace deleted",
+                    duration: 3000,
+                });
+                router.push(`/projects/${project.id}/services/containers`);
+            } else {
+                console.log("error when try to delete namespace", res);
+                DisplayToast({
+                    type: "error",
+                    message:
+                        "Could not delete namespace, please try again later or contact support",
+                    duration: 7000,
+                });
+            }
+        } catch (error: any) {
+            console.log("error when try to delete namespace", error);
+            DisplayToast({
+                type: "error",
+                message:
+                    "Could not delete namespace, please try again later or contact support",
+                duration: 7000,
+            });
+        } finally {
             setLoading(false);
         }
     };
@@ -309,6 +349,33 @@ export default function NamespaceSettings({
                         </table>
                     </div>
                 )}
+            </div>
+
+            <div className="mt-12 flex w-4/5 flex-row items-center justify-between">
+                <h2 className="mb-5 w-full text-2xl font-bold">Operations</h2>
+            </div>
+            <div className="flex w-full flex-col gap-1 p-5">
+                <div className="flex flex-row items-center gap-1">
+                    <span className="w-4/5 font-semibold text-red-500">
+                        This will permanently delete this container and all
+                        associated data.
+                    </span>
+                    <button
+                        type="button"
+                        className="Button stuga-red-color"
+                        onClick={() => setIsDeleteModalOpened(true)}
+                    >
+                        Delete container
+                    </button>
+                    <ConfirmDeleteContainerNamespaceModal
+                        text={"Are you sure you want to delete this namespace?"}
+                        onClose={() => setIsDeleteModalOpened(false)}
+                        isOpenFromParent={isDeleteModalOpened}
+                        deleteAction={async () => {
+                            await deleteContainerNamespace(namespace);
+                        }}
+                    />
+                </div>
             </div>
         </div>
     );

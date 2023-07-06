@@ -100,16 +100,17 @@ export default function NamespaceDetails({
                             "You are not authorized to access this namespace, please contact your project admin's",
                         duration: 3000,
                     });
+                    router.push(`/projects/${projectId}/services/containers`);
+                    return;
                 }
-            } else {
-                DisplayToast({
-                    type: "error",
-                    message:
-                        "Could not retrieve namespace information, please try again later or contact support",
-                    duration: 3000,
-                });
             }
-            router.push("/");
+            DisplayToast({
+                type: "error",
+                message:
+                    "Could not retrieve namespace information, please try again later or contact support",
+                duration: 3000,
+            });
+            router.push(`/projects/${projectId}/services/containers`);
         } finally {
             setLoading(false);
         }
