@@ -136,6 +136,7 @@ export default function Profile({
                         {user ? "Change your access" : "Create your access"}
                     </h2>
                     <PasswordForm
+                        username={USERNAME}
                         userHaveAccount={user ? true : false}
                         handleSubmit={handleSubmit}
                     />

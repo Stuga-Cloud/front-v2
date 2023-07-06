@@ -2,9 +2,11 @@ import { InfoCircledIcon } from "@radix-ui/react-icons";
 import React, { useState } from "react";
 
 export default function PasswordForm({
+    username,
     userHaveAccount,
     handleSubmit,
 }: {
+    username?: string | null;
     userHaveAccount: boolean;
     handleSubmit: (
         event: React.FormEvent,
@@ -51,7 +53,7 @@ export default function PasswordForm({
 
                 <div className="mb-20 ms-5 flex w-full flex-col">
                     <div className="mb-2 flex flex-row items-center">
-                        <p className="font-bold">{USERNAME}</p>
+                        <p className="font-bold">{username}</p>
                     </div>
                     <div className="flex flex-row items-center gap-2">
                         <InfoCircledIcon />
