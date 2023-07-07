@@ -9,6 +9,7 @@ import { LoadingSpinner } from "@/components/shared/icons";
 import { useRouter } from "next/navigation";
 import LambdasDashboard from './lambdas-dashboard';
 import LambdaMonitor from './lambdas-monitor';
+import { DisplayToast } from '@/components/shared/toast/display-toast';
 
 export default function LambdaAccueil({
     session,
@@ -34,10 +35,15 @@ export default function LambdaAccueil({
             })
             .catch((error) => {
                 console.log("error")
-                toastEventEmitter.emit("pop", {
-                    type: "danger",
+                // toastEventEmitter.emit("pop", {
+                //     type: "danger",
+                //     message: "error when try to get lambdas",
+                //     duration: 5000,
+                // });
+                DisplayToast({
+                    type: "error",
                     message: "error when try to get lambdas",
-                    duration: 5000,
+                    duration: 4000,
                 });
             })
             .finally(() => {
@@ -105,10 +111,15 @@ export default function LambdaAccueil({
                             console.log("lambdas")
                             setLambdas(lambdas);
                         } catch (error) {
-                            toastEventEmitter.emit("pop", {
-                                type: "danger",
+                            // toastEventEmitter.emit("pop", {
+                            //     type: "danger",
+                            //     message: "error when try to get lambdas",
+                            //     duration: 5000,
+                            // });
+                            DisplayToast({
+                                type: "error",
                                 message: "error when try to get lambdas",
-                                duration: 5000,
+                                duration: 4000,
                             });
                         }
                     }}

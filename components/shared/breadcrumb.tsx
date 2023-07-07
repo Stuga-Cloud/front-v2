@@ -24,7 +24,7 @@ export const Breadcrumb = ({ items }: { items: BreadcrumbItem[] }) => {
                         className="mr-2 rounded-sm"
                     />
                     <Link
-                        href="/"
+                        href="https://stuga-cloud.github.io/docs/"
                         className="me-4 ms-5 text-sm font-medium text-green-500 hover:text-blue-600"
                     >
                         Docs

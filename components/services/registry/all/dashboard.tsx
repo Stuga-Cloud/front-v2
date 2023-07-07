@@ -4,6 +4,7 @@ import { toastEventEmitter } from "@/lib/event-emitter/toast-event-emitter";
 import { useState } from "react";
 import { LoadingSpinner } from "@/components/shared/icons";
 import { DeleteNamespace } from "../../../../lib/services/registry/namespace/delete-namespace";
+import { DisplayToast } from "@/components/shared/toast/display-toast";
 
 export default function Dashboard({
     projectId,
@@ -21,17 +22,27 @@ export default function Dashboard({
         setLoading(true);
         try {
             await DeleteNamespace(namespaceId, projectId);
-            toastEventEmitter.emit("pop", {
+            // toastEventEmitter.emit("pop", {
+            //     type: "success",
+            //     mesage: "Namespace deleted successfully",
+            //     duration: 2000,
+            // });
+            DisplayToast({
                 type: "success",
-                mesage: "Namespace deleted successfully",
-                duration: 2000,
+                message: "Namespace deleted successfully",
+                duration: 4000,
             });
             await afterDelete();
         } catch (error) {
-            toastEventEmitter.emit("pop", {
-                type: "danger",
+            // toastEventEmitter.emit("pop", {
+            //     type: "danger",
+            //     message: "Failed to delete namespace",
+            //     duration: 2000,
+            // });
+            DisplayToast({
+                type: "error",
                 message: "Failed to delete namespace",
-                duration: 2000,
+                duration: 4000,
             });
         } finally {
             setLoading(false);

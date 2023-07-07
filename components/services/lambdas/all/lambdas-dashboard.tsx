@@ -4,6 +4,7 @@ import { useState } from "react";
 import { DropdownActionLambda } from "./lambda-dropdown-action";
 import { DeleteLambda } from "@/lib/services/lambdas/client/delete-lambda";
 import { toastEventEmitter } from "@/lib/event-emitter/toast-event-emitter";
+import { DisplayToast } from "@/components/shared/toast/display-toast";
 
 export default function LambdasDashboard({
     lambdas,
@@ -24,16 +25,26 @@ export default function LambdasDashboard({
             await DeleteLambda({ lambdaId, projectId });
             console.log("print after delete")
             await afterDelete();
-            toastEventEmitter.emit("pop", {
+            // toastEventEmitter.emit("pop", {
+            //     type: "success",
+            //     mesage: "lambda deleted successfully",
+            //     duration: 5000,
+            // });
+            DisplayToast({
                 type: "success",
-                mesage: "lambda deleted successfully",
-                duration: 5000,
+                message: "lambda deleted successfully",
+                duration: 4000,
             });
         } catch (error) {
-            toastEventEmitter.emit("pop", {
-                type: "danger",
+            // toastEventEmitter.emit("pop", {
+            //     type: "danger",
+            //     message: "Failed to delete lambda",
+            //     duration: 2000,
+            // });
+            DisplayToast({
+                type: "error",
                 message: "Failed to delete lambda",
-                duration: 2000,
+                duration: 4000,
             });
         } finally {
             setLoading(false);

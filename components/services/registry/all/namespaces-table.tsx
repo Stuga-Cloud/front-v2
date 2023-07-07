@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { Namespace } from "@/lib/models/registry/namespace";
 import Access from "../detail/access/access";
 import Profile from "./profile";
+import { DisplayToast } from "@/components/shared/toast/display-toast";
 
 const getNamespaces = async (projectId: string): Promise<Namespace[]> => {
     try {
@@ -62,10 +63,15 @@ export default function Namespaces({
                 setNamespaces(namespaces);
             })
             .catch((error) => {
-                toastEventEmitter.emit("pop", {
-                    type: "danger",
+                // toastEventEmitter.emit("pop", {
+                //     type: "danger",
+                //     message: "error when try to get namespaces",
+                //     duration: 5000,
+                // });
+                DisplayToast({
+                    type: "error",
                     message: "error when try to get namespaces",
-                    duration: 5000,
+                    duration: 2000,
                 });
             })
             .finally(() => {
@@ -132,8 +138,13 @@ export default function Namespaces({
                             const namespaces = await getNamespaces(projectId);
                             setNamespaces(namespaces);
                         } catch (error) {
-                            toastEventEmitter.emit("pop", {
-                                type: "danger",
+                            // toastEventEmitter.emit("pop", {
+                            //     type: "danger",
+                            //     message: "error when try to get namespaces",
+                            //     duration: 5000,
+                            // });
+                            DisplayToast({
+                                type: "error",
                                 message: "error when try to get namespaces",
                                 duration: 5000,
                             });

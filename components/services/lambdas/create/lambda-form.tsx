@@ -34,6 +34,7 @@ import {
 import { AvailableRegistriesToRegistry } from "../utils/lambda-registry-mapper";
 import { GetProject } from "@/lib/services/project/get-project";
 import { useRouter } from "next/navigation";
+import { DisplayToast } from "@/components/shared/toast/display-toast";
 
 export default function NewLambdaForm({
     session,
@@ -58,7 +59,8 @@ export default function NewLambdaForm({
     ] = useState<LambdaEnvironmentVariable[]>([]);
     const [registry, setRegistry] = useState<Registry>("dockerhub");
     const [projectName, setProjectName] = useState<string>("");
-    const [urlConfidentiality, setUrlConfidentiality] = useState<string>("public");
+    const [urlConfidentiality, setUrlConfidentiality] =
+        useState<string>("public");
     const [cpuConfig, setCpuConfig] = useState(cpuLimitsChoices[0]);
     const [memoryConfig, setMemoryConfig] = useState(memoryLimitsChoices[0]);
     const [loading, setLoading] = useState(false);
@@ -107,7 +109,12 @@ export default function NewLambdaForm({
         try {
             setLoading(true);
             await CreateLambda(projectId, form);
-            toastEventEmitter.emit("pop", {
+            // toastEventEmitter.emit("pop", {
+            //     type: "success",
+            //     message: "lambda well created",
+            //     duration: 4000,
+            // });
+            DisplayToast({
                 type: "success",
                 message: "lambda well created",
                 duration: 4000,
@@ -117,10 +124,15 @@ export default function NewLambdaForm({
             if (error instanceof StugaError) {
                 console.log("error stuga");
                 console.log(error);
-                toastEventEmitter.emit("pop", {
-                    type: "danger",
+                // toastEventEmitter.emit("pop", {
+                //     type: "danger",
+                //     message: error.message,
+                //     duration: 8000,
+                // });
+                DisplayToast({
+                    type: "error",
                     message: error.message,
-                    duration: 8000,
+                    duration: 4000,
                 });
             }
         } finally {

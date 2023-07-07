@@ -4,6 +4,7 @@ import { Image } from "./namespace-detail";
 import { Dispatch, SetStateAction } from "react";
 import { toastEventEmitter } from "@/lib/event-emitter/toast-event-emitter";
 import { deleteNamespaceImage } from "../../../../lib/services/registry/namespace/delete-namespace-image";
+import { DisplayToast } from "@/components/shared/toast/display-toast";
 
 export default function DetailDashboard({
     projectId,
@@ -114,15 +115,21 @@ export default function DetailDashboard({
                                                     });
                                                     await afterDelete();
                                                 } catch (e) {
-                                                    toastEventEmitter.emit(
-                                                        "pop",
-                                                        {
-                                                            type: "danger",
-                                                            message:
+                                                    // toastEventEmitter.emit(
+                                                    //     "pop",
+                                                    //     {
+                                                    //         type: "danger",
+                                                    //         message:
+                                                    //             "Error while deleting image",
+                                                    //         duration: 5000,
+                                                    //     },
+                                                    // );
+                                                    DisplayToast({
+                                                        type: "error",
+                                                        message:
                                                                 "Error while deleting image",
-                                                            duration: 5000,
-                                                        },
-                                                    );
+                                                        duration: 4000,
+                                                    });
                                                 } finally {
                                                     setLoading(false);
                                                 }

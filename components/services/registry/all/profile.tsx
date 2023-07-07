@@ -6,6 +6,7 @@ import { toastEventEmitter } from "@/lib/event-emitter/toast-event-emitter";
 import { CreateUserInRegistry } from "../../../../lib/services/registry/namespace/create-user";
 import { GetAccountInRegistry } from "../../../../lib/services/registry/namespace/get-account-in-registry";
 import { ModifyPassword } from "../../../../lib/services/registry/namespace/modify-pasword";
+import { DisplayToast } from "@/components/shared/toast/display-toast";
 
 export default function Profile({
     session,
@@ -37,34 +38,54 @@ export default function Profile({
         console.log(oldPassword)
         console.log("---------------------------------")
         if (password !== confirmPassword) {
-            toastEventEmitter.emit("pop", {
-                type: "danger",
+            // toastEventEmitter.emit("pop", {
+            //     type: "danger",
+            //     message: "Passwords do not match!",
+            //     duration: 2000,
+            // });
+            DisplayToast({
+                type: "error",
                 message: "Passwords do not match!",
-                duration: 2000,
+                duration: 5000,
             });
         } else {
             try {
                 setLoading(true);
                 if (!oldPassword) {
                     await CreateUserInRegistry(projectId, password);
-                    toastEventEmitter.emit("pop", {
+                    // toastEventEmitter.emit("pop", {
+                    //     type: "success",
+                    //     message: "User created successfully",
+                    //     duration: 4000,
+                    // });
+                    DisplayToast({
                         type: "success",
                         message: "User created successfully",
-                        duration: 4000,
+                        duration: 5000,
                     });
                     const user = await GetAccountInRegistry(projectId);
                     setUser(user);
                 } else {
                     await ModifyPassword(projectId, password, oldPassword);
-                    toastEventEmitter.emit("pop", {
+                    // toastEventEmitter.emit("pop", {
+                    //     type: "success",
+                    //     message: "Password modify successfully",
+                    //     duration: 4000,
+                    // });
+                    DisplayToast({
                         type: "success",
                         message: "Password modify successfully",
                         duration: 4000,
                     });
                 }
             } catch (error) {
-                toastEventEmitter.emit("pop", {
-                    type: "danger",
+                // toastEventEmitter.emit("pop", {
+                //     type: "danger",
+                //     message: "Error create user or updating password",
+                //     duration: 4000,
+                // });
+                DisplayToast({
+                    type: "error",
                     message: "Error create user or updating password",
                     duration: 4000,
                 });
@@ -86,8 +107,8 @@ export default function Profile({
             })
             .catch((error) => {
                 if (error.response.status === 500) {
-                    toastEventEmitter.emit("pop", {
-                        type: "warning",
+                    DisplayToast({
+                        type: "error",
                         message: "Error while fetching user",
                         duration: 2000,
                     });

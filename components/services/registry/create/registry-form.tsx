@@ -6,6 +6,7 @@ import { InfoCircledIcon } from "@radix-ui/react-icons";
 import LoadingSpinner from "@/components/shared/icons/loading-spinner";
 import { toastEventEmitter } from "@/lib/event-emitter/toast-event-emitter";
 import { useRouter } from "next/navigation";
+import { DisplayToast } from "@/components/shared/toast/display-toast";
 
 export default function RegistryForm({
     session,
@@ -26,15 +27,25 @@ export default function RegistryForm({
                 method: "POST",
                 body: JSON.stringify({ name, visibility }),
             });
-            toastEventEmitter.emit("pop", {
+            // toastEventEmitter.emit("pop", {
+            //     type: "success",
+            //     message: "Namespace created",
+            //     duration: 4000,
+            // });
+            DisplayToast({
                 type: "success",
                 message: "Namespace created",
                 duration: 4000,
             });
             router.push(`/projects/${projectId}/services/registry`);
         } catch (error) {
-            toastEventEmitter.emit("pop", {
-                type: "danger",
+            // toastEventEmitter.emit("pop", {
+            //     type: "danger",
+            //     message: "error when try to create namespace",
+            //     duration: 4000,
+            // });
+            DisplayToast({
+                type: "error",
                 message: "error when try to create namespace",
                 duration: 4000,
             });

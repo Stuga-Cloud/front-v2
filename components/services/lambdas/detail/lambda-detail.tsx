@@ -26,6 +26,7 @@ import { LambdaMetrics } from "../../../../lib/services/lambdas/lambda-metrics";
 import { GetLambdaMetrics } from "@/lib/services/lambdas/client/get-lambda-metrics";
 import LambdaMonitor from "./lambda-monitor";
 import { Lambda } from "@prisma/client";
+import { DisplayToast } from '@/components/shared/toast/display-toast';
 
 export default function LambdaDetail({
     session,
@@ -61,7 +62,12 @@ export default function LambdaDetail({
         try {
             setLoading(true);
             await UpdateDeployLambda(projectId, lambdaParam);
-            toastEventEmitter.emit("pop", {
+            // toastEventEmitter.emit("pop", {
+            //     type: "success",
+            //     message: "lambda updated",
+            //     duration: 5000,
+            // });
+            DisplayToast({
                 type: "success",
                 message: "lambda updated",
                 duration: 5000,
@@ -70,11 +76,16 @@ export default function LambdaDetail({
             setLambda(lambdaUpdated);
             setLambdaInit(lambdaUpdated);
         } catch (error) {
-            toastEventEmitter.emit("pop", {
-                type: "danger",
+            DisplayToast({
+                type: "error",
                 message: error.error ?? "error when try to update lambda",
                 duration: 5000,
             });
+            // toastEventEmitter.emit("pop", {
+            //     type: "danger",
+            //     message: error.error ?? "error when try to update lambda",
+            //     duration: 5000,
+            // });
         } finally {
             setLoading(false);
         }
@@ -95,7 +106,12 @@ export default function LambdaDetail({
             console.log("try to update lambda");
             console.log(lambdaParam);
             await UpdateLambda(projectId, lambdaParam);
-            toastEventEmitter.emit("pop", {
+            // toastEventEmitter.emit("pop", {
+            //     type: "success",
+            //     message: "lambda updated",
+            //     duration: 5000,
+            // });
+            DisplayToast({
                 type: "success",
                 message: "lambda updated",
                 duration: 5000,
@@ -104,8 +120,13 @@ export default function LambdaDetail({
             setLambda(lambdaUpdated);
             setLambdaInit(lambdaUpdated);
         } catch (error) {
-            toastEventEmitter.emit("pop", {
-                type: "danger",
+            // toastEventEmitter.emit("pop", {
+            //     type: "danger",
+            //     message: error.error ?? "error when try to update lambda",
+            //     duration: 5000,
+            // });
+            DisplayToast({
+                type: "error",
                 message: error.error ?? "error when try to update lambda",
                 duration: 5000,
             });
@@ -123,11 +144,17 @@ export default function LambdaDetail({
                 setLambdaMetrics(lambdaMetricsGet);
             })
             .catch((error) => {
-                toastEventEmitter.emit("pop", {
-                    type: "danger",
+                // toastEventEmitter.emit("pop", {
+                //     type: "danger",
+                //     message:
+                //         error.message ?? "error when try to get lambda info",
+                //     duration: 5000,
+                // });
+                DisplayToast({
+                    type: "error",
                     message:
                         error.message ?? "error when try to get lambda info",
-                    duration: 5000,
+                    duration: 4000,
                 });
             });
 
@@ -137,11 +164,17 @@ export default function LambdaDetail({
                 setLambdaInit(lambda);
             })
             .catch((error) => {
-                toastEventEmitter.emit("pop", {
-                    type: "danger",
+                // toastEventEmitter.emit("pop", {
+                //     type: "danger",
+                //     message:
+                //         error.message ?? "error when try to get lambda info",
+                //     duration: 5000,
+                // });
+                DisplayToast({
+                    type: "error",
                     message:
                         error.message ?? "error when try to get lambda info",
-                    duration: 5000,
+                    duration: 4000,
                 });
             })
             .finally(() => {
@@ -174,11 +207,7 @@ export default function LambdaDetail({
                     <TabsLambdaDetail
                         tab={activeTab}
                         onClick={(
-                            tab:
-                                | "details"
-                                | "visibility"
-                                | "monitor"
-                                | "image",
+                            tab: "details" | "visibility" | "monitor" | "image",
                         ) => {
                             setActiveTab(tab);
                         }}

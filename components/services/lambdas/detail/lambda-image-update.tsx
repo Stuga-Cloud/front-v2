@@ -8,6 +8,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { isLambdaImageNameValid } from "@/lib/models/lambdas/validation/lambda-create-candidate";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
+import { DisplayToast } from "@/components/shared/toast/display-toast";
 
 const findRegistryByName = (
     name: AvailableRegistriesName,
@@ -15,10 +16,15 @@ const findRegistryByName = (
     if (availableRegistries.find((registry) => registry.name === name)) {
         return availableRegistries.find((registry) => registry.name === name)!;
     }
-    toastEventEmitter.emit("pop", {
-        type: "danger",
+    // toastEventEmitter.emit("pop", {
+    //     type: "danger",
+    //     message: `Registry ${name} not found`,
+    //     duration: 5000,
+    // });
+    DisplayToast({
+        type: "error",
         message: `Registry ${name} not found`,
-        duration: 5000,
+        duration: 4000,
     });
     return availableRegistries[0];
 };

@@ -130,16 +130,26 @@ export default function NewNamespaceForm({
             }
 
             if (error instanceof StugaError) {
-                toastEventEmitter.emit("pop", {
-                    type: "danger",
+                // toastEventEmitter.emit("pop", {
+                //     type: "danger",
+                //     message: error.message,
+                //     duration: 4000,
+                // });
+                DisplayToast({
+                    type: "error",
                     message: error.message,
                     duration: 4000,
                 });
             }
-            toastEventEmitter.emit("pop", {
-                type: "danger",
-                message:
-                    "Couldn't create namespace, try again or contact support",
+            // toastEventEmitter.emit("pop", {
+            //     type: "danger",
+            //     message:
+            //         "Couldn't create namespace, try again or contact support",
+            //     duration: 4000,
+            // });
+            DisplayToast({
+                type: "error",
+                message: "Couldn't create namespace, try again or contact support",
                 duration: 4000,
             });
         }

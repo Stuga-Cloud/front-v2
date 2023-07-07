@@ -7,6 +7,7 @@ import DockerLoginCode from "../docker-login-code";
 import { AddAccountInNamespace } from "../../../../../lib/services/registry/namespace/add-account-in-namespace";
 import { StugaError } from "@/lib/services/error/error";
 import { GetAccountInNamespace } from "../../../../../lib/services/registry/namespace/get-account-in-namespace";
+import { DisplayToast } from "@/components/shared/toast/display-toast";
 
 export default function Access({
     session,
@@ -27,10 +28,15 @@ export default function Access({
         setLoading(true);
         try {
             await AddAccountInNamespace(projectId, namespace.id);
-            toastEventEmitter.emit("pop", {
-                type: "success",
+            // toastEventEmitter.emit("pop", {
+            //     type: "success",
+            //     message: "User added successfully",
+            //     duration: 2000,
+            // });
+            DisplayToast({
+                type: "error",
                 message: "User added successfully",
-                duration: 2000,
+                duration: 4000,
             });
             GetAccountInNamespace(namespace.id)
                 .then((userReq) => {
@@ -48,8 +54,13 @@ export default function Access({
                 })
                 .catch((error) => {
                     if (error.response.status === 500) {
-                        toastEventEmitter.emit("pop", {
-                            type: "danger",
+                        // toastEventEmitter.emit("pop", {
+                        //     type: "danger",
+                        //     message: "Error while fetching user",
+                        //     duration: 2000,
+                        // });
+                        DisplayToast({
+                            type: "error",
                             message: "Error while fetching user",
                             duration: 2000,
                         });
@@ -59,8 +70,13 @@ export default function Access({
                         error.response.status === 403 &&
                         error.response.data.error === "user-not-in-namespace"
                     ) {
-                        toastEventEmitter.emit("pop", {
-                            type: "danger",
+                        // toastEventEmitter.emit("pop", {
+                        //     type: "danger",
+                        //     message: "the user in not in the namespace",
+                        //     duration: 2000,
+                        // });
+                        DisplayToast({
+                            type: "error",
                             message: "the user in not in the namespace",
                             duration: 2000,
                         });
@@ -72,15 +88,25 @@ export default function Access({
         } catch (error) {
             if (error instanceof StugaError) {
                 if (error.status === 404) {
-                    toastEventEmitter.emit("pop", {
-                        type: "danger",
+                    // toastEventEmitter.emit("pop", {
+                    //     type: "danger",
+                    //     message: "namespace does not exist",
+                    //     duration: 2000,
+                    // });
+                    DisplayToast({
+                        type: "error",
                         message: "namespace does not exist",
                         duration: 2000,
                     });
                 }
             } else {
-                toastEventEmitter.emit("pop", {
-                    type: "danger",
+                // toastEventEmitter.emit("pop", {
+                //     type: "danger",
+                //     message: "Error while adding user to a namespace",
+                //     duration: 2000,
+                // });
+                DisplayToast({
+                    type: "error",
                     message: "Error while adding user to a namespace",
                     duration: 2000,
                 });
@@ -109,10 +135,15 @@ export default function Access({
             })
             .catch((error) => {
                 if (error.response.status === 500) {
-                    toastEventEmitter.emit("pop", {
-                        type: "warning",
+                    // toastEventEmitter.emit("pop", {
+                    //     type: "warning",
+                    //     message: "Error while fetching user",
+                    //     duration: 2000,
+                    // });
+                    DisplayToast({
+                        type: "error",
                         message: "Error while fetching user",
-                        duration: 2000,
+                        duration: 3000,
                     });
                 }
 
@@ -120,8 +151,13 @@ export default function Access({
                     error.response.status !== 403 &&
                     error.response.data.error !== "user-not-in-namespace"
                 ) {
-                    toastEventEmitter.emit("pop", {
-                        type: "danger",
+                    // toastEventEmitter.emit("pop", {
+                    //     type: "danger",
+                    //     message: "Internal server error",
+                    //     duration: 3000,
+                    // });
+                    DisplayToast({
+                        type: "error",
                         message: "Internal server error",
                         duration: 3000,
                     });
