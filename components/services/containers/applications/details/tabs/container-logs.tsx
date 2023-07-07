@@ -35,6 +35,7 @@ export default function ContainerLogs({
     const [logs, setLogs] = useState<ContainerApplicationLogs[]>([]);
     const [currentPod, setCurrentPod] = useState<string>("");
     const [currentLogs, setCurrentLogs] = useState<string>("");
+    const [stopRefreshing, setStopRefreshing] = useState<boolean>(false);
 
     const findLogs = (podName: string) => {
         const log = logs.find((log) => log.podName === podName);
@@ -72,6 +73,7 @@ export default function ContainerLogs({
     useEffect(() => {
         const interval = setInterval(() => {
             if (!container) return;
+            if (stopRefreshing) return;
             loadLogs();
         }, 5000);
         return () => clearInterval(interval);
@@ -118,6 +120,7 @@ export default function ContainerLogs({
                             readOnly
                             ref={(el) => {
                                 if (!el) return;
+                                if (stopRefreshing) return;
                                 el.scrollTop = el.scrollHeight;
                             }}
                         />
@@ -133,6 +136,20 @@ export default function ContainerLogs({
                             }}
                         >
                             Copy to clipboard
+                        </button>
+                        <button
+                            className={`mt-2 rounded  px-4 py-2 font-bold text-white ${
+                                stopRefreshing
+                                    ? "bg-green-500 hover:bg-green-700"
+                                    : "bg-red-500 hover:bg-red-700"
+                            }`}
+                            onClick={() => {
+                                setStopRefreshing(!stopRefreshing);
+                            }}
+                        >
+                            {stopRefreshing
+                                ? "Start refreshing"
+                                : "Stop refreshing"}
                         </button>
                     </div>
                 </div>
