@@ -60,6 +60,13 @@ export default function ContainerDetails({
         }
     };
 
+    const userIsAdmin = () => {
+        if (!project) return false;
+        return project.members.some(
+            (member) => member.id === user?.id && member.role === "ADMIN",
+        );
+    };
+
     useEffect(() => {
         if (!projectId) return;
         setLoading(true);
@@ -178,6 +185,7 @@ export default function ContainerDetails({
                             onClick={(tab: AvailableContainerDetailsTabs) => {
                                 setActiveTab(tab);
                             }}
+                            userIsAdmin={userIsAdmin}
                         />
 
                         {activeTab === "preview" && container && (
@@ -192,7 +200,7 @@ export default function ContainerDetails({
                                 }}
                             />
                         )}
-                        {activeTab === "deployment" && (
+                        {activeTab === "deployment" && userIsAdmin() && (
                             <ContainerDeployment
                                 session={session}
                                 project={project}

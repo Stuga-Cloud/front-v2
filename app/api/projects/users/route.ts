@@ -49,6 +49,9 @@ export async function POST(request: Request) {
         where: {
             id: projectId,
         },
+        include: {
+            members: true,
+        },
     });
 
     if (!project) {
@@ -59,7 +62,15 @@ export async function POST(request: Request) {
             { status: 404 },
         );
     }
-    if (project.createdBy !== loggedUser.id) {
+
+    var isAdmin = false;
+    for (const member of project.members) {
+        if (member.userId === loggedUser.id && member.role === "ADMIN") {
+            isAdmin = true;
+            break;
+        }
+    }
+    if (!isAdmin) {
         return NextResponse.json(
             {
                 error: `You are not the owner of the project.`,

@@ -4,9 +4,11 @@ import { AvailableContainerDetailsTabs } from "@/components/services/containers/
 export default function TabsContainerDetails({
     tab,
     onClick,
+    userIsAdmin,
 }: {
     tab: AvailableContainerDetailsTabs;
     onClick: (tab: AvailableContainerDetailsTabs) => void;
+    userIsAdmin: () => boolean;
 }) {
     const [activeTab, setActiveTab] = useState<AvailableContainerDetailsTabs>(
         tab || "preview",
@@ -47,20 +49,22 @@ export default function TabsContainerDetails({
                         Status
                     </a>
                 </li>
-                <li className="mr-2">
-                    <a
-                        href="#"
-                        className={`group inline-flex rounded-t-lg p-4 ${
-                            activeTab === "deployment"
-                                ? "border-b-2 border-green-400 text-green-400"
-                                : "border-transparent hover:border-gray-300 hover:text-gray-600"
-                        }`}
-                        aria-current="page"
-                        onClick={() => handleClick("deployment")}
-                    >
-                        Deployment
-                    </a>
-                </li>
+                {userIsAdmin() && (
+                    <li className="mr-2">
+                        <a
+                            href="#"
+                            className={`group inline-flex rounded-t-lg p-4 ${
+                                activeTab === "deployment"
+                                    ? "border-b-2 border-green-400 text-green-400"
+                                    : "border-transparent hover:border-gray-300 hover:text-gray-600"
+                            }`}
+                            aria-current="page"
+                            onClick={() => handleClick("deployment")}
+                        >
+                            Deployment
+                        </a>
+                    </li>
+                )}
                 <li className="mr-2">
                     <a
                         href="#"
