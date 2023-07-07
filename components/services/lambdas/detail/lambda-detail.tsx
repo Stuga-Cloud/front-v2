@@ -43,7 +43,7 @@ export default function LambdaDetail({
         null,
     );
     const [activeTab, setActiveTab] = useState<
-        "image" | "details" | "environments" | "visibility" | "monitor"
+        "image" | "details" | "visibility" | "monitor"
     >("details");
     const [loading, setLoading] = useState(true);
     const router = useRouter();
@@ -176,7 +176,6 @@ export default function LambdaDetail({
                         onClick={(
                             tab:
                                 | "details"
-                                | "environments"
                                 | "visibility"
                                 | "monitor"
                                 | "image",

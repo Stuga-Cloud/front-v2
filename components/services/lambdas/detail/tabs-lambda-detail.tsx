@@ -4,16 +4,14 @@ export default function TabsLambdaDetail({
     tab,
     onClick,
 }: {
-    tab: "details" | "image" | "environments" | "visibility" | "monitor";
-    onClick: (
-        tab: "details" | "image" | "environments" | "visibility" | "monitor",
-    ) => void;
+    tab: "details" | "image" | "visibility" | "monitor";
+    onClick: (tab: "details" | "image" | "visibility" | "monitor") => void;
 }) {
     const [activeTab, setActiveTab] = useState<
-        "details" | "image" | "environments" | "visibility" | "monitor"
+        "details" | "image" | "visibility" | "monitor"
     >(tab || "details");
     const handleClick = (
-        tab: "details" | "image" | "environments" | "visibility" | "monitor",
+        tab: "details" | "image" | "visibility" | "monitor",
     ) => {
         onClick(tab);
         setActiveTab(tab);
@@ -78,7 +76,7 @@ export default function TabsLambdaDetail({
                     </a>
                 </li>
 
-                <li className="mr-2">
+                {/* <li className="mr-2">
                     <a
                         href="#"
                         className={`group inline-flex rounded-t-lg p-4 ${
@@ -104,7 +102,7 @@ export default function TabsLambdaDetail({
                         </svg>
                         Environments
                     </a>
-                </li>
+                </li> */}
 
                 <li className="mr-2">
                     <a
